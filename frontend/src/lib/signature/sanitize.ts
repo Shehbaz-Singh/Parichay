@@ -2,15 +2,7 @@ import { languageOf, type Script } from '@parichay/shared';
 
 // Everything the signature prints passes through here first. The signature is HTML the owner pastes
 // into other people's mail, so a name or a role must never be able to add markup.
-//
-// Characters are tested by code, not written into patterns, so no invisible character has to sit in
-// this file.
 
-// C0 and C1 controls, line and paragraph separators, the bidi embedding and override marks
-// (U+202A-202E, U+2066-2069), the direction and Arabic letter marks (U+200E, U+200F, U+061C), the
-// word joiner and the byte order mark (U+2060, U+FEFF). They can make text read in a different
-// order than it is written, or hide in it. Zero-width joiners are kept: Indic scripts need them.
-// The `dir` attribute sets direction instead.
 const isUnsafe = (code: number) =>
   code <= 0x1f ||
   (code >= 0x7f && code <= 0x9f) ||
