@@ -47,8 +47,10 @@ const LABELS: Partial<Record<TranslatableEntity, Record<string, string>>> = {
     availabilityMessage: 'Availability message',
     workNote: 'Working together note',
     shareMessage: 'Share message',
+    contactFormIntro: 'Contact form intro',
   },
   section: { title: 'Heading' },
+  linkBioLink: { label: 'Button text' },
   experience: { title: 'Job title', description: 'Description' },
   education: { degree: 'Degree' },
   project: { name: 'Project name', description: 'Description' },
@@ -100,8 +102,25 @@ export function buildGroups(profile: MyProfile): FieldGroup[] {
       spec('profile', profile.id, 'availabilityMessage', profile.availabilityMessage),
       spec('profile', profile.id, 'workNote', profile.workCardEnabled ? profile.workNote : null),
       spec('profile', profile.id, 'shareMessage', profile.shareMessage),
+      spec(
+        'profile',
+        profile.id,
+        'contactFormIntro',
+        profile.contactFormEnabled ? profile.contactFormIntro : null,
+      ),
     ]),
   ]);
+
+  add(
+    {
+      id: 'linkbio',
+      title: 'Link-in-bio buttons',
+      note: 'The texts of your own buttons. The links are the same in every language.',
+    },
+    (profile.linkBioEnabled ? profile.linkBioLinks : []).map((row) =>
+      card(row.id, row.label, [spec('linkBioLink', row.id, 'label', row.label)]),
+    ),
+  );
 
   const config = normalizeSectionConfig(
     profile.sectionConfig,

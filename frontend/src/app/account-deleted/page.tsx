@@ -22,8 +22,9 @@ export default function AccountDeletedPage() {
         </div>
         <h1 className="type-page mt-6">Your account has been deleted</h1>
         <p className="mt-3 text-muted">
-          Your account, your portfolio, your posts, your testimonials and your images have been
-          erased, and your page address no longer works. You’ve been logged out.
+          Your account, your portfolio, your posts, your testimonials, your contact messages and
+          your images have been erased, and your page address no longer works. You’ve been logged
+          out.
         </p>
         <p className="mt-3 text-sm text-muted">
           Copies that search engines or other sites already made are outside our control, and our

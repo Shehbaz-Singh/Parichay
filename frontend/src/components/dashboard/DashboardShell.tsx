@@ -9,6 +9,7 @@ import { useLoad, useMediaQuery } from '@/lib/hooks';
 import { ConfirmProvider } from '../ui';
 import { cx } from '../ui/cx';
 import { EditorProvider } from './editor-context';
+import { MessagesProvider } from './messages-context';
 import { BottomNav, Sidebar } from './Nav';
 import { DashboardActionsProvider } from './palette/actions';
 import { PaletteProvider } from './palette/PaletteHost';
@@ -74,9 +75,15 @@ function Workspace({ children }: { children: ReactNode }) {
 }
 
 function Frame({ children }: { children: ReactNode }) {
-  // Account settings and the email signature have no portfolio to preview.
+  // Account settings, the email signature, the inbox and the link-in-bio card have no portfolio to
+  // preview (the card page draws its own preview).
   const pathname = usePathname();
-  const withPreview = pathname !== '/dashboard/settings' && pathname !== '/dashboard/signature';
+  const withPreview = ![
+    '/dashboard/settings',
+    '/dashboard/signature',
+    '/dashboard/messages',
+    '/dashboard/link-bio',
+  ].includes(pathname);
   return (
     <div className="dashboard-root min-h-screen lg:flex">
       <Sidebar />
@@ -109,9 +116,11 @@ export function DashboardShell({ children }: { children: ReactNode }) {
     <EditorProvider initial={state.data}>
       <ConfirmProvider>
         <DashboardActionsProvider>
-          <PaletteProvider>
-            <Frame>{children}</Frame>
-          </PaletteProvider>
+          <MessagesProvider>
+            <PaletteProvider>
+              <Frame>{children}</Frame>
+            </PaletteProvider>
+          </MessagesProvider>
         </DashboardActionsProvider>
       </ConfirmProvider>
     </EditorProvider>

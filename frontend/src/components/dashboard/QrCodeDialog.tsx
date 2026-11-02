@@ -42,6 +42,9 @@ export function QrCodeDialog({
   name,
   published,
   contactCard,
+  title = 'QR code for your page',
+  description = 'Anyone who points a phone camera at this opens your portfolio. Good for a printed resume, a business card or a slide.',
+  fileSuffix = '',
 }: {
   open: boolean;
   onClose: () => void;
@@ -51,6 +54,10 @@ export function QrCodeDialog({
   published: boolean;
   // The short vCard text for the alternative code, or null while the contact card is off.
   contactCard?: string | null;
+  // Other words and file names, when the code is not for the portfolio (the link-in-bio card).
+  title?: string;
+  description?: string;
+  fileSuffix?: string;
 }) {
   // The link is the default. The contact card is an alternative, and only when it is switched on.
   const [kind, setKind] = useState<'link' | 'card'>('link');
@@ -93,10 +100,10 @@ export function QrCodeDialog({
       <Modal
         open={open}
         onClose={onClose}
-        title="QR code for your page"
+        title={title}
         description={
           published
-            ? 'Anyone who points a phone camera at this opens your portfolio. Good for a printed resume, a business card or a slide.'
+            ? description
             : 'Your page isn’t published yet, so this link doesn’t go anywhere. Publish it first, then come back for your QR code.'
         }
         footer={
@@ -116,7 +123,9 @@ export function QrCodeDialog({
                 </Button>
                 <Button
                   disabled={!code}
-                  onClick={() => code && save(code.png, `${slug}${card ? '-contact' : ''}-qr.png`)}
+                  onClick={() =>
+                    code && save(code.png, `${slug}${fileSuffix}${card ? '-contact' : ''}-qr.png`)
+                  }
                 >
                   <Download aria-hidden="true" className="size-4" />
                   PNG
@@ -128,7 +137,7 @@ export function QrCodeDialog({
                     code &&
                     save(
                       URL.createObjectURL(new Blob([code.svg], { type: 'image/svg+xml' })),
-                      `${slug}${card ? '-contact' : ''}-qr.svg`,
+                      `${slug}${fileSuffix}${card ? '-contact' : ''}-qr.svg`,
                     )
                   }
                 >

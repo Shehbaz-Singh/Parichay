@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import { CONTACT_DEFAULT_RETENTION_DAYS } from '@parichay/shared';
 import { LegalPage, type LegalSection } from '@/components/landing/LegalPage';
 import { API_URL } from '@/lib/config';
 
@@ -8,25 +9,40 @@ export const metadata: Metadata = {
   robots: { index: false },
 };
 
-// The AI service that reads resumes is named by the API from its own configuration (LLM_PROVIDER),
-// so this page cannot drift from what the server really uses. null means resume import is switched
-// off, or the API could not be reached: the text then says so and asks the owner to fill it in.
-async function aiProvider(): Promise<string | null> {
+// What this page says about the server comes from the API's own configuration, so it cannot drift
+// from what the server really does: the AI service that reads resumes (LLM_PROVIDER; null means
+// resume import is switched off, or the API could not be reached: the text then says so), how long
+// contact messages are kept (CONTACT_RETENTION_DAYS), and the CAPTCHA of the contact form (null while
+// there is none).
+async function siteInfo() {
+  const fallback = {
+    aiProvider: null as string | null,
+    retentionDays: CONTACT_DEFAULT_RETENTION_DAYS,
+    captcha: null as string | null,
+  };
   try {
     const res = await fetch(`${API_URL}/public/_info`, {
       next: { revalidate: 3600 },
       signal: AbortSignal.timeout(5000),
     });
-    if (!res.ok) return null;
-    const body = (await res.json()) as { aiProvider?: string | null };
-    return body.aiProvider ?? null;
+    if (!res.ok) return fallback;
+    const body = (await res.json()) as {
+      aiProvider?: string | null;
+      contactRetentionDays?: number;
+      captchaProvider?: string | null;
+    };
+    return {
+      aiProvider: body.aiProvider ?? null,
+      retentionDays: body.contactRetentionDays ?? fallback.retentionDays,
+      captcha: body.captchaProvider ?? null,
+    };
   } catch {
-    return null;
+    return fallback;
   }
 }
 
 export default async function PrivacyPage() {
-  const provider = await aiProvider();
+  const { aiProvider: provider, retentionDays, captcha } = await siteInfo();
 
   const sections: LegalSection[] = [
     {
@@ -75,6 +91,17 @@ export default async function PrivacyPage() {
               <strong>Testimonials,</strong> if you let visitors send them: the name, role, company
               and message a visitor writes, and an email address if they choose to give one. They
               wait for your approval, and the email is only ever shown to you.
+            </li>
+            <li>
+              <strong>Your link-in-bio card,</strong> if you switch it on: the buttons you write
+              (their text and the address each goes to) and a few choices (its look, and which
+              optional buttons it shows). The card itself holds nothing else: it is made fresh from
+              what your page already shows, and the account email is never in it.
+            </li>
+            <li>
+              <strong>Contact messages,</strong> if you switch on the contact form: the name, email
+              address, optional subject and message a visitor writes. Only you can see them, in your
+              dashboard (see “Messages sent through a contact form” below).
             </li>
             <li>
               <strong>Your contact card,</strong> if you switch on “Let visitors save my contact
@@ -155,6 +182,17 @@ export default async function PrivacyPage() {
             </li>
             <li>your availability badge, if you switch it on;</li>
             <li>
+              a short link-in-bio card at <code>/your-name/links</code>, if you switch it on. It
+              shows your name, photo, tagline, place, availability badge, the links you show, your
+              own buttons, and buttons for the features you have on (contact form, contact card,
+              resume, share). Hidden links and anything you have switched off are not in it. It is
+              kept out of search engines, but anyone with the link can open it;
+            </li>
+            <li>
+              a “Send a message” form, if you switch on the contact form. The form never shows your
+              email address, and what visitors write is not published;
+            </li>
+            <li>
               testimonials you have approved: the author’s name, role, company and message (never
               their email).
             </li>
@@ -167,6 +205,63 @@ export default async function PrivacyPage() {
             If you unpublish or delete your page, it stops being served by us within about a minute.
             We cannot remove copies that other sites, search engines or visitors have already made.
           </p>
+        </>
+      ),
+    },
+    {
+      id: 'messages',
+      title: 'Messages sent through a contact form',
+      content: (
+        <>
+          <p>
+            A portfolio owner can switch on a contact form. If you are a visitor who uses one, this
+            is what happens:
+          </p>
+          <ul>
+            <li>
+              <strong>What is collected:</strong> your name, your email address, an optional subject
+              and your message, as you type them, and the time you sent it. Nothing else about you
+              is stored with it: no IP address, no browser details.
+            </li>
+            <li>
+              <strong>Who can see it:</strong> only the owner of that page, when they open their
+              dashboard. It is not published anywhere, and Parichay does not read it, sell it or use
+              it for anything else. <strong>No email is sent</strong> by Parichay, either to the
+              owner or to you: the owner finds your message when they open their dashboard, and may
+              reply from their own email app. We cannot promise that they will read it or reply.
+            </li>
+            <li>
+              <strong>What your email address is for:</strong> only so the owner can reply to you.
+              Owners agree not to use it to build lists, to send marketing, or to pass it on (see
+              the Terms).
+            </li>
+            <li>
+              <strong>How long it is kept:</strong> {retentionDays} days. After that it is deleted
+              automatically. The owner can delete it sooner, and it is deleted if the owner deletes
+              their account. If you want a message removed earlier, ask the owner, or the person who
+              runs the service (see “Contact”).
+            </li>
+            <li>
+              <strong>Keeping spam out, without tracking you:</strong> the form has a field people
+              never see, which only automated programs fill in; it notes when the form was opened,
+              so that one sent faster than a person can write is dropped; and the server counts how
+              many messages come from one address. That count is kept only in the server’s memory,
+              under a scrambled version of the address that is made with a secret that changes every
+              day, so it is not written to the database or to our logs, and it cannot be traced back
+              to you or matched from one day to the next. It starts again when the server restarts.
+              {captcha ? (
+                <>
+                  {' '}
+                  The form also uses <strong>{captcha}</strong>, a privacy-friendly check from
+                  Cloudflare that confirms you are a person. It is loaded only when you open the
+                  form, and Cloudflare receives your IP address and some browser details to run the
+                  check, under its own privacy policy.
+                </>
+              ) : (
+                <> The form does not use a CAPTCHA or any outside service.</>
+              )}
+            </li>
+          </ul>
         </>
       ),
     },
@@ -197,6 +292,13 @@ export default async function PrivacyPage() {
               <strong>{provider ?? 'The AI provider'}</strong> (resume reading): receives resume
               text, as described above.
             </li>
+            {captcha && (
+              <li>
+                <strong>Cloudflare</strong> ({captcha}, spam protection): when a visitor opens the
+                contact form, their browser loads a small check from Cloudflare, which sees their IP
+                address and browser details. It does not receive the message.
+              </li>
+            )}
             <li>
               <strong>Hosting:</strong> the website and the server behind it run on our hosting
               providers. Hosting providers see requests and keep ordinary server logs.
@@ -245,6 +347,15 @@ export default async function PrivacyPage() {
             show.
           </p>
           <p>
+            The link-in-bio card works like the portfolio page: it sets no cookies and has no
+            analytics, so button clicks are not counted. The clock on it uses the visitor’s device
+            time and stores nothing.
+          </p>
+          <p>
+            Using a contact form stores nothing in the visitor’s browser either: what they type is
+            sent when they press “Send” and is not kept in their browser.
+          </p>
+          <p>
             Visitors to a published page get no cookies from us. We do not use the cookies or
             storage above for tracking, so we do not show a cookie banner.
           </p>
@@ -283,6 +394,15 @@ export default async function PrivacyPage() {
             ones, until you delete them or your account.
           </li>
           <li>
+            <strong>Link-in-bio buttons and choices:</strong> in your account until you change or
+            delete them, or delete your account.
+          </li>
+          <li>
+            <strong>Contact messages:</strong> {retentionDays} days, then they are deleted
+            automatically (the clean-up runs every few hours and whenever the server starts). The
+            owner can delete them sooner. They are deleted with the account too.
+          </li>
+          <li>
             <strong>Server logs:</strong> kept by our hosts for a limited time. We try not to put
             personal data in our own logs.
           </li>
@@ -302,8 +422,9 @@ export default async function PrivacyPage() {
             </li>
             <li>
               <strong>Export it:</strong> “Download my data” gives you a JSON file with your account
-              email, profile, every section, custom sections, posts (drafts included), testimonials
-              and settings. (There is no analytics data to include, because we do not collect any.)
+              email, profile, every section, custom sections, posts (drafts included), testimonials,
+              the contact messages still stored, your link-in-bio buttons and settings. (There is no
+              analytics data to include, because we do not collect any.)
             </li>
             <li>
               <strong>Delete it:</strong> “Delete account” erases your account and all your content.

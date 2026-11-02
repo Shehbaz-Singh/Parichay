@@ -33,6 +33,23 @@ export const NOTICES = {
   testimonialApproved: (name: string) => `Approved the testimonial from ${name}.`,
   testimonialRejected: (name: string) => `Rejected the testimonial from ${name}.`,
   testimonialRemoved: (name: string) => `Removed ${name}'s testimonial from your page.`,
+  contactFormOn: 'The contact form is on. It shows on your page once it is published.',
+  contactFormOff: 'The contact form is off. Visitors can no longer write to you.',
+  contactFormShown: 'The Contact section is now shown on your page.',
+  contactIntroSaved: 'Contact form intro saved.',
+  messageDeleted: 'Message deleted.',
+  messageSpam: 'Reported as spam and deleted.',
+  messageArchived: 'Message archived.',
+  messageMovedBack: 'Message moved back to your inbox.',
+  messageMarkedRead: 'Marked as read.',
+  messageMarkedUnread: 'Marked as unread.',
+  emailCopied: (email: string) => `Copied ${email}.`,
+  linkBioOn: 'The link-in-bio card is on. Anyone with the link can see it.',
+  linkBioOff: 'The link-in-bio card is off. Its link now shows a “not found” page.',
+  linkBioSaved: 'Saved.',
+  linkBioButtonAdded: 'Button added to your card.',
+  linkBioButtonSaved: 'Button saved.',
+  linkBioCopied: 'Copied the link to your card.',
   skillAdded: (name: string) => `Added ${name}.`,
   skillRemoved: (name: string) => `Removed ${name}.`,
   themeChanged: (name: string) => `Theme changed to ${name}.`,
@@ -55,6 +72,8 @@ export const PROBLEMS = {
   themeNotChanged: "We couldn't change the theme. Please try again.",
   colorNotChanged: "We couldn't change the color. Please try again.",
   linkNotUpdated: "We couldn't update that link. Please try again.",
+  copyEmail: "We couldn't copy the email address automatically. Select it and copy it by hand.",
+  linkBioCopy: "We couldn't copy the link automatically. Select it and copy it by hand.",
   copyLink: "We couldn't copy the link automatically. Select it and copy it by hand.",
   signatureCopy:
     "We couldn't copy that automatically. Select the preview and copy it by hand, or download the .html file.",
@@ -77,6 +96,10 @@ export const CONFIRMS = {
     `Delete "${title}"${items}? This cannot be undone.`,
   deleteTestimonial: (name: string) =>
     `The testimonial from ${name} will be deleted. This cannot be undone.`,
+  deleteMessage: (name: string) =>
+    `The message from ${name} will be deleted for good. This cannot be undone.`,
+  reportSpam: (name: string) =>
+    `The message from ${name} will be deleted for good, as spam. This cannot be undone.`,
   deletePost: (title: string) =>
     `“${title}” will be removed for good, along with its cover image. This can’t be undone.`,
 } as const;

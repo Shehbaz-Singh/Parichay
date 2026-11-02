@@ -11,8 +11,12 @@ import {
   type ReactNode,
 } from 'react';
 import {
+  CONTACT_DEFAULT_RETENTION_DAYS,
+  LINK_BIO_SETTING_KEYS,
   publicLayout,
+  type LinkBioSettings,
   type MyCustomSection,
+  type MyLinkBioButton,
   type MyProfile,
   type MyTestimonial,
   type ParsedResume,
@@ -374,6 +378,15 @@ export function EditorProvider({ initial, children }: { initial: MyProfile; chil
             preferredContact: undefined,
             workNote: undefined,
           }),
+      // The contact form, as the API gives it: only while it is switched on.
+      ...(profile.contactFormEnabled && !profile.isSample
+        ? {
+            contactForm: {
+              intro: profile.contactFormIntro,
+              retentionDays: CONTACT_DEFAULT_RETENTION_DAYS,
+            },
+          }
+        : { contactForm: undefined }),
       links: profile.links.filter((link) => link.visible),
       // The same layout the public API returns (visible sections in order, custom sections with
       // items), worked out from the unsaved config too.
@@ -697,6 +710,34 @@ export function useTestimonials() {
     reject: (id: string) => setStatus(id, 'reject'),
     setAccepting,
   };
+}
+
+// The link-in-bio card: its custom buttons (a list like the others) and its settings. The settings
+// are sent whole, because the endpoint replaces them all, so a change is merged into what is saved.
+export function useLinkBio() {
+  const { profile, update } = useEditor();
+  const replaceList = useCallback(
+    (change: (list: MyLinkBioButton[]) => MyLinkBioButton[]) =>
+      update((p) => ({ ...p, linkBioLinks: change(p.linkBioLinks) })),
+    [update],
+  );
+  const list = useListApi('/profile/me/link-bio/links', profile.linkBioLinks, replaceList);
+
+  const saveSettings = useCallback(
+    async (changes: Partial<LinkBioSettings>) => {
+      const current = Object.fromEntries(
+        LINK_BIO_SETTING_KEYS.map((key) => [key, profile[key]]),
+      ) as LinkBioSettings;
+      const saved = await api<LinkBioSettings>('/profile/me/link-bio', {
+        method: 'PUT',
+        body: { ...current, ...changes },
+      });
+      update((p) => ({ ...p, ...saved }));
+    },
+    [profile, update],
+  );
+
+  return { ...list, saveSettings };
 }
 
 // The suggestions waiting for one list, with ways to clear them.

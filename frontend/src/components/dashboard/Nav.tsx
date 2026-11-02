@@ -5,7 +5,9 @@ import { usePathname } from 'next/navigation';
 import { Logo } from '@/components/Logo';
 import type { MouseEvent } from 'react';
 import {
+  Inbox,
   Languages,
+  Link2,
   LayoutList,
   LogOut,
   Mail,
@@ -20,6 +22,7 @@ import { Badge, Button } from '../ui';
 import { cx } from '../ui/cx';
 import { completeness } from './Completeness';
 import { useEditor } from './editor-context';
+import { useMessages } from './messages-context';
 import { useGo, useLeaveGuard } from './navigation';
 
 // The dashboard's pages. Analytics is not here because the app has none.
@@ -29,26 +32,36 @@ const ITEMS: { href: string; label: string; Icon: LucideIcon }[] = [
   { href: '/dashboard/languages', label: 'Languages', Icon: Languages },
   { href: '/dashboard/themes', label: 'Themes', Icon: Palette },
   { href: '/dashboard/testimonials', label: 'Testimonials', Icon: MessageSquareQuote },
+  { href: '/dashboard/messages', label: 'Messages', Icon: Inbox },
+  { href: '/dashboard/link-bio', label: 'Link-in-bio', Icon: Link2 },
   { href: '/dashboard/signature', label: 'Signature', Icon: Mail },
   { href: '/dashboard/settings', label: 'Settings', Icon: Settings },
 ];
 
-// What shows beside a label: the share of the profile that is filled in, or testimonials waiting.
+// What shows beside a label: the share of the profile that is filled in, testimonials waiting, or
+// unread messages.
 function useHints(): Record<string, string | undefined> {
   const { profile } = useEditor();
+  const { unread } = useMessages();
   const pending = profile.testimonials.filter((t) => t.status === 'pending').length;
   return {
     '/dashboard': `${completeness(profile).percent}%`,
     '/dashboard/testimonials': pending > 0 ? String(pending) : undefined,
+    '/dashboard/messages': unread > 0 ? String(unread) : undefined,
   };
 }
+
+// The word a screen reader hears after the number, for the pages that have one.
+const HINT_WORDS: Record<string, string> = {
+  '/dashboard': ' complete',
+  '/dashboard/testimonials': ' pending',
+  '/dashboard/messages': ' unread',
+};
 
 function NavLinks({ layout }: { layout: 'side' | 'bottom' }) {
   const pathname = usePathname();
   const go = useGo();
   const hints = useHints();
-  const { profile } = useEditor();
-  const pending = profile.testimonials.filter((t) => t.status === 'pending').length;
 
   // A plain click goes through the leave check; opening in a new tab or window is left alone.
   function onClick(e: MouseEvent<HTMLAnchorElement>, href: string) {
@@ -80,7 +93,7 @@ function NavLinks({ layout }: { layout: 'side' | 'bottom' }) {
             >
               <span className="relative">
                 <Icon aria-hidden="true" className="size-5" />
-                {layout === 'bottom' && href === '/dashboard/testimonials' && pending > 0 && (
+                {layout === 'bottom' && hint && href !== '/dashboard' && (
                   <span
                     aria-hidden="true"
                     className="absolute -top-1 -right-1.5 size-2.5 rounded-full bg-accent"
@@ -91,12 +104,14 @@ function NavLinks({ layout }: { layout: 'side' | 'bottom' }) {
               {layout === 'side' && hint && (
                 <Badge tone={href === '/dashboard' ? 'neutral' : 'solid'} className="ms-auto">
                   {hint}
-                  {href === '/dashboard/testimonials' && <span className="sr-only"> pending</span>}
-                  {href === '/dashboard' && <span className="sr-only"> complete</span>}
+                  <span className="sr-only">{HINT_WORDS[href]}</span>
                 </Badge>
               )}
-              {layout === 'bottom' && href === '/dashboard/testimonials' && pending > 0 && (
-                <span className="sr-only">{pending} pending</span>
+              {layout === 'bottom' && hint && href !== '/dashboard' && (
+                <span className="sr-only">
+                  {hint}
+                  {HINT_WORDS[href]}
+                </span>
               )}
             </Link>
           </li>

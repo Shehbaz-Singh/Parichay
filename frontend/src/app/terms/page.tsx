@@ -58,7 +58,9 @@ const sections: LegalSection[] = [
         <p>
           You promise that you have the right to share what you post, that it is accurate, and that
           it does not break anyone’s rights or the rules below. If you add a testimonial from
-          someone, you are responsible for having their permission and for what it says.
+          someone, you are responsible for having their permission and for what it says. If you
+          switch on the contact form, you are responsible for how you use the messages you receive
+          and the people’s details in them (see “Acceptable use”).
         </p>
         <p>
           If you use resume import, the text of your resume is processed by an AI service. It can
@@ -89,6 +91,13 @@ const sections: LegalSection[] = [
             or other rights;
           </li>
           <li>use your page for spam, scams, phishing, or to spread malware or links to it;</li>
+          <li>
+            use the contact form’s inbox to harvest visitors’ data, to add people to a list or send
+            marketing to someone who only wrote you a message, or to pass their name or email
+            address on. A visitor’s address is there so you can reply to what they wrote, and for
+            nothing else. Messages are deleted automatically after a set time, and you may not keep
+            copies of them for other purposes;
+          </li>
           <li>
             attack, overload or probe the service, bypass its limits (such as rate limits), scrape
             it in bulk, or try to get into other people’s accounts or data;

@@ -41,6 +41,10 @@ export function applyTranslations(
       'availabilityMessage',
       preview.availabilityMessage,
     ),
+    contactForm: preview.contactForm && {
+      ...preview.contactForm,
+      intro: tn('profile', profileId, 'contactFormIntro', preview.contactForm.intro),
+    },
     workNote: preview.workCardEnabled
       ? tn('profile', profileId, 'workNote', preview.workNote ?? null)
       : undefined,

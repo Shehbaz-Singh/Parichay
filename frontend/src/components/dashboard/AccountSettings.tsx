@@ -145,7 +145,7 @@ function YourData() {
       </div>
       <p className="text-xs text-muted">
         A JSON file with your account email, profile, every section, custom sections, posts,
-        testimonials and settings. Your password is never included.
+        testimonials, contact messages and settings. Your password is never included.
       </p>
     </section>
   );
@@ -179,9 +179,9 @@ function DeleteAccount() {
         Delete account and data
       </h2>
       <p className="text-sm text-ink">
-        This permanently deletes your account, your portfolio, your posts, your testimonials and
-        your images. Your page address stops working right away. It cannot be undone, so download
-        your data first if you want a copy.
+        This permanently deletes your account, your portfolio, your posts, your testimonials, your
+        contact messages and your images. Your page address stops working right away. It cannot be
+        undone, so download your data first if you want a copy.
       </p>
       {confirming ? (
         <Card ref={panel} tone="danger-soft" className="space-y-4">
