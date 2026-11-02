@@ -2,26 +2,26 @@ import { ChevronDown } from 'lucide-react';
 
 export const QUESTIONS = [
   {
-    q: 'Is it free?',
-    a: 'Yes, right now. There is no charge to create, edit or publish a page, and we do not ask for a card. Parichay is a young project, so pricing may change later.',
+    q: 'Is Parichay free to use?',
+    a: 'Yes! Parichay is currently free to use. You can create, customize, and publish your portfolio without paying a fee or providing payment details. As the project grows, our pricing may evolve, but we’ll keep things transparent along the way.'
   },
   {
-    q: 'Can I hide parts of my portfolio?',
-    a: 'Yes. Every section can be switched off, renamed and reordered. Hiding a section keeps what you wrote in it, so you can bring it back later. A new page also stays private until you switch on Publish.',
+    q: 'Can I control which parts of my portfolio are visible?',
+    a: 'Absolutely. You can show or hide individual sections, rename them, and rearrange them to suit your needs. Hiding a section preserves its content, so you can restore it whenever you like. Your portfolio also remains private by default until you choose to publish it.'
   },
   {
     q: 'Who owns my content?',
-    a: 'You do. Everything on your page is yours to edit, and you can export it. A resume PDF you upload is not stored: its text is sent to an AI service to be read, and only the result is kept until you save it.',
+    a: 'Your content belongs to you. You can edit your portfolio whenever you like and export your data. If you upload a resume PDF, we send its text to an AI service for processing rather than storing the original file. The extracted information is retained only until you choose to save it.'
   },
   {
-    q: 'Can I delete my data?',
-    a: 'Yes, at any time, from the settings page. Deleting your account removes your profile, posts, testimonials and images. You can also export your data first.',
+    q: 'Can I delete my data or account?',
+    a: 'Yes. You can manage your data from your account settings and delete your account whenever you choose. Account deletion removes your profile, posts, testimonials, and images. If you’d like to keep a copy of your information, you can export your data before deleting your account.'
   },
   {
-    q: 'What does Parichay mean?',
-    a: 'परिचय (parichay) is the Hindi word for “introduction”, the kind you make when you meet someone. That is what your page is for.',
-  },
-];
+    q: 'What does “Parichay” mean?',
+    a: 'परिचय (Parichay) is a Hindi word meaning “introduction.” It represents the first impression you make when someone discovers your work, your story, and your achievements. That’s exactly what Parichay helps you create: a personal space to introduce yourself to the world.'
+  }
+]
 
 // Native <details>: it opens and closes with the keyboard and works without JavaScript.
 export function Faq() {
