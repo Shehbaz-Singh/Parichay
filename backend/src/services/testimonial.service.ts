@@ -8,6 +8,7 @@ import type { Prisma } from '../generated/prisma/client';
 import { AppError } from '../lib/errors';
 import { WAIT, lockProfile } from '../lib/locks';
 import { prisma } from '../lib/prisma';
+import { publishedProfile } from '../lib/profile';
 import { assertExactIds } from '../lib/reorder';
 import { orNotFound } from '../lib/prisma-errors';
 import { myTestimonials } from '../lib/selects';
@@ -40,11 +41,7 @@ const tooMany = () => AppError.conflict('LIMIT_REACHED', ERRORS.testimonialLimit
 // Only for a published profile that is accepting them. Always saved as pending, whatever the
 // request says. Unpublished and missing profiles give the same 404.
 export async function submit(slug: string, input: TestimonialInput) {
-  const profile = await prisma.profile.findFirst({
-    where: { slug, published: true },
-    select: { id: true, acceptTestimonials: true },
-  });
-  if (!profile) throw AppError.notFound(ERRORS.profileNotFound);
+  const profile = await publishedProfile(slug, { id: true, acceptTestimonials: true });
   if (!profile.acceptTestimonials) {
     throw new AppError(403, 'TESTIMONIALS_CLOSED', ERRORS.testimonialsClosed);
   }

@@ -170,7 +170,8 @@ const sameCompany = (a: string, b: string) =>
   a.trim().replace(/\s+/g, ' ').toLowerCase() === b.trim().replace(/\s+/g, ' ').toLowerCase();
 
 // Jobs in a row at the same company become one entry, the way LinkedIn shows a career at one
-// employer: the company once, then each position under it. Only neighbours are joined, so the
+// employer: the company once, then each position under it. A single job reads the same way: the
+// company first, the position below it. Only neighbours are joined, so the
 // owner's order is kept (a return to a company later stays a separate entry). A stay is open-ended
 // if any of its jobs is; otherwise it ends with the latest end.
 function groupJobs(jobs: PublicProfile['experience'], fmt: DateFmt, t: Translator): Entry[] {
@@ -186,8 +187,8 @@ function groupJobs(jobs: PublicProfile['experience'], fmt: DateFmt, t: Translato
       return {
         id: job.id,
         fmt,
-        title: job.title,
-        subtitle: job.company,
+        title: job.company,
+        subtitle: job.title,
         start: job.startDate,
         end: job.endDate,
         duration: stay(job.startDate, job.endDate, t),

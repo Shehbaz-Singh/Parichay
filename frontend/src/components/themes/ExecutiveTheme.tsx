@@ -26,6 +26,7 @@ import {
   NewTabLink,
   RoleList,
   TotalExperience,
+  FooterLines,
 } from './parts';
 import { ThemeWrapper } from './ThemeWrapper';
 import type { ThemeProps } from './types';
@@ -325,15 +326,10 @@ function BlockView({ block }: { block: Block }) {
 function Footer({ footer }: { footer: FooterModel }) {
   return (
     <footer className="mt-14 border-t border-line pt-6 text-sm text-muted print:mt-6 print:pt-3">
-      <p>
-        © {footer.year} {footer.name}
-      </p>
-      <p className="mt-1">
-        Made {footer.message}{' '}
-        <a href={footer.cta.href} className={`font-semibold text-ink underline ${focusRing}`}>
-          {footer.cta.label}
-        </a>
-      </p>
+      <FooterLines
+        footer={footer}
+        linkClassName={`font-semibold text-ink underline ${focusRing}`}
+      />
     </footer>
   );
 }

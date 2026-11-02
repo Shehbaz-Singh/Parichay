@@ -29,6 +29,7 @@ import {
   NewTabLink,
   RoleList,
   TotalExperience,
+  FooterLines,
 } from './parts';
 import { ThemeWrapper } from './ThemeWrapper';
 import type { ThemeProps } from './types';
@@ -495,18 +496,10 @@ function blockTiles(block: Block): Tile[] {
 function Footer({ footer }: { footer: FooterModel }) {
   return (
     <footer className="mx-auto max-w-6xl px-4 pb-10 text-center text-sm text-muted sm:px-6">
-      <p>
-        © {footer.year} {footer.name}
-      </p>
-      <p className="mt-1">
-        Made {footer.message}{' '}
-        <a
-          href={footer.cta.href}
-          className={`font-semibold text-ink underline underline-offset-4 hover:no-underline ${focusRing}`}
-        >
-          {footer.cta.label}
-        </a>
-      </p>
+      <FooterLines
+        footer={footer}
+        linkClassName={`font-semibold text-ink underline underline-offset-4 hover:no-underline ${focusRing}`}
+      />
     </footer>
   );
 }

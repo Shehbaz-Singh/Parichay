@@ -14,6 +14,7 @@ import { checkFormToken, issueFormToken } from '../lib/form-token';
 import { WAIT, lockProfile } from '../lib/locks';
 import { ERRORS } from '../lib/messages';
 import { prisma } from '../lib/prisma';
+import { publishedProfile } from '../lib/profile';
 import { orNotFound } from '../lib/prisma-errors';
 import { captchaSiteKey, verifyCaptcha } from '../lib/turnstile';
 import { createVisitorLimiter } from '../lib/visitor-limit';
@@ -43,12 +44,7 @@ const received = () => ({ received: true as const });
 // A page with a form that is switched on: published, not a sample. Anything else is the same 404,
 // so nothing is learned about a profile that is not offering one.
 async function formProfile(slug: string) {
-  const profile = await prisma.profile.findFirst({
-    where: { slug, published: true, isSample: false, contactFormEnabled: true },
-    select: { id: true },
-  });
-  if (!profile) throw AppError.notFound(ERRORS.profileNotFound);
-  return profile;
+  return publishedProfile(slug, { id: true }, { isSample: false, contactFormEnabled: true });
 }
 
 // What the form needs when it opens: a signed time stamp and, when the server uses Turnstile, the

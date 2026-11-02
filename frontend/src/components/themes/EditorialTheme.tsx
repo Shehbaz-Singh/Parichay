@@ -26,6 +26,7 @@ import {
   NewTabLink,
   RoleList,
   TotalExperience,
+  FooterLines,
 } from './parts';
 import { Reveal } from './Reveal';
 import { ThemeWrapper } from './ThemeWrapper';
@@ -356,15 +357,7 @@ function Footer({ footer }: { footer: FooterModel }) {
       <div
         className={`${display} mt-24 border-t border-ink pt-6 text-center text-sm text-muted italic`}
       >
-        <p>
-          © {footer.year} {footer.name}
-        </p>
-        <p className="mt-1">
-          Made {footer.message}{' '}
-          <a href={footer.cta.href} className={link}>
-            {footer.cta.label}
-          </a>
-        </p>
+        <FooterLines footer={footer} linkClassName={link} />
       </div>
     </footer>
   );

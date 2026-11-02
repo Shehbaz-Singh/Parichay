@@ -3,6 +3,7 @@ import type { Prisma } from '../generated/prisma/client';
 import { config } from '../lib/config';
 import { AppError } from '../lib/errors';
 import { prisma } from '../lib/prisma';
+import { publishedProfile } from '../lib/profile';
 import {
   customItems,
   orderedList,
@@ -60,11 +61,7 @@ export async function languageLookup(
 }
 
 export async function getPublicProfile(slug: string, lang?: string) {
-  const profile = await prisma.profile.findFirst({
-    where: { slug, published: true },
-    select: publicSelect,
-  });
-  if (!profile) throw AppError.notFound(ERRORS.profileNotFound);
+  const profile = await publishedProfile(slug, publicSelect);
   const { enabled, locale, lookup } = await languageLookup(profile, lang);
   const t = (type: Parameters<typeof pick>[1], id: string, field: string, original: string) =>
     lookup ? pick(lookup, type, id, field, original) : original;
@@ -191,17 +188,13 @@ function translatedPost<T extends { id: string; title: string; excerpt: string |
 // Anything else (no such profile, unpublished, the section hidden, a language that is not offered) is
 // the same 404, so nothing is revealed.
 async function writingContext(slug: string, lang?: string) {
-  const profile = await prisma.profile.findFirst({
-    where: { slug, published: true },
-    select: {
-      id: true,
-      defaultLocale: true,
-      locales: true,
-      sectionConfig: true,
-      customSections: { select: { id: true } },
-    },
+  const profile = await publishedProfile(slug, {
+    id: true,
+    defaultLocale: true,
+    locales: true,
+    sectionConfig: true,
+    customSections: { select: { id: true } },
   });
-  if (!profile) throw AppError.notFound(ERRORS.profileNotFound);
   const layout = normalizeSectionConfig(
     profile.sectionConfig,
     profile.customSections.map((section) => section.id),

@@ -4,7 +4,7 @@ import { FileDown, Globe, Link2, Mail, Phone, UserPlus } from 'lucide-react';
 import type { PublicLink } from '@parichay/shared';
 import { formatDate, formatMonthYear, initials } from '@/lib/format';
 import { fill } from '@/lib/i18n';
-import type { Block, DateFmt, Entry, HeaderModel, Role } from './blocks';
+import type { Block, DateFmt, Entry, FooterModel, HeaderModel, Role } from './blocks';
 
 // Small pieces every theme uses, so the markup that matters (dates as <time>, links that open in a
 // new tab, the photo or the initials, the icon on a link) is the same everywhere. Layout and
@@ -409,6 +409,32 @@ export function WritingList({
           {block.ui.viewAll}
         </Link>
       )}
+    </>
+  );
+}
+
+// The two lines of a footer: the copyright and the "made with" credit. The theme supplies the
+// <footer> around it and the classes.
+export function FooterLines({
+  footer,
+  yearClassName,
+  linkClassName,
+}: {
+  footer: FooterModel;
+  yearClassName?: string;
+  linkClassName: string;
+}) {
+  return (
+    <>
+      <p className={yearClassName}>
+        © {footer.year} {footer.name}
+      </p>
+      <p className="mt-1">
+        Made {footer.message}{' '}
+        <a href={footer.cta.href} className={linkClassName}>
+          {footer.cta.label}
+        </a>
+      </p>
     </>
   );
 }

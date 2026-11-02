@@ -1,8 +1,6 @@
 import { linkCardFeatures, readWorkingHours } from '@parichay/shared';
 import { config } from '../lib/config';
-import { AppError } from '../lib/errors';
-import { ERRORS } from '../lib/messages';
-import { prisma } from '../lib/prisma';
+import { publishedProfile } from '../lib/profile';
 import { languageLookup } from './public.service';
 import { pick } from './translation.service';
 
@@ -12,9 +10,9 @@ import { pick } from './translation.service';
 // Optional buttons come as a yes or no, worked out here, so the page cannot disagree with the
 // features: a switched-off feature, or one without data, is simply absent.
 export async function getLinkCard(slug: string, lang?: string) {
-  const profile = await prisma.profile.findFirst({
-    where: { slug, published: true, linkBioEnabled: true },
-    select: {
+  const profile = await publishedProfile(
+    slug,
+    {
       id: true,
       slug: true,
       fullName: true,
@@ -54,8 +52,8 @@ export async function getLinkCard(slug: string, lang?: string) {
       workingHours: true,
       replyTime: true,
     },
-  });
-  if (!profile) throw AppError.notFound(ERRORS.profileNotFound);
+    { linkBioEnabled: true },
+  );
 
   const { enabled, locale, lookup } = await languageLookup(profile, lang);
   const features = linkCardFeatures({ ...profile, visibleLinks: profile.links.length });

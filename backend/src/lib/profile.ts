@@ -16,3 +16,19 @@ export async function ownProfile<S extends Prisma.ProfileSelect>(
   if (!profile) throw AppError.notFound(ERRORS.profileNotFound);
   return profile;
 }
+
+// The published profile with this slug, narrowed to `select`, for a public route. `where` adds
+// conditions (a feature that must be switched on). A profile that is missing, unpublished or fails
+// one of them is the same 404, so nothing is revealed about it.
+export async function publishedProfile<S extends Prisma.ProfileSelect>(
+  slug: string,
+  select: S,
+  where: Prisma.ProfileWhereInput = {},
+) {
+  const profile = await prisma.profile.findFirst({
+    where: { ...where, slug, published: true },
+    select,
+  });
+  if (!profile) throw AppError.notFound(ERRORS.profileNotFound);
+  return profile;
+}
