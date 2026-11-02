@@ -19,6 +19,7 @@ import { useLoad } from '@/lib/hooks';
 import { Form, TextField } from '../form-fields';
 import { downloadMyData } from '@/lib/download-export';
 import { Button, Card } from '../ui';
+import { PageHeader } from './layout';
 import { LogOutButton } from './Nav';
 import { ContentSkeleton, LoadFailed } from './screens';
 import { PROBLEMS } from '@/lib/messages';
@@ -243,12 +244,14 @@ export function AccountSettings() {
 
   return (
     <div className="mx-auto max-w-xl space-y-10 py-4">
-      <div>
-        <h1 className="type-page">Account settings</h1>
-        <p className="mt-1 text-sm text-muted">
-          Signed in as <span className="font-medium">{state.data.user.email}</span>
-        </p>
-      </div>
+      <PageHeader
+        title="Settings"
+        description={
+          <>
+            Signed in as <span className="font-medium">{state.data.user.email}</span>
+          </>
+        }
+      />
       <YourData />
       <ChangePassword />
       <section aria-labelledby="session-heading" className="space-y-3">

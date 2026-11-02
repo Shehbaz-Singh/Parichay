@@ -9,7 +9,6 @@ import {
   ShieldCheck,
 } from 'lucide-react';
 
-// Only what exists today.
 const FEATURES = [
   {
     Icon: FileUp,
@@ -24,7 +23,7 @@ const FEATURES = [
   {
     Icon: LayoutList,
     title: 'Custom sections',
-    text: 'Add sections of your own, such as certifications or talks. Show, hide, rename and reorder any section.',
+    text: 'Add sections of your own, under any heading you like, such as talks or interests. Show, hide, rename and reorder any section.',
   },
   {
     Icon: PenLine,

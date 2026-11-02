@@ -45,10 +45,7 @@ export function ThemesPage() {
   useFormAutosave(form, save);
 
   return (
-    <section aria-labelledby="look-heading" className="space-y-4">
-      <h2 id="look-heading" className="type-section">
-        Pick a look
-      </h2>
+    <section aria-label="Pick a look" className="space-y-4">
       <p className="text-sm text-muted">
         Try a few. Your words stay the same, and the preview shows each one with your own details.
       </p>

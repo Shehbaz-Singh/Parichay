@@ -22,6 +22,7 @@ import { TextField } from '../../form-fields';
 import { LinkCard } from '../../linkbio/LinkCard';
 import { Button, Card, Switch, buttonStyles } from '../../ui';
 import { EditorForm } from '../EditorForm';
+import { InfoToggle } from '../layout';
 import { QrCodeDialog } from '../QrCodeDialog';
 import { ListManager, type FormProps } from '../SectionManager';
 import { errorText, useEditor, useLinkBio } from '../editor-context';
@@ -188,7 +189,7 @@ export function LinkBioStep() {
       unavailable:
         profile.contactFormEnabled && !profile.isSample
           ? undefined
-          : 'Switch on the contact form on the Messages page first.',
+          : 'Switch on the contact form under Messages first.',
     },
     {
       key: 'linkBioShowVcard',
@@ -199,7 +200,7 @@ export function LinkBioStep() {
           ? profile.links.some((l) => l.visible)
             ? undefined
             : 'Show at least one link on your page first. The card is made from them.'
-          : 'Switch on “Let visitors save my contact card” in Basics first.',
+          : 'Switch on “Let visitors save my contact card” under Share & extras first.',
     },
     {
       key: 'linkBioShowResume',
@@ -207,7 +208,7 @@ export function LinkBioStep() {
       hint: 'Your resume as a PDF, made from your page.',
       unavailable: profile.resumeEnabled
         ? undefined
-        : 'Switch on the resume download in Basics first.',
+        : 'Switch on the resume download under Share & extras first.',
     },
     {
       key: 'linkBioShowShare',
@@ -221,24 +222,19 @@ export function LinkBioStep() {
       unavailable:
         profile.workCardEnabled && profile.timezone
           ? undefined
-          : 'Switch on the Working together card, with a time zone, in Basics first.',
+          : 'Switch on the Working together card, with a time zone, under Share & extras first.',
     },
   ];
   // Which of them the card really shows, for the summary under the switches.
   const active = [features.contact, features.vcard, features.resume, features.share, features.work];
 
   return (
-    <section aria-labelledby="link-bio-heading" className="space-y-6">
-      <div>
-        <h2 id="link-bio-heading" className="type-section">
-          Link-in-bio card
-        </h2>
-        <p className="text-sm text-muted">
-          A short, mobile-first version of your page for places that allow one link: your Instagram
-          bio, a WhatsApp status, an email signature. It lists your own buttons, your links and the
-          features you have switched on.
-        </p>
-      </div>
+    <section aria-label="Link-in-bio card" className="space-y-6">
+      <InfoToggle label="What is a link-in-bio card?">
+        A short, mobile-first version of your page for places that allow one link: your Instagram
+        bio, a WhatsApp status, an email signature. It lists your own buttons, your links and the
+        features you have switched on.
+      </InfoToggle>
 
       <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_minmax(0,390px)]">
         <div className="min-w-0 space-y-6">

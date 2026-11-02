@@ -3,121 +3,203 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Logo } from '@/components/Logo';
-import type { MouseEvent } from 'react';
+import { useEffect, useId, useState, type MouseEvent } from 'react';
 import {
+  ChevronDown,
+  House,
   Inbox,
   Languages,
-  Link2,
   LayoutList,
   LogOut,
-  Mail,
+  Menu,
   MessageSquareQuote,
   Palette,
   Settings,
+  Share2,
   UserRound,
   type LucideIcon,
 } from 'lucide-react';
 import { api } from '@/lib/client-api';
-import { Badge, Button } from '../ui';
+import { Badge, Button, Sheet } from '../ui';
 import { cx } from '../ui/cx';
-import { completeness } from './Completeness';
 import { useEditor } from './editor-context';
 import { useMessages } from './messages-context';
 import { useGo, useLeaveGuard } from './navigation';
 
-// The dashboard's pages. Analytics is not here because the app has none.
-const ITEMS: { href: string; label: string; Icon: LucideIcon }[] = [
-  { href: '/dashboard', label: 'Profile', Icon: UserRound },
-  { href: '/dashboard/sections', label: 'Sections', Icon: LayoutList },
-  { href: '/dashboard/languages', label: 'Languages', Icon: Languages },
-  { href: '/dashboard/themes', label: 'Themes', Icon: Palette },
-  { href: '/dashboard/testimonials', label: 'Testimonials', Icon: MessageSquareQuote },
-  { href: '/dashboard/messages', label: 'Messages', Icon: Inbox },
-  { href: '/dashboard/link-bio', label: 'Link-in-bio', Icon: Link2 },
-  { href: '/dashboard/signature', label: 'Signature', Icon: Mail },
-  { href: '/dashboard/settings', label: 'Settings', Icon: Settings },
+interface NavItem {
+  href: string;
+  label: string;
+  Icon: LucideIcon;
+  // Other pages that belong under this one, so it stays marked as the current page on them.
+  also?: string[];
+}
+
+interface NavGroup {
+  label: string;
+  items: NavItem[];
+}
+
+// The dashboard's pages, in a few labeled groups. Home stands alone above them.
+const HOME: NavItem = { href: '/dashboard', label: 'Home', Icon: House };
+const GROUPS: NavGroup[] = [
+  {
+    label: 'Build',
+    items: [{ href: '/dashboard/profile', label: 'Profile', Icon: UserRound }],
+  },
+  {
+    label: 'Look',
+    items: [
+      { href: '/dashboard/themes', label: 'Themes', Icon: Palette },
+      { href: '/dashboard/sections', label: 'Sections', Icon: LayoutList },
+      { href: '/dashboard/languages', label: 'Languages', Icon: Languages },
+    ],
+  },
+  {
+    label: 'Share',
+    items: [
+      {
+        href: '/dashboard/extras',
+        label: 'Share & extras',
+        Icon: Share2,
+        also: ['/dashboard/link-bio', '/dashboard/signature'],
+      },
+    ],
+  },
+  {
+    label: 'Inbox',
+    items: [
+      { href: '/dashboard/messages', label: 'Messages', Icon: Inbox },
+      { href: '/dashboard/testimonials', label: 'Testimonials', Icon: MessageSquareQuote },
+    ],
+  },
+  {
+    label: 'Account',
+    items: [{ href: '/dashboard/settings', label: 'Settings', Icon: Settings }],
+  },
 ];
 
-// What shows beside a label: the share of the profile that is filled in, testimonials waiting, or
-// unread messages.
-function useHints(): Record<string, string | undefined> {
+const isCurrent = (pathname: string, item: NavItem) =>
+  pathname === item.href || (item.also ?? []).some((p) => pathname === p);
+
+// What waits on a page: unread messages and pending testimonials. A badge is only for these (things
+// asking to be looked at), never for how far along the profile is.
+function useAttention(): Record<string, { count: number; word: string } | undefined> {
   const { profile } = useEditor();
   const { unread } = useMessages();
   const pending = profile.testimonials.filter((t) => t.status === 'pending').length;
   return {
-    '/dashboard': `${completeness(profile).percent}%`,
-    '/dashboard/testimonials': pending > 0 ? String(pending) : undefined,
-    '/dashboard/messages': unread > 0 ? String(unread) : undefined,
+    '/dashboard/messages': unread > 0 ? { count: unread, word: 'unread' } : undefined,
+    '/dashboard/testimonials': pending > 0 ? { count: pending, word: 'pending' } : undefined,
   };
 }
 
-// The word a screen reader hears after the number, for the pages that have one.
-const HINT_WORDS: Record<string, string> = {
-  '/dashboard': ' complete',
-  '/dashboard/testimonials': ' pending',
-  '/dashboard/messages': ' unread',
-};
+export function useAttentionTotal() {
+  return Object.values(useAttention()).reduce((sum, a) => sum + (a?.count ?? 0), 0);
+}
 
-function NavLinks({ layout }: { layout: 'side' | 'bottom' }) {
+function NavLink({ item, onNavigate }: { item: NavItem; onNavigate?: () => void }) {
   const pathname = usePathname();
   const go = useGo();
-  const hints = useHints();
+  const attention = useAttention()[item.href];
+  const current = isCurrent(pathname, item);
 
   // A plain click goes through the leave check; opening in a new tab or window is left alone.
-  function onClick(e: MouseEvent<HTMLAnchorElement>, href: string) {
+  function onClick(e: MouseEvent<HTMLAnchorElement>) {
     if (e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
     e.preventDefault();
-    void go(href);
+    onNavigate?.();
+    void go(item.href);
   }
 
   return (
-    <ul className={layout === 'side' ? 'space-y-1' : 'flex overflow-x-auto'}>
-      {ITEMS.map(({ href, label, Icon }) => {
-        const current = pathname === href;
-        const hint = hints[href];
+    <Link
+      href={item.href}
+      onClick={onClick}
+      aria-current={current ? 'page' : undefined}
+      className={cx(
+        'relative flex items-center gap-3 rounded-control px-3 py-2 text-sm font-medium transition motion-reduce:transition-none',
+        current
+          ? 'bg-accent-soft font-semibold text-ink before:absolute before:inset-y-1.5 before:start-0 before:w-1 before:rounded-full before:bg-accent'
+          : 'text-muted hover:bg-surface hover:text-ink active:bg-line',
+      )}
+    >
+      <item.Icon aria-hidden="true" className="size-5 shrink-0" />
+      <span>{item.label}</span>
+      {attention && (
+        <Badge tone="solid" className="ms-auto">
+          {attention.count}
+          <span className="sr-only"> {attention.word}</span>
+        </Badge>
+      )}
+    </Link>
+  );
+}
+
+// The groups. On a wide screen every group is open under its label. In the drawer each one folds
+// under its label, and the one holding the current page starts open.
+function NavGroups({ collapsible, onNavigate }: { collapsible: boolean; onNavigate?: () => void }) {
+  const pathname = usePathname();
+  const base = useId();
+  const [closed, setClosed] = useState<Set<string>>(
+    () =>
+      new Set(
+        GROUPS.filter((g) => !g.items.some((item) => isCurrent(pathname, item))).map(
+          (g) => g.label,
+        ),
+      ),
+  );
+  const toggle = (label: string) =>
+    setClosed((before) => {
+      const next = new Set(before);
+      if (!next.delete(label)) next.add(label);
+      return next;
+    });
+
+  return (
+    <div className="space-y-4">
+      <ul>
+        <li>
+          <NavLink item={HOME} onNavigate={onNavigate} />
+        </li>
+      </ul>
+      {GROUPS.map((group) => {
+        const open = !collapsible || !closed.has(group.label);
+        const listId = `${base}-${group.label}`;
         return (
-          <li key={href} className={layout === 'bottom' ? 'min-w-fit flex-1' : undefined}>
-            <Link
-              href={href}
-              onClick={(e) => onClick(e, href)}
-              aria-current={current ? 'page' : undefined}
-              className={cx(
-                'flex items-center rounded-control text-sm font-medium transition',
-                layout === 'side'
-                  ? 'gap-3 px-3 py-2'
-                  : 'min-h-14 flex-col justify-center gap-0.5 px-0.5 text-[0.6875rem]',
-                current
-                  ? 'bg-accent-soft font-semibold text-ink'
-                  : 'text-muted hover:bg-surface hover:text-ink active:bg-line',
-              )}
-            >
-              <span className="relative">
-                <Icon aria-hidden="true" className="size-5" />
-                {layout === 'bottom' && hint && href !== '/dashboard' && (
-                  <span
-                    aria-hidden="true"
-                    className="absolute -top-1 -right-1.5 size-2.5 rounded-full bg-accent"
-                  />
-                )}
-              </span>
-              <span>{label}</span>
-              {layout === 'side' && hint && (
-                <Badge tone={href === '/dashboard' ? 'neutral' : 'solid'} className="ms-auto">
-                  {hint}
-                  <span className="sr-only">{HINT_WORDS[href]}</span>
-                </Badge>
-              )}
-              {layout === 'bottom' && hint && href !== '/dashboard' && (
-                <span className="sr-only">
-                  {hint}
-                  {HINT_WORDS[href]}
-                </span>
-              )}
-            </Link>
-          </li>
+          <div key={group.label}>
+            {collapsible ? (
+              <button
+                type="button"
+                aria-expanded={open}
+                aria-controls={listId}
+                onClick={() => toggle(group.label)}
+                className="flex w-full items-center justify-between rounded-control px-3 py-1.5 text-xs font-semibold tracking-wide text-muted uppercase hover:bg-surface"
+              >
+                {group.label}
+                <ChevronDown
+                  aria-hidden="true"
+                  className={cx(
+                    'size-4 transition-transform motion-reduce:transition-none',
+                    open && 'rotate-180',
+                  )}
+                />
+              </button>
+            ) : (
+              <p className="px-3 pb-1 text-xs font-semibold tracking-wide text-muted uppercase">
+                {group.label}
+              </p>
+            )}
+            <ul id={listId} hidden={!open} className="space-y-0.5">
+              {group.items.map((item) => (
+                <li key={item.href}>
+                  <NavLink item={item} onNavigate={onNavigate} />
+                </li>
+              ))}
+            </ul>
+          </div>
         );
       })}
-    </ul>
+    </div>
   );
 }
 
@@ -136,30 +218,58 @@ export function LogOutButton({ className }: { className?: string }) {
   );
 }
 
-// Wide screens: a sidebar. Narrow ones: a bar along the bottom.
+// Wide screens: a sidebar.
 export function Sidebar() {
   return (
-    <aside className="sticky top-0 hidden h-screen w-60 shrink-0 flex-col justify-between border-e border-line p-4 lg:flex">
+    <aside className="sticky top-0 hidden h-screen w-60 shrink-0 flex-col justify-between overflow-y-auto border-e border-line p-4 lg:flex">
       <div className="space-y-6">
         <p className="px-3 pt-1">
           <Logo />
         </p>
         <nav aria-label="Dashboard">
-          <NavLinks layout="side" />
+          <NavGroups collapsible={false} />
         </nav>
       </div>
-      <LogOutButton className="w-full justify-start" />
+      <LogOutButton className="mt-4 w-full justify-start" />
     </aside>
   );
 }
 
-export function BottomNav() {
+// Narrow screens: a menu button in the top bar that opens the same pages in a drawer.
+export function MobileMenu() {
+  const [open, setOpen] = useState(false);
+  const pathname = usePathname();
+  const attention = useAttentionTotal();
+
+  // The drawer closes when the page changes (a link inside it, or the leave check letting you go).
+  useEffect(() => setOpen(false), [pathname]);
+
   return (
-    <nav
-      aria-label="Dashboard"
-      className="fixed inset-x-0 bottom-0 z-40 border-t border-line bg-page lg:hidden"
-    >
-      <NavLinks layout="bottom" />
-    </nav>
+    <>
+      <button
+        type="button"
+        onClick={() => setOpen(true)}
+        aria-haspopup="dialog"
+        className="relative -ms-2 inline-flex size-10 items-center justify-center rounded-control hover:bg-surface active:bg-line lg:hidden"
+      >
+        <Menu aria-hidden="true" className="size-5" />
+        <span className="sr-only">
+          Menu
+          {attention > 0 ? `, ${attention} item${attention === 1 ? '' : 's'} need attention` : ''}
+        </span>
+        {attention > 0 && (
+          <span
+            aria-hidden="true"
+            className="absolute end-1.5 top-1.5 size-2.5 rounded-full bg-accent"
+          />
+        )}
+      </button>
+      <Sheet open={open} onClose={() => setOpen(false)} title="Menu" side="start">
+        <nav aria-label="Dashboard menu" className="flex min-h-full flex-col justify-between gap-6">
+          <NavGroups collapsible onNavigate={() => setOpen(false)} />
+          <LogOutButton className="w-full justify-start" />
+        </nav>
+      </Sheet>
+    </>
   );
 }

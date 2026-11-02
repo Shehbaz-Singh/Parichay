@@ -7,6 +7,7 @@ export { ErrorText, SlowNotice } from './Feedback';
 export { FocusedInput, Input, Textarea } from './Input';
 export { Select } from './Select';
 export { ConfirmProvider, Modal, useConfirm } from './Modal';
+export { Sheet } from './Sheet';
 export { Skeleton } from './Skeleton';
 export { Switch } from './Switch';
 export { Tabs, type TabItem } from './Tabs';

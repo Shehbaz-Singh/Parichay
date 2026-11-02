@@ -31,7 +31,7 @@ import {
 import { NOTICES, PROBLEMS, CONFIRMS } from '@/lib/messages';
 
 // Starting points for "Add section". The title is filled in and can be changed before creating.
-const PRESETS = ['Certifications', 'Awards', 'Publications', 'Volunteering'];
+const PRESETS = ['Awards', 'Talks', 'Interests', 'Volunteering', 'Publications', 'Certifications'];
 
 // ---- items
 
@@ -72,14 +72,14 @@ function CustomItemForm({ item, onDone, onSaved }: FormProps<CustomItem>) {
       <TextField
         name="title"
         label="Title"
-        placeholder="e.g. AWS Certified Developer"
+        placeholder="The name of this entry"
         maxLength={CUSTOM_TITLE_MAX}
         required
       />
       <TextField
         name="subtitle"
         label="Subtitle (optional)"
-        hint="For example the issuer, organisation or publisher."
+        hint="Anything that goes with the title, such as an organisation, place or role."
         maxLength={CUSTOM_SUBTITLE_MAX}
       />
       <div className="grid gap-4 sm:grid-cols-2">
@@ -315,12 +315,14 @@ function AddSection({ count }: { count: number }) {
     return (
       <div role="group" aria-label="Start from" className="flex flex-wrap items-center gap-2">
         <span className="text-sm text-muted">Start from:</span>
+        <Button variant="primary" onClick={() => start('')}>
+          Your own heading
+        </Button>
         {PRESETS.map((preset) => (
           <Button key={preset} onClick={() => start(preset)}>
             {preset}
           </Button>
         ))}
-        <Button onClick={() => start('')}>Blank section</Button>
         <Button variant="ghost" onClick={() => setChoosing(false)}>
           Cancel
         </Button>
@@ -347,17 +349,18 @@ export function CustomSectionsStep() {
           Custom sections
         </h2>
         <p className="text-sm text-muted">
-          Add your own sections, such as Certifications or Awards. They join the list under
-          Sections, where you can reorder or hide them. Up to {MAX_CUSTOM_SECTIONS} sections with{' '}
-          {MAX_CUSTOM_ITEMS} items each. A section with no items is not shown.
+          Add a section under any heading you like, such as Talks, Interests or Awards. It can hold
+          whatever you want to list. Sections join the list under Sections, where you can reorder or
+          hide them. Up to {MAX_CUSTOM_SECTIONS} sections with {MAX_CUSTOM_ITEMS} items each. A
+          section with no items is not shown.
         </p>
       </div>
 
       {sections.length === 0 && (
         <Card dashed padding="lg" className="text-center">
           <EmptyState icon={LayoutPanelTop}>
-            Nothing here yet. Add a section for anything that doesn't fit elsewhere, like
-            certifications, awards or talks.
+            Nothing here yet. Add a section for anything that doesn't fit elsewhere, under a heading
+            you choose.
           </EmptyState>
         </Card>
       )}

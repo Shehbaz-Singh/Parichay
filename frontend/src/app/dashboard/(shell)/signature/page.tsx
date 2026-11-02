@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { PageHeader } from '@/components/dashboard/layout';
 import { SignatureGenerator } from '@/components/dashboard/SignatureGenerator';
 
 export const metadata: Metadata = { title: 'Email signature' };
@@ -6,7 +7,11 @@ export const metadata: Metadata = { title: 'Email signature' };
 export default function Page() {
   return (
     <>
-      <h1 className="type-page mb-4">Email signature</h1>
+      <PageHeader
+        title="Email signature"
+        description="Build a signature for your email app."
+        back={{ href: '/dashboard/extras', label: 'Share & extras' }}
+      />
       <SignatureGenerator />
     </>
   );

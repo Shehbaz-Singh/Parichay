@@ -125,7 +125,11 @@ export function Completeness() {
       {next ? (
         <div className="flex flex-wrap items-center justify-between gap-2">
           <p className="text-sm text-muted">Next up: {next.todo.toLowerCase()}.</p>
-          <Button variant="primary" size="sm" onClick={() => void go('/dashboard', next.tab)}>
+          <Button
+            variant="primary"
+            size="sm"
+            onClick={() => void go('/dashboard/profile', next.tab)}
+          >
             {next.todo}
             <ArrowRight aria-hidden="true" className="size-4" />
           </Button>

@@ -17,6 +17,7 @@ import { Button, Card, Input, Switch } from '../../ui';
 import { useAutosave } from '../autosave';
 import { useEditor } from '../editor-context';
 import { useGo } from '../navigation';
+import { InfoToggle } from '../layout';
 import { SortableList } from '../SortableList';
 
 // What the form edits. A title is plain text here: blank means "use the default heading".
@@ -93,16 +94,13 @@ export function SectionsStep() {
     setRows((current) => ids.flatMap((id) => current.find((row) => row.key === id) ?? []));
 
   return (
-    <section aria-labelledby="sections-heading" className="space-y-4">
-      <h2 id="sections-heading" className="type-section">
-        Order and headings
-      </h2>
+    <section aria-label="Order and headings" className="space-y-4">
       <p className="text-sm text-muted">
-        Decide what goes on your page and in what order, and rename the headings to sound like you.
         Hiding a section keeps everything you wrote in it, so there’s no risk in trying things out.
-        To reorder with the keyboard, focus a grip, press Space, move with the arrow keys, then
-        press Space again.
       </p>
+      <InfoToggle label="How to reorder with the keyboard">
+        Focus a grip, press Space, move with the arrow keys, then press Space again.
+      </InfoToggle>
 
       <SortableList
         items={rows.map((row) => ({ ...row, id: row.key }))}
@@ -129,7 +127,7 @@ export function SectionsStep() {
               {custom ? (
                 <p className="flex flex-wrap items-center gap-2 text-sm text-muted">
                   The heading is the section's own title.
-                  <Button variant="ghost" onClick={() => void go('/dashboard', 'custom')}>
+                  <Button variant="ghost" onClick={() => void go('/dashboard/profile', 'custom')}>
                     Edit items and title
                   </Button>
                 </p>

@@ -13,15 +13,12 @@ import {
 import type { ContactUnread } from '@parichay/shared';
 import { api } from '@/lib/client-api';
 
-// How many messages from the contact form are waiting, for the menu and the browser tab. It is
-// fetched when the dashboard opens and again every minute while the tab is visible: plain polling
-// (no WebSockets, nothing held open), so it is light on the free tier, and a tab in the background
-// asks for nothing. Nothing is emailed, so this is how an owner finds out.
 const POLL_MS = 60_000;
 const TITLE_COUNT = /^\(\d+\)\s/;
 
 interface MessagesValue {
   unread: number;
+  loaded: boolean; // false until the first count has come back
   // The Messages page knows the exact count after loading or changing something.
   setUnread: (count: number) => void;
   refresh: () => Promise<void>;
@@ -37,6 +34,7 @@ export function useMessages(): MessagesValue {
 
 export function MessagesProvider({ children }: { children: ReactNode }) {
   const [unread, setUnreadState] = useState(0);
+  const [loaded, setLoaded] = useState(false);
   const [announcement, setAnnouncement] = useState('');
   const known = useRef<number | null>(null); // the last count seen; null until the first answer
   const clear = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
@@ -47,6 +45,7 @@ export function MessagesProvider({ children }: { children: ReactNode }) {
     const before = known.current;
     known.current = count;
     setUnreadState(count);
+    setLoaded(true);
     if (announce && before !== null && count > before) {
       setAnnouncement(
         count === 1 ? 'You have a new message.' : `You have ${count} unread messages.`,
@@ -110,7 +109,10 @@ export function MessagesProvider({ children }: { children: ReactNode }) {
     };
   }, [unread]);
 
-  const value = useMemo(() => ({ unread, setUnread, refresh }), [unread, setUnread, refresh]);
+  const value = useMemo(
+    () => ({ unread, loaded, setUnread, refresh }),
+    [unread, loaded, setUnread, refresh],
+  );
   return (
     <MessagesContext.Provider value={value}>
       {children}

@@ -26,11 +26,9 @@ import { Button, SlowNotice, Switch } from '../../ui';
 import { useFormAutosave } from '../autosave';
 import { EditorForm } from '../EditorForm';
 import { useEditor, useReportDirty, useSection } from '../editor-context';
+import { Collapsible } from '../layout';
+import { useGo } from '../navigation';
 import { SectionManager, type ItemFormProps } from '../SectionManager';
-import { AvailabilityCard } from './AvailabilityCard';
-import { ResumeCard } from './ResumeCard';
-import { ContactCardCard } from './ContactCardCard';
-import { WorkingTogetherCard } from './WorkingTogetherCard';
 import { NOTICES, PROBLEMS } from '@/lib/messages';
 import { useImageUpload } from '../use-image-upload';
 
@@ -310,6 +308,7 @@ function VisibilityToggle({ link }: { link: MyLink }) {
 }
 
 export function BasicsStep() {
+  const go = useGo();
   return (
     <div className="space-y-10">
       <section aria-labelledby="photo-heading" className="space-y-4">
@@ -324,41 +323,13 @@ export function BasicsStep() {
           Details
         </h2>
         <DetailsForm />
-      </section>
-
-      <section aria-labelledby="availability-heading" className="space-y-4">
-        <h2 id="availability-heading" className="type-section">
-          Availability
-        </h2>
-        <AvailabilityCard />
-      </section>
-
-      <section aria-labelledby="work-heading" className="space-y-4">
-        <h2 id="work-heading" className="type-section">
-          Working together
-        </h2>
-        <WorkingTogetherCard />
-      </section>
-
-      <section aria-labelledby="contact-card-heading" className="space-y-4">
-        <h2 id="contact-card-heading" className="type-section">
-          Contact card
-        </h2>
-        <ContactCardCard />
-      </section>
-
-      <section aria-labelledby="resume-heading" className="space-y-4">
-        <h2 id="resume-heading" className="type-section">
-          Resume download
-        </h2>
-        <ResumeCard />
-      </section>
-
-      <section aria-labelledby="address-heading" className="space-y-4">
-        <h2 id="address-heading" className="type-section">
-          Page address
-        </h2>
-        <SlugForm />
+        <p className="text-sm text-muted">
+          Availability, working hours, the contact card and the resume download are under{' '}
+          <Button variant="ghost" size="sm" onClick={() => void go('/dashboard/extras')}>
+            Share &amp; extras
+          </Button>
+          .
+        </p>
       </section>
 
       <section aria-labelledby="links-heading" className="space-y-4">
@@ -382,6 +353,15 @@ export function BasicsStep() {
           extra={(link) => <VisibilityToggle link={link} />}
         />
       </section>
+
+      <Collapsible title="Advanced" description="The web address of your page.">
+        <section aria-labelledby="address-heading" className="space-y-4">
+          <h2 id="address-heading" className="type-section">
+            Page address
+          </h2>
+          <SlugForm />
+        </section>
+      </Collapsible>
     </div>
   );
 }

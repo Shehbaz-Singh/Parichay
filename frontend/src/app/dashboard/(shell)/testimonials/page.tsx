@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { PageHeader } from '@/components/dashboard/layout';
 import { TestimonialsStep } from '@/components/dashboard/steps/TestimonialsStep';
 
 export const metadata: Metadata = { title: 'Testimonials' };
@@ -6,7 +7,10 @@ export const metadata: Metadata = { title: 'Testimonials' };
 export default function Page() {
   return (
     <>
-      <h1 className="type-page mb-4">Testimonials</h1>
+      <PageHeader
+        title="Testimonials"
+        description="Quotes from people you have worked with. You approve each one before it shows."
+      />
       <TestimonialsStep />
     </>
   );

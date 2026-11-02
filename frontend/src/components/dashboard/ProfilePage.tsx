@@ -2,8 +2,8 @@
 
 import type { ComponentType } from 'react';
 import { Tabs, type TabItem } from '../ui';
-import { Completeness } from './Completeness';
 import { useEditor } from './editor-context';
+import { PageHeader } from './layout';
 import { useLeaveGuard } from './navigation';
 import { AboutStep } from './steps/AboutStep';
 import { BasicsStep } from './steps/BasicsStep';
@@ -47,8 +47,11 @@ export function ProfilePage() {
   }
 
   return (
-    <div className="space-y-6">
-      <Completeness />
+    <>
+      <PageHeader
+        title="Profile"
+        description="Everything about you that goes on your page, one tab for each kind of content."
+      />
       <Tabs
         label="Profile sections"
         idBase="profile"
@@ -58,6 +61,6 @@ export function ProfilePage() {
       >
         <Component goTo={goTo} />
       </Tabs>
-    </div>
+    </>
   );
 }

@@ -14,6 +14,7 @@ import { CONFIRMS, NOTICES, PROBLEMS } from '@/lib/messages';
 import { Badge, Button, Card, EmptyState, Tabs, buttonStyles, useConfirm } from '../../ui';
 import { ContentSkeleton, LoadFailed } from '../screens';
 import { errorText, useEditor } from '../editor-context';
+import { Collapsible } from '../layout';
 import { useMessages } from '../messages-context';
 import { ContactFormCard } from './ContactFormCard';
 
@@ -414,20 +415,19 @@ function Inbox({ onRetention }: { onRetention: (days: number) => void }) {
 export function MessagesStep() {
   // The exact retention comes with the list; the settings card shows it as soon as it is known.
   const [days, setDays] = useState(CONTACT_DEFAULT_RETENTION_DAYS);
+  const { profile } = useEditor();
 
   return (
-    <section aria-labelledby="messages-heading" className="space-y-6">
-      <div>
-        <h2 id="messages-heading" className="type-section">
-          Messages
-        </h2>
-        <p className="text-sm text-muted">
-          Let visitors write to you from your page, and read what they send. Replies go from your
-          own email app.
-        </p>
-      </div>
-      <ContactFormCard retentionDays={days} />
+    <section aria-label="Messages" className="space-y-6">
+      <p className="text-sm text-muted">Replies go from your own email app.</p>
       <Inbox onRetention={setDays} />
+      <Collapsible
+        title="Contact form settings"
+        description="Switch the form on or off, and choose how long messages are kept."
+        defaultOpen={!profile.contactFormEnabled}
+      >
+        <ContactFormCard retentionDays={days} />
+      </Collapsible>
     </section>
   );
 }

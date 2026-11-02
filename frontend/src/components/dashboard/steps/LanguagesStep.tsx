@@ -13,6 +13,7 @@ import { api } from '@/lib/client-api';
 import { useLoad } from '@/lib/hooks';
 import { Button, Card, ErrorText, Input, Modal, Select } from '../../ui';
 import { errorText, useEditor } from '../editor-context';
+import { InfoToggle } from '../layout';
 import { LanguageProgress } from '../languages/LanguageProgress';
 import { TranslationEditor } from '../languages/TranslationEditor';
 import { ContentSkeleton, LoadFailed } from '../screens';
@@ -69,11 +70,11 @@ export function LanguagesStep() {
         <h2 id="translate-heading" className="type-section">
           Translate your texts
         </h2>
-        <p className="text-sm text-muted">
+        <InfoToggle label="How translating works">
           Each text shows your original beside the translation. Anything you leave empty appears in
           your main language, so a page is never half blank. Changes are saved by themselves, and
-          the preview on the right can show the language you are working on.
-        </p>
+          the preview can show the language you are working on.
+        </InfoToggle>
         <TranslationEditor languages={data} refresh={refresh} />
       </section>
     </div>

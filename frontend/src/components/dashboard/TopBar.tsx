@@ -11,6 +11,7 @@ import { ShareButton } from '../ShareButton';
 import { Button, Modal, Switch, buttonStyles } from '../ui';
 import { errorText, useEditor, type SaveStatus } from './editor-context';
 import { useGo } from './navigation';
+import { MobileMenu } from './Nav';
 import { PublishCelebration } from './PublishCelebration';
 import { useRegisterDashboardActions } from './palette/actions';
 import { PaletteButton } from './palette/PaletteHost';
@@ -225,7 +226,7 @@ function PublishControls() {
             <Button
               onClick={() => {
                 setAsking(false);
-                void go('/dashboard', missing[0]?.tab);
+                void go('/dashboard/profile', missing[0]?.tab);
               }}
             >
               Finish it first
@@ -245,6 +246,7 @@ function PublishControls() {
 export function TopBar() {
   return (
     <header className="sticky top-0 z-30 flex flex-wrap items-center gap-x-5 gap-y-2 border-b border-line bg-page/95 px-4 py-2.5 backdrop-blur">
+      <MobileMenu />
       <p className="lg:hidden">
         <Logo />
       </p>

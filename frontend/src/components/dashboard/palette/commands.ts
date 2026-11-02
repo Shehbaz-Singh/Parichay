@@ -5,6 +5,7 @@ import {
   Download,
   ExternalLink,
   Eye,
+  House,
   EyeOff,
   FileDown,
   FolderKanban,
@@ -21,6 +22,7 @@ import {
   Palette,
   QrCode,
   Settings,
+  Share2,
   UserRound,
   Wrench,
   FileUp,
@@ -85,9 +87,16 @@ const GO_TO: {
   keywords: string[];
 }[] = [
   {
+    id: 'home',
+    title: 'Home',
+    href: '/dashboard',
+    icon: House,
+    keywords: ['overview', 'dashboard', 'start', 'summary', 'next step', 'progress'],
+  },
+  {
     id: 'basics',
     title: 'Basics',
-    href: '/dashboard',
+    href: '/dashboard/profile',
     tab: 'basics',
     icon: UserRound,
     keywords: [
@@ -98,15 +107,14 @@ const GO_TO: {
       'tagline',
       'location',
       'links',
-      'contact',
-      'availability',
-      'resume download',
+      'page address',
+      'slug',
     ],
   },
   {
     id: 'about',
     title: 'About',
-    href: '/dashboard',
+    href: '/dashboard/profile',
     tab: 'about',
     icon: PenLine,
     keywords: ['bio', 'summary', 'intro', 'story'],
@@ -114,7 +122,7 @@ const GO_TO: {
   {
     id: 'skills',
     title: 'Skills',
-    href: '/dashboard',
+    href: '/dashboard/profile',
     tab: 'skills',
     icon: Wrench,
     keywords: ['tools', 'technologies', 'abilities'],
@@ -122,7 +130,7 @@ const GO_TO: {
   {
     id: 'experience',
     title: 'Experience',
-    href: '/dashboard',
+    href: '/dashboard/profile',
     tab: 'experience',
     icon: Briefcase,
     keywords: ['jobs', 'work', 'career', 'employment', 'roles'],
@@ -130,7 +138,7 @@ const GO_TO: {
   {
     id: 'projects',
     title: 'Projects',
-    href: '/dashboard',
+    href: '/dashboard/profile',
     tab: 'projects',
     icon: FolderKanban,
     keywords: ['portfolio', 'work samples', 'apps'],
@@ -138,7 +146,7 @@ const GO_TO: {
   {
     id: 'education',
     title: 'Education',
-    href: '/dashboard',
+    href: '/dashboard/profile',
     tab: 'education',
     icon: GraduationCap,
     keywords: ['degree', 'school', 'university', 'college', 'study'],
@@ -146,7 +154,7 @@ const GO_TO: {
   {
     id: 'writing',
     title: 'Writing',
-    href: '/dashboard',
+    href: '/dashboard/profile',
     tab: 'writing',
     icon: BookOpen,
     keywords: ['posts', 'blog', 'articles', 'markdown'],
@@ -154,15 +162,15 @@ const GO_TO: {
   {
     id: 'custom',
     title: 'Custom sections',
-    href: '/dashboard',
+    href: '/dashboard/profile',
     tab: 'custom',
     icon: LayoutPanelTop,
-    keywords: ['certifications', 'awards', 'open source', 'extra'],
+    keywords: ['certifications', 'awards', 'talks', 'interests', 'hobbies', 'open source', 'extra'],
   },
   {
     id: 'import',
     title: 'Import resume',
-    href: '/dashboard',
+    href: '/dashboard/profile',
     tab: 'import',
     icon: FileUp,
     keywords: ['upload', 'pdf', 'cv', 'parse'],
@@ -201,6 +209,25 @@ const GO_TO: {
     href: '/dashboard/messages',
     icon: Inbox,
     keywords: ['inbox', 'contact form', 'contact', 'mail', 'unread', 'replies', 'enquiries'],
+  },
+  {
+    id: 'extras',
+    title: 'Share & extras',
+    href: '/dashboard/extras',
+    icon: Share2,
+    keywords: [
+      'availability',
+      'working together',
+      'time zone',
+      'contact card',
+      'vcard',
+      'resume download',
+      'resume pdf',
+      'contact form',
+      'link in bio',
+      'signature',
+      'features',
+    ],
   },
   {
     id: 'link-bio',
@@ -297,7 +324,7 @@ const actions: Source = ({ profile, actions: getActions, notify }) => {
       disabled: !profile.published
         ? 'Publish your page first'
         : !profile.resumeEnabled
-          ? 'Switch on the resume download in Basics'
+          ? 'Switch on the resume download under Share & extras'
           : undefined,
       run: () => {
         const a = document.createElement('a');
@@ -316,7 +343,7 @@ const actions: Source = ({ profile, actions: getActions, notify }) => {
       disabled: !profile.published
         ? 'Publish your page first'
         : !profile.contactCardEnabled
-          ? 'Switch on the contact card in Basics'
+          ? 'Switch on the contact card under Share & extras'
           : undefined,
       run: () => {
         const a = document.createElement('a');
@@ -387,7 +414,7 @@ const snippet = (text: string, max = 60) =>
 
 const items: Source = ({ profile, go, requestJump }) => {
   const jump = (tab: string, kind: string, id: string) => async () => {
-    await go('/dashboard', tab);
+    await go('/dashboard/profile', tab);
     requestJump(kind, id);
   };
   return [

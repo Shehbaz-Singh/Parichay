@@ -232,16 +232,11 @@ export function TestimonialsStep() {
   const remaining = MAX_TESTIMONIALS - t.pending.length - t.rejected.length;
 
   return (
-    <section aria-labelledby="testimonials-heading" className="space-y-6">
-      <div>
-        <h2 id="testimonials-heading" className="type-section">
-          Testimonials
-        </h2>
-        <p className="text-sm text-muted">
-          Show what people say about working with you. Visitors can send one from your page; it
-          stays hidden until you approve it. You can also add one yourself.
-        </p>
-      </div>
+    <section aria-label="Testimonials" className="space-y-6">
+      <p className="text-sm text-muted">
+        Visitors can send one from your page; it stays hidden until you approve it. You can also add
+        one yourself.
+      </p>
 
       <Card className="space-y-3">
         <div className="flex items-center gap-3">

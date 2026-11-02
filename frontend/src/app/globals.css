@@ -440,9 +440,40 @@ main:focus {
   }
 }
 
-/* The dashboard's page scrollbar: a slim one instead of the wide default. */
-html:has(.dashboard-root) {
-  scrollbar-width: thin;
+/* The dashboard's scrollbars (the page, the sidebar, side panels): a slim rounded thumb that
+   darkens on hover, with no arrows and no track. Chromium and Safari take the ::-webkit rules;
+   Firefox gets the standard thin scrollbar. (Chromium ignores the ::-webkit rules once
+   scrollbar-width is set, so the standard ones are only for browsers without them.) */
+html:has(.dashboard-root)::-webkit-scrollbar,
+.dashboard-root *::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+}
+html:has(.dashboard-root)::-webkit-scrollbar-track,
+.dashboard-root *::-webkit-scrollbar-track {
+  background: transparent;
+}
+html:has(.dashboard-root)::-webkit-scrollbar-thumb,
+.dashboard-root *::-webkit-scrollbar-thumb {
+  background-color: var(--border);
+  background-clip: content-box;
+  border: 3px solid transparent;
+  border-radius: 999px;
+}
+html:has(.dashboard-root)::-webkit-scrollbar-thumb:hover,
+.dashboard-root *::-webkit-scrollbar-thumb:hover {
+  background-color: var(--muted);
+}
+html:has(.dashboard-root)::-webkit-scrollbar-button,
+.dashboard-root *::-webkit-scrollbar-button {
+  display: none;
+}
+@supports not selector(::-webkit-scrollbar) {
+  html:has(.dashboard-root),
+  .dashboard-root * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--border) transparent;
+  }
 }
 
 /* Page and dialog transitions: short and gentle, and only for people who have not asked their

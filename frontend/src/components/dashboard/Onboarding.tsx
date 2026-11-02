@@ -78,7 +78,7 @@ export function Onboarding() {
             onClick={() => {
               if (!last) return setStep(step + 1);
               close();
-              void go('/dashboard', 'import');
+              void go('/dashboard/profile', 'import');
             }}
           >
             {last ? 'Let’s begin' : 'Next'}

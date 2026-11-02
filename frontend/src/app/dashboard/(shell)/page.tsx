@@ -1,14 +1,8 @@
 import type { Metadata } from 'next';
-import { Greeting } from '@/components/dashboard/Greeting';
-import { ProfilePage } from '@/components/dashboard/ProfilePage';
+import { HomePage } from '@/components/dashboard/HomePage';
 
-export const metadata: Metadata = { title: 'Profile' };
+export const metadata: Metadata = { title: 'Home' };
 
 export default function Page() {
-  return (
-    <>
-      <Greeting />
-      <ProfilePage />
-    </>
-  );
+  return <HomePage />;
 }
