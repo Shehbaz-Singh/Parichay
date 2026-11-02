@@ -15,6 +15,17 @@ enum TestimonialStatus {
   rejected
 }
 
+enum LinkBioStyle {
+  light
+  soft
+}
+
+enum ContactMessageStatus {
+  new
+  read
+  archived
+}
+
 enum AvailabilityStatus {
   open_to_work
   open_to_freelance
@@ -97,6 +108,18 @@ model Profile {
   workNote            String?            @db.VarChar(140)
   // The suggested message of the Share menu (shared/src/share.ts); null uses the default.
   shareMessage        String?            @db.VarChar(200)
+  // The contact form of the public page (shared/src/contact.ts). The intro is one plain line.
+  contactFormEnabled  Boolean            @default(false)
+  contactFormIntro    String?            @db.VarChar(140)
+  // The link-in-bio card at /<slug>/links (shared/src/link-bio.ts): on or off, its look, and which
+  // optional buttons it shows. Its custom buttons are the LinkBioLink rows.
+  linkBioEnabled      Boolean            @default(false)
+  linkBioStyle        LinkBioStyle       @default(light)
+  linkBioShowContact  Boolean            @default(true)
+  linkBioShowVcard    Boolean            @default(true)
+  linkBioShowResume   Boolean            @default(true)
+  linkBioShowShare    Boolean            @default(true)
+  linkBioShowWork     Boolean            @default(true)
   defaultLocale       String             @default("en")
   locales             String[]           @default([])
   // Whether visitors may submit testimonials (POST /public/:slug/testimonials).
@@ -107,18 +130,20 @@ model Profile {
   availabilityMessage String?            @db.VarChar(140)
   // Order, visibility and headings of the page sections (see shared/src/section-config.ts).
   // The default must match defaultSectionConfig(); existing rows get it when the column is added.
-  sectionConfig       Json               @default("[{\"key\":\"about\",\"visible\":true},{\"key\":\"skills\",\"visible\":true},{\"key\":\"experience\",\"visible\":true},{\"key\":\"projects\",\"visible\":true},{\"key\":\"education\",\"visible\":true},{\"key\":\"testimonials\",\"visible\":false},{\"key\":\"writing\",\"visible\":false}]")
+  sectionConfig       Json               @default("[{\"key\":\"about\",\"visible\":true},{\"key\":\"skills\",\"visible\":true},{\"key\":\"experience\",\"visible\":true},{\"key\":\"projects\",\"visible\":true},{\"key\":\"education\",\"visible\":true},{\"key\":\"testimonials\",\"visible\":false},{\"key\":\"writing\",\"visible\":false},{\"key\":\"contact\",\"visible\":false}]")
 
-  user           User            @relation(fields: [userId], references: [id], onDelete: Cascade)
-  links          Link[]
-  skills         Skill[]
-  experience     Experience[]
-  projects       Project[]
-  education      Education[]
-  customSections CustomSection[]
-  testimonials   Testimonial[]
-  posts          Post[]
-  translations   Translation[]
+  user            User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  links           Link[]
+  skills          Skill[]
+  experience      Experience[]
+  projects        Project[]
+  education       Education[]
+  customSections  CustomSection[]
+  testimonials    Testimonial[]
+  contactMessages ContactMessage[]
+  linkBioLinks    LinkBioLink[]
+  posts           Post[]
+  translations    Translation[]
 }
 
 model Link {
@@ -240,6 +265,42 @@ model Testimonial {
   @@index([profileId, status])
 }
 
+// A message a visitor sent through the contact form. Nothing is emailed: the owner reads it in the
+// dashboard. `senderEmail` is for the owner only and is never sent to visitors. Messages are deleted
+// after CONTACT_RETENTION_DAYS by a scheduled sweep (services/contact-retention.ts), and with the
+// profile.
+model ContactMessage {
+  id          String               @id @default(cuid())
+  profileId   String
+  senderName  String               @db.VarChar(80)
+  senderEmail String               @db.VarChar(254)
+  subject     String?              @db.VarChar(120)
+  message     String
+  status      ContactMessageStatus @default(new)
+  createdAt   DateTime             @default(now())
+  readAt      DateTime?
+
+  profile Profile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+
+  @@index([profileId, status, createdAt])
+  @@index([createdAt])
+}
+
+// A custom button of the link-in-bio card. Its own table, like the profile's links and skills: the
+// buttons are ordered, limited to LINK_BIO_MAX_BUTTONS, and their labels are translatable per
+// language (Translation, entity "linkBioLink") while the address is shared by all languages.
+model LinkBioLink {
+  id        String @id @default(cuid())
+  profileId String
+  label     String @db.VarChar(40)
+  url       String
+  order     Int    @default(0)
+
+  profile Profile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+
+  @@index([profileId])
+}
+
 // A short post written here (Markdown body) or a link to an article elsewhere. Drafts are never
 // public. The slug comes from the title, is unique within the profile, and stays when the title
 // changes. The cover image lives in Cloudinary and is only ever set by the upload endpoint.
@@ -275,6 +336,7 @@ enum TranslatableEntity {
   customSection
   customItem
   post
+  linkBioLink
 }
 
 // One owner-written text in one extra language. There is no foreign key to the thing translated

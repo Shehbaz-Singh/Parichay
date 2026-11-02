@@ -1,5 +1,7 @@
 import { z } from 'zod';
 import { availabilityStatusSchema } from './availability';
+import { publicContactFormSchema } from './contact';
+import { myLinkBioButtonSchema } from './link-bio';
 import { linkTypeSchema, profileSchema } from './portfolio';
 import { myPostSummarySchema, publicPostSummarySchema } from './posts';
 import { myTestimonialSchema, publicTestimonialSchema } from './testimonials';
@@ -108,6 +110,15 @@ export const publicProfileSchema = profileSchema
     replyTime: true,
     preferredContact: true,
     workNote: true,
+    contactFormEnabled: true,
+    contactFormIntro: true,
+    linkBioEnabled: true,
+    linkBioStyle: true,
+    linkBioShowContact: true,
+    linkBioShowVcard: true,
+    linkBioShowResume: true,
+    linkBioShowShare: true,
+    linkBioShowWork: true,
   })
   .extend({
     // Present only while the owner has the badge switched on; the API leaves all three out otherwise.
@@ -121,6 +132,8 @@ export const publicProfileSchema = profileSchema
     replyTime: replyTimeSchema.nullable().optional(),
     preferredContact: preferredContactSchema.nullable().optional(),
     workNote: z.string().nullable().optional(),
+    // The contact form: present only while the owner has it switched on (and the page is not a sample).
+    contactForm: publicContactFormSchema.optional(),
     // The language this response is in (one of `locales`, or the default). `locales` here lists only
     // the extra languages that are ready for visitors.
     locale: z.string().default('en'),
@@ -146,6 +159,8 @@ export const myProfileSchema = profileSchema.extend({
   customSections: z.array(myCustomSectionSchema).default([]),
   // Every testimonial, pending and rejected included.
   testimonials: z.array(myTestimonialSchema).default([]),
+  // The link-in-bio card's custom buttons, in order.
+  linkBioLinks: z.array(myLinkBioButtonSchema).default([]),
   // Every post, drafts included, without the body (GET /profile/me/posts/:id has it).
   posts: z.array(myPostSummarySchema).default([]),
   links: z.array(publicLinkSchema.extend({ visible: z.boolean() })),

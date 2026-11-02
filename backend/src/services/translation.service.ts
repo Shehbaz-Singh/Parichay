@@ -35,6 +35,10 @@ export async function loadSource(profileId: string): Promise<Source> {
       availabilityMessage: true,
       workNote: true,
       shareMessage: true,
+      contactFormEnabled: true,
+      contactFormIntro: true,
+      linkBioEnabled: true,
+      linkBioLinks: { select: { id: true, label: true } },
       workCardEnabled: true,
       sectionConfig: true,
       experience: { select: { id: true, title: true, description: true } },
@@ -69,6 +73,8 @@ export async function loadSource(profileId: string): Promise<Source> {
     // Only while the card is switched on: a note nobody can see is not a text to translate.
     workNote: profile.workCardEnabled ? profile.workNote : null,
     shareMessage: profile.shareMessage,
+    // Only while the form is switched on, like the working-together note.
+    contactFormIntro: profile.contactFormEnabled ? profile.contactFormIntro : null,
   });
   // A built-in heading is translatable when the owner has given it a title of their own; the default
   // headings come from the interface strings of each language.
@@ -87,6 +93,9 @@ export async function loadSource(profileId: string): Promise<Source> {
     add('customSection', section.id, { title: section.title });
     for (const item of section.items) add('customItem', item.id, item);
   }
+  // The labels of the link-in-bio buttons, only while the card is on (the addresses are not translated).
+  if (profile.linkBioEnabled)
+    for (const row of profile.linkBioLinks) add('linkBioLink', row.id, row);
   for (const post of profile.posts) {
     add('post', post.id, {
       title: post.title,

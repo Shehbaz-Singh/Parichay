@@ -5,6 +5,7 @@ import { prisma } from '../lib/prisma';
 import { isUniqueViolation } from '../lib/prisma-errors';
 import {
   customItems,
+  myLinkBioLinks,
   myPostSummaries,
   myTestimonials,
   orderedList,
@@ -29,6 +30,7 @@ const fullProfileSelect = {
     orderBy: [{ order: 'asc' }, { id: 'asc' }],
   },
   testimonials: myTestimonials,
+  linkBioLinks: myLinkBioLinks,
   posts: myPostSummaries,
 } satisfies Prisma.ProfileSelect;
 

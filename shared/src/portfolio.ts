@@ -1,3 +1,5 @@
+import { CONTACT_INTRO_MAX } from './contact';
+import { DEFAULT_LINK_BIO_STYLE, linkBioStyleSchema } from './link-bio';
 import { z } from 'zod';
 import {
   AVAILABILITY_MESSAGE_MAX,
@@ -54,6 +56,7 @@ export const RESERVED_SLUGS = [
   'privacy',
   'terms',
   'writing',
+  'links',
   '_next',
 ] as const;
 
@@ -146,6 +149,19 @@ export const profileInputSchema = z.object({
   workNote: optionalLine(WORK_NOTE_MAX),
   // The suggested message of the Share menu (share.ts). Null means the default for the language.
   shareMessage: optionalBlock(SHARE_MESSAGE_MAX),
+  // The contact form (contact.ts): whether visitors can write to the owner, and a line above it.
+  // Changed by its own endpoint, together with the section that shows it.
+  contactFormEnabled: z.boolean().default(false),
+  contactFormIntro: optionalLine(CONTACT_INTRO_MAX),
+  // The link-in-bio card (link-bio.ts): on or off, its look, and which optional buttons it shows.
+  // Changed by its own endpoint, which also checks that the page is published.
+  linkBioEnabled: z.boolean().default(false),
+  linkBioStyle: linkBioStyleSchema.default(DEFAULT_LINK_BIO_STYLE),
+  linkBioShowContact: z.boolean().default(true),
+  linkBioShowVcard: z.boolean().default(true),
+  linkBioShowResume: z.boolean().default(true),
+  linkBioShowShare: z.boolean().default(true),
+  linkBioShowWork: z.boolean().default(true),
 });
 export type ProfileInput = z.infer<typeof profileInputSchema>;
 
@@ -170,7 +186,20 @@ export type Profile = z.infer<typeof profileSchema>;
 
 // PUT /profile/me. Publishing has its own endpoint, and omitting the slug keeps the current one.
 export const profileUpdateSchema = profileInputSchema
-  .omit({ slug: true, published: true, acceptTestimonials: true })
+  .omit({
+    slug: true,
+    published: true,
+    acceptTestimonials: true,
+    contactFormEnabled: true,
+    contactFormIntro: true,
+    linkBioEnabled: true,
+    linkBioStyle: true,
+    linkBioShowContact: true,
+    linkBioShowVcard: true,
+    linkBioShowResume: true,
+    linkBioShowShare: true,
+    linkBioShowWork: true,
+  })
   .extend({ slug: slugSchema.optional() });
 export type ProfileUpdateInput = z.infer<typeof profileUpdateSchema>;
 

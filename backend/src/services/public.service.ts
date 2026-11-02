@@ -1,5 +1,6 @@
 import { normalizeSectionConfig, publicLayout, readWorkingHours } from '@parichay/shared';
 import type { Prisma } from '../generated/prisma/client';
+import { config } from '../lib/config';
 import { AppError } from '../lib/errors';
 import { prisma } from '../lib/prisma';
 import {
@@ -47,7 +48,7 @@ const publicSelect = {
 // An unpublished profile and a profile that does not exist both give the same 404, so
 // nobody can tell which slugs are taken by profiles that are not public. The same goes for a
 // language that is not offered or whose translation is not ready: it is a 404, not a half page.
-async function languageLookup(
+export async function languageLookup(
   profile: { id: string; defaultLocale: string; locales: string[] },
   lang: string | undefined,
 ) {
@@ -94,10 +95,20 @@ export async function getPublicProfile(slug: string, lang?: string) {
     replyTime,
     preferredContact,
     workNote,
+    contactFormEnabled,
+    contactFormIntro,
     ...visible
   } = withoutBadge;
   return {
     ...visible,
+    // The contact form: nothing of it is public while it is switched off, and a sample has none.
+    ...(contactFormEnabled &&
+      !rest.isSample && {
+        contactForm: {
+          intro: tn('profile', id, 'contactFormIntro', contactFormIntro),
+          retentionDays: config.CONTACT_RETENTION_DAYS,
+        },
+      }),
     ...(availabilityEnabled && {
       availabilityEnabled,
       availabilityStatus,

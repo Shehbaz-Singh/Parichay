@@ -16,7 +16,7 @@ function fromFrontend(req: Request): boolean {
   return a.length === b.length && timingSafeEqual(a, b);
 }
 
-function clientKey(req: Request): string {
+export function clientKey(req: Request): string {
   const forwarded = req.get('x-client-ip');
   const ip = fromFrontend(req) && forwarded && isIP(forwarded) ? forwarded : (req.ip ?? '');
   return ipKeyGenerator(ip);

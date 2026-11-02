@@ -1,5 +1,6 @@
 import 'dotenv/config';
 import { z } from 'zod';
+import { CONTACT_DEFAULT_RETENTION_DAYS } from '@parichay/shared';
 
 const optionalText = () =>
   z
@@ -28,6 +29,17 @@ const envSchema = z.object({
   LLM_API_KEY: optionalText(),
   LLM_MODEL: optionalText(), // each provider has a default
   LLM_BASE_URL: optionalText().pipe(z.string().url().optional()), // for OpenAI-compatible servers
+  // Contact form. Messages older than this many days are deleted by a scheduled sweep.
+  CONTACT_RETENTION_DAYS: z.coerce
+    .number()
+    .int()
+    .min(1)
+    .max(3650)
+    .default(CONTACT_DEFAULT_RETENTION_DAYS),
+  // Cloudflare Turnstile, a privacy-friendly CAPTCHA for the contact form. It switches on only when
+  // both keys are set; the privacy policy then names it.
+  TURNSTILE_SITE_KEY: optionalText(),
+  TURNSTILE_SECRET_KEY: optionalText(),
   CLOUDINARY_CLOUD_NAME: z.string().min(1, 'CLOUDINARY_CLOUD_NAME is required'),
   CLOUDINARY_API_KEY: z.string().min(1, 'CLOUDINARY_API_KEY is required'),
   CLOUDINARY_API_SECRET: z.string().min(1, 'CLOUDINARY_API_SECRET is required'),
@@ -41,3 +53,9 @@ if (!parsed.success) {
 }
 
 export const config = parsed.data;
+
+// Turnstile is on only with both keys.
+export const turnstile =
+  config.TURNSTILE_SITE_KEY && config.TURNSTILE_SECRET_KEY
+    ? { siteKey: config.TURNSTILE_SITE_KEY, secretKey: config.TURNSTILE_SECRET_KEY }
+    : null;

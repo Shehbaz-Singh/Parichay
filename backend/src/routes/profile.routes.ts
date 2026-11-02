@@ -1,6 +1,9 @@
 import { Router } from 'express';
 import {
   addLanguageSchema,
+  contactListQuerySchema,
+  contactSettingsSchema,
+  contactStatusUpdateSchema,
   customItemInputSchema,
   customSectionInputSchema,
   postInputSchema,
@@ -8,6 +11,8 @@ import {
   publishSchema,
   reorderSchema,
   languageSettingsSchema,
+  linkBioButtonInputSchema,
+  linkBioSettingsSchema,
   sectionsUpdateSchema,
   suggestRequestSchema,
   testimonialInputSchema,
@@ -26,6 +31,22 @@ import {
   updateCustomItem,
   updateCustomSection,
 } from '../controllers/custom-section.controller';
+import {
+  createLinkBioButton,
+  deleteLinkBioButton,
+  listLinkBioButtons,
+  reorderLinkBioButtons,
+  saveLinkBioSettings,
+  updateLinkBioButton,
+} from '../controllers/link-bio.controller';
+import {
+  deleteMessage,
+  getMessage,
+  getUnreadMessages,
+  listMessages,
+  saveContactSettings,
+  updateMessageStatus,
+} from '../controllers/message.controller';
 import {
   deleteMyAvatar,
   exportMyData,
@@ -77,7 +98,7 @@ import { requireAuth } from '../middleware/auth';
 import { resumeLimiter, uploadLimiter } from '../middleware/rate-limit';
 import { avatarUpload, coverUpload, resumeUpload } from '../middleware/upload';
 import { sectionParam, validateSectionBody } from '../middleware/section';
-import { validateBody } from '../middleware/validate';
+import { validateBody, validateQuery } from '../middleware/validate';
 
 export const profileRouter = Router();
 
@@ -149,6 +170,44 @@ profileRouter.put('/me/testimonials/:id', validateBody(testimonialInputSchema), 
 profileRouter.post('/me/testimonials/:id/approve', approveTestimonial);
 profileRouter.post('/me/testimonials/:id/reject', rejectTestimonial);
 profileRouter.delete('/me/testimonials/:id', deleteTestimonial);
+
+// The contact form's inbox. Declared before /me/:section like the others; "unread-count" and
+// "settings" come before /:id so they are not read as an id.
+profileRouter.get('/me/messages', validateQuery(contactListQuerySchema), listMessages);
+profileRouter.get('/me/messages/unread-count', getUnreadMessages);
+profileRouter.put(
+  '/me/messages/settings',
+  validateBody(contactSettingsSchema),
+  saveContactSettings,
+);
+profileRouter.get('/me/messages/:id', getMessage);
+profileRouter.patch(
+  '/me/messages/:id',
+  validateBody(contactStatusUpdateSchema),
+  updateMessageStatus,
+);
+profileRouter.delete('/me/messages/:id', deleteMessage);
+
+// The link-in-bio card: its settings and its custom buttons. Declared before /me/:section like the
+// others; "reorder" comes before /:id so it is not read as an id.
+profileRouter.put('/me/link-bio', validateBody(linkBioSettingsSchema), saveLinkBioSettings);
+profileRouter.get('/me/link-bio/links', listLinkBioButtons);
+profileRouter.post(
+  '/me/link-bio/links',
+  validateBody(linkBioButtonInputSchema),
+  createLinkBioButton,
+);
+profileRouter.patch(
+  '/me/link-bio/links/reorder',
+  validateBody(reorderSchema),
+  reorderLinkBioButtons,
+);
+profileRouter.put(
+  '/me/link-bio/links/:id',
+  validateBody(linkBioButtonInputSchema),
+  updateLinkBioButton,
+);
+profileRouter.delete('/me/link-bio/links/:id', deleteLinkBioButton);
 
 // Writing: posts and links to articles. Declared before /me/:section like the others. The cover
 // image has its own upload, with the same limits and rate limit as the avatar.

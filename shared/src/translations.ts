@@ -1,6 +1,8 @@
 import { z } from 'zod';
 import { AVAILABILITY_MESSAGE_MAX } from './availability';
 import { CUSTOM_DESCRIPTION_MAX, CUSTOM_SUBTITLE_MAX, CUSTOM_TITLE_MAX } from './custom-sections';
+import { CONTACT_INTRO_MAX } from './contact';
+import { LINK_BIO_LABEL_MAX } from './link-bio';
 import { LOCALE_CODES } from './languages';
 import { POST_BODY_MAX, POST_EXCERPT_MAX, POST_TITLE_MAX } from './posts';
 import { SECTION_TITLE_MAX } from './section-config';
@@ -22,6 +24,7 @@ export const TRANSLATABLE_ENTITIES = [
   'customSection',
   'customItem',
   'post',
+  'linkBioLink', // a custom button of the link-in-bio card; the address is shared by all languages
 ] as const;
 export const translatableEntitySchema = z.enum(TRANSLATABLE_ENTITIES);
 export type TranslatableEntity = z.infer<typeof translatableEntitySchema>;
@@ -43,6 +46,7 @@ export const TRANSLATABLE: Record<TranslatableEntity, Record<string, Translatabl
     availabilityMessage: line(AVAILABILITY_MESSAGE_MAX),
     workNote: line(WORK_NOTE_MAX),
     shareMessage: block(SHARE_MESSAGE_MAX),
+    contactFormIntro: line(CONTACT_INTRO_MAX),
   },
   section: { title: line(SECTION_TITLE_MAX) },
   experience: { title: line(100), description: block(3000) },
@@ -60,6 +64,7 @@ export const TRANSLATABLE: Record<TranslatableEntity, Record<string, Translatabl
     excerpt: line(POST_EXCERPT_MAX),
     body: block(POST_BODY_MAX),
   },
+  linkBioLink: { label: line(LINK_BIO_LABEL_MAX) },
 };
 
 export const fieldRule = (entity: TranslatableEntity, field: string) =>

@@ -1,6 +1,13 @@
+import { config } from '../lib/config';
 import { AppError } from '../lib/errors';
 import { prisma } from '../lib/prisma';
-import { customItems, myTestimonials, orderedList, profileSelect } from '../lib/selects';
+import {
+  customItems,
+  myLinkBioLinks,
+  myTestimonials,
+  orderedList,
+  profileSelect,
+} from '../lib/selects';
 import { ERRORS } from '../lib/messages';
 
 // Everything stored about the signed-in person, for them to keep. It is built from explicit selects,
@@ -28,6 +35,14 @@ export async function exportAccountData(userId: string) {
             orderBy: [{ order: 'asc' }, { id: 'asc' }],
           },
           testimonials: myTestimonials,
+          // The custom buttons of the link-in-bio card (the card's settings are on the profile).
+          linkBioLinks: myLinkBioLinks,
+          // Messages visitors sent through the contact form (only those still within the retention
+          // period exist), with the sender's name and email.
+          contactMessages: {
+            omit: { profileId: true },
+            orderBy: [{ createdAt: 'asc' }, { id: 'asc' }],
+          },
           // The translated texts of every extra language (each says which thing it translates).
           translations: {
             omit: { id: true, profileId: true },
@@ -63,6 +78,8 @@ export async function exportAccountData(userId: string) {
       'This service does not record page views or other analytics about your visitors, so there are none to export.',
       'A resume PDF you uploaded for import is not stored, so it is not part of this file.',
       'Testimonials include the contact email a visitor gave you, if they gave one. That email is never shown on your public page.',
+      'Link-in-bio buttons are in the profile section: each has the text and the address it goes to. The card settings (on or off, look, which optional buttons show) are part of the profile.',
+      `Contact messages are the ones visitors sent through your contact form, with their name and email address. They are deleted automatically after ${config.CONTACT_RETENTION_DAYS} days, so older ones are not in this file.`,
     ],
   };
 }

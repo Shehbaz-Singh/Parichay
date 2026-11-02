@@ -31,6 +31,8 @@ export const ERRORS = {
   customSectionNotFound: 'Custom section not found',
   itemNotFound: 'Item not found',
   testimonialNotFound: 'Testimonial not found',
+  messageNotFound: 'Message not found',
+  linkBioButtonNotFound: 'Button not found',
 
   // ---- limits and conflicts
   slugTaken: 'This slug is already taken',
@@ -39,11 +41,19 @@ export const ERRORS = {
   maxCustomItems: (max: number) => `You can have at most ${max} items in a section`,
   maxSectionItems: (max: number, section: string) =>
     `You can have at most ${max} items in ${section}`,
+  linkBioLimit: (max: number) => `You can have at most ${max} buttons on your link-in-bio card`,
+  linkBioNeedsPublish: 'Publish your page before you switch on the link-in-bio card',
   testimonialLimit: 'No more testimonials can be added right now',
   testimonialsClosed: 'This person is not accepting testimonials',
   reorderCustomItems: 'ids must list every item in the section exactly once',
   reorderSection: (section: string) => `ids must list every item in ${section} exactly once`,
+  reorderLinkBio: 'ids must list every link-in-bio button exactly once',
   reorderTestimonials: 'ids must list every approved testimonial exactly once',
+
+  // ---- contact form (what a visitor can be told is kept deliberately vague)
+  contactBusy: 'Too many messages right now. Please try again later.',
+  contactExpired: 'This form has timed out. Please reload the page and try again.',
+  contactCaptcha: 'We could not check that you are a person. Please try again.',
 
   // ---- working together card
   timeZoneForCard: 'Choose a time zone to show the Working together card',
