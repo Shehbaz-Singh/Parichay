@@ -19,7 +19,7 @@ import type { WorkModel } from './blocks';
 import { NewTabLink } from './parts';
 
 // Puts values into a message that has {placeholders}, where a value may be an element (the <time>).
-function fillNodes(template: string, values: Record<string, ReactNode>): ReactNode[] {
+export function fillNodes(template: string, values: Record<string, ReactNode>): ReactNode[] {
   return template.split(/(\{\w+\})/).map((piece, index) => {
     const key = /^\{(\w+)\}$/.exec(piece)?.[1];
     return key && key in values ? <span key={index}>{values[key]}</span> : piece;

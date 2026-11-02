@@ -19,6 +19,7 @@ interface Props {
   // The words, in the page's language (English when left out, as in the dashboard).
   ui?: Ui['share'];
   newTab?: string; // " (opens in a new tab)"
+  className?: string; // added to the button (a bigger touch target on the link-in-bio card)
 }
 
 const noSubscription = () => () => {};
@@ -39,6 +40,7 @@ export function ShareButton({
   variant = 'pill',
   ui = uiFor('en').share,
   newTab = uiFor('en').newTab,
+  className = '',
 }: Props) {
   const native = useSyncExternalStore(noSubscription, hasWebShare, () => false);
   const [open, setOpen] = useState(false);
@@ -156,7 +158,7 @@ export function ShareButton({
         onClick={onTrigger}
         aria-expanded={native ? undefined : open}
         aria-controls={native ? undefined : menuId}
-        className={`inline-flex items-center gap-2 text-sm font-medium transition focus-visible:outline-2 focus-visible:outline-offset-2 ${look}`}
+        className={`inline-flex items-center gap-2 text-sm font-medium transition focus-visible:outline-2 focus-visible:outline-offset-2 ${look} ${className}`}
       >
         <Share2 aria-hidden="true" className="size-4" />
         {ui.label}

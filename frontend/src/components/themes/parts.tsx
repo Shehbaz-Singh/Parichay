@@ -182,7 +182,7 @@ function LinkedInLogo({ className }: IconProps) {
   );
 }
 
-const LINK_ICONS: Record<PublicLink['type'], ComponentType<IconProps>> = {
+export const LINK_ICONS: Record<PublicLink['type'], ComponentType<IconProps>> = {
   linkedin: LinkedInLogo,
   github: GitHubLogo,
   email: Mail,

@@ -11,6 +11,7 @@ import {
   type HeaderModel,
 } from './blocks';
 import { uiFor } from '@/lib/i18n';
+import { ContactForm } from './ContactForm';
 import { LeaveTestimonial } from './LeaveTestimonial';
 import { WorkCard } from './WorkCard';
 import {
@@ -256,6 +257,15 @@ function BlockView({ block }: { block: Block }) {
             </div>
           )}
         </>
+      );
+    case 'contact':
+      return (
+        <div className="max-w-xl print:hidden">
+          <ContactForm
+            form={block.form}
+            buttonClassName={`inline-flex items-center rounded border border-ink px-4 py-1.5 text-sm font-semibold transition-colors hover:bg-page ${focusRing}`}
+          />
+        </div>
       );
     case 'entries':
       return (

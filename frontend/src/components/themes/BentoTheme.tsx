@@ -13,6 +13,7 @@ import {
   type HeaderModel,
 } from './blocks';
 import { uiFor } from '@/lib/i18n';
+import { ContactForm } from './ContactForm';
 import { LeaveTestimonial } from './LeaveTestimonial';
 import { WorkCard } from './WorkCard';
 import {
@@ -419,6 +420,24 @@ function blockTiles(block: Block): Tile[] {
                 excerptClassName="mt-2 leading-relaxed text-muted"
                 moreClassName={`mt-6 inline-block text-sm font-semibold text-accent-fg underline underline-offset-2 hover:no-underline ${focusRing}`}
               />
+            </TileBody>
+          ),
+        },
+      ];
+    case 'contact':
+      return [
+        {
+          key: block.id,
+          span: 6,
+          tone: 'plain',
+          node: (
+            <TileBody id={block.id} title={block.title}>
+              <div className="max-w-xl print:hidden">
+                <ContactForm
+                  form={block.form}
+                  buttonClassName={`inline-flex items-center rounded-full border border-line bg-page/70 px-5 py-2 text-sm font-semibold transition-colors hover:bg-page ${focusRing}`}
+                />
+              </div>
             </TileBody>
           ),
         },

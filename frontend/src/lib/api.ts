@@ -1,9 +1,11 @@
 import { cache } from 'react';
 import { z } from 'zod';
 import {
+  publicLinkCardSchema,
   publicPostSchema,
   publicPostSummarySchema,
   publicProfileSchema,
+  type PublicLinkCard,
   type PublicPost,
   type PublicPostSummary,
   type PublicProfile,
@@ -30,6 +32,22 @@ export const getPublicProfile = cache(
     if (res.status === 404) return null;
     if (!res.ok) throw new Error(`Public profile API responded with ${res.status}`);
     return publicProfileSchema.parse(await res.json());
+  },
+);
+
+// The link-in-bio card of a profile, or null when there is none (missing, unpublished, or the card is
+// off: the API gives the same 404 for all of those). Dropped with the profile cache.
+export const getLinkCard = cache(
+  async (slug: string, lang?: string): Promise<PublicLinkCard | null> => {
+    const res = await fetch(
+      `${API_URL}/public/${encodeURIComponent(slug)}/links${langQuery(lang)}`,
+      {
+        next: { revalidate: REVALIDATE_SECONDS, tags: [PUBLIC_PROFILES_TAG] },
+      },
+    );
+    if (res.status === 404) return null;
+    if (!res.ok) throw new Error(`Link card API responded with ${res.status}`);
+    return publicLinkCardSchema.parse(await res.json());
   },
 );
 

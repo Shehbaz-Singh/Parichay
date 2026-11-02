@@ -77,6 +77,19 @@ export interface WritingEntry {
   cover: string | null; // checked to be http(s)
 }
 
+// What the contact form needs. The owner's address is not part of it: a message goes to the API.
+export interface ContactFormModel {
+  slug: string;
+  locale: string;
+  ui: Ui['contactForm'];
+  ownerName: string;
+  intro: string; // the owner's line, or the default one
+  days: number; // how long a message is kept
+  pageHref: string; // the form on a page of its own, for visitors without JavaScript
+  homeHref: string; // the portfolio page in this language
+  privacyHref: string;
+}
+
 interface BlockBase {
   locale: string; // the language of the page
   ui: Ui; // the interface text in that language
@@ -94,6 +107,7 @@ export type Block =
       allHref: string; // the page with every post
     })
   | (BlockBase & { kind: 'projects'; projects: ProjectEntry[] })
+  | (BlockBase & { kind: 'contact'; form: ContactFormModel })
   | (BlockBase & {
       kind: 'testimonials';
       testimonials: TestimonialEntry[];
@@ -234,6 +248,26 @@ export function writingEntries(
 
 const isBuiltIn = (key: string): key is SectionKey => Object.hasOwn(SECTION_LABELS, key);
 
+export function buildContactForm(
+  profile: Pick<PublicProfile, 'slug' | 'locale' | 'defaultLocale' | 'fullName'>,
+  intro: string | null,
+  days: number,
+): ContactFormModel {
+  const ui = uiFor(profile.locale).contactForm;
+  const name = profile.fullName;
+  return {
+    slug: profile.slug,
+    locale: profile.locale,
+    ui,
+    ownerName: name,
+    intro: intro?.trim() || fill(ui.intro, { name }),
+    days,
+    pageHref: `/${profile.slug}/contact${profile.locale === profile.defaultLocale ? '' : `?lang=${profile.locale}`}`,
+    homeHref: pagePath(profile.slug, profile.locale, profile.defaultLocale),
+    privacyHref: '/privacy',
+  };
+}
+
 // The sections to draw, in the configured order. Hidden sections are not in profile.sections, and
 // a section with no content is left out here even when it is switched on. A key this code does not
 // know (a section added later) is skipped, so an older page never breaks.
@@ -326,6 +360,19 @@ export function buildBlocks(profile: PublicProfile, idPrefix = ''): Block[] {
               message: item.message,
             })),
             submitTo: profile.acceptTestimonials ? profile.slug : null,
+          });
+        }
+        break;
+      case 'contact':
+        if (profile.contactForm) {
+          blocks.push({
+            kind: 'contact',
+            ...base,
+            form: buildContactForm(
+              profile,
+              profile.contactForm.intro,
+              profile.contactForm.retentionDays,
+            ),
           });
         }
         break;
@@ -477,7 +524,15 @@ export function buildHeader(profile: PublicProfile): HeaderModel {
           ...(status === 'custom'
             ? { label: note ?? ui.availabilityStatus.custom, detail: null }
             : { label: ui.availabilityStatus[status], detail: note }),
-          contact: contactTarget(profile.links),
+          // With the contact form on, "Get in touch" opens it (its own page, which also works
+          // without JavaScript); otherwise it is the best link the owner shows.
+          contact: profile.contactForm
+            ? {
+                href: buildContactForm(profile, null, 0).pageHref,
+                label: ui.sections.contact,
+                external: false,
+              }
+            : contactTarget(profile.links),
         }
       : null,
   };

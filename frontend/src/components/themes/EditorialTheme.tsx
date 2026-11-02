@@ -11,6 +11,7 @@ import {
   type HeaderModel,
 } from './blocks';
 import { uiFor } from '@/lib/i18n';
+import { ContactForm } from './ContactForm';
 import { LeaveTestimonial } from './LeaveTestimonial';
 import { WorkCard } from './WorkCard';
 import {
@@ -279,6 +280,15 @@ function BlockView({ block }: { block: Block }) {
             />
           )}
         </>
+      );
+    case 'contact':
+      return (
+        <div className="max-w-xl print:hidden">
+          <ContactForm
+            form={block.form}
+            buttonClassName={`inline-flex items-center text-sm font-medium ${link}`}
+          />
+        </div>
       );
     case 'entries':
       return (

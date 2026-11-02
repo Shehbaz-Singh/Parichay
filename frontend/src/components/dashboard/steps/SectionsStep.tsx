@@ -41,6 +41,7 @@ const BUILT_IN_HAS_CONTENT: Record<SectionKey, (profile: MyProfile) => boolean> 
   education: (p) => p.education.length > 0,
   testimonials: (p) => p.acceptTestimonials || p.testimonials.some((t) => t.status === 'approved'),
   writing: (p) => (p.posts ?? []).some((post) => post.status === 'published'),
+  contact: (p) => p.contactFormEnabled && !p.isSample,
 };
 
 // A custom section is looked up by id; one that no longer exists has nothing to show.
