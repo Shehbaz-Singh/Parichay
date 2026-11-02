@@ -7,9 +7,7 @@ export function Footer() {
       <div className="mx-auto flex max-w-6xl flex-wrap items-start justify-between gap-6 px-5 py-10 text-sm text-muted sm:px-8">
         <div className="max-w-xs">
           <Logo variant="footer" />
-          <p className="mt-2">
-            Introduce yourself properly. Made by a developer, for all developers.
-          </p>
+          <p className="mt-2">Parichay: your introduction, done properly.</p>
         </div>
         <nav aria-label="Footer">
           <ul className="flex flex-wrap gap-x-6 gap-y-2">

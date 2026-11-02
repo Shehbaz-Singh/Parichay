@@ -500,7 +500,7 @@ export function buildFooter(profile: PublicProfile): FooterModel {
     ui,
     name: profile.fullName,
     year: new Date().getFullYear(),
-    message: 'by a developer, for all developers.',
+    message: 'with Parichay.',
     cta: { href: '/', label: ui.footerCta },
   };
 }
