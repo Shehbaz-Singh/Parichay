@@ -30,7 +30,6 @@ import {
   TotalExperience,
   MoreLinkView,
 } from './parts';
-import { Reveal } from './Reveal';
 import { ThemeWrapper } from './ThemeWrapper';
 import type { ThemeProps } from './types';
 
@@ -70,7 +69,7 @@ function Header({ header }: { header: HeaderModel }) {
       <div className="mx-auto flex max-w-5xl flex-col gap-10 px-5 pt-12 pb-24 sm:px-8 sm:pt-16 sm:pb-28 md:flex-row md:items-end md:justify-between">
         <div className="min-w-0">
           {header.location && (
-            <p className="mb-5 inline-flex max-w-full items-center gap-1.5 rounded-full border-2 border-current px-3 py-1 text-xs font-bold tracking-widest uppercase">
+            <p className="mb-5 inline-flex max-w-full items-center gap-1.5 rounded-full border-2 border-current px-3 py-1 text-sm font-bold">
               <MapPin aria-hidden="true" className="size-3.5 shrink-0" />
               {header.location}
             </p>
@@ -121,7 +120,7 @@ function Header({ header }: { header: HeaderModel }) {
         </div>
         <Avatar
           avatar={header.avatar}
-          className="size-36 shrink-0 rotate-3 rounded-[2rem] border-4 border-current shadow-[8px_8px_0_0_rgb(0_0_0/0.22)] transition-transform duration-300 motion-safe:hover:rotate-0 sm:size-52"
+          className="size-36 shrink-0 rounded-[2rem] border-4 border-current sm:size-52"
           placeholderClassName="bg-on-accent text-5xl font-black text-accent sm:text-7xl"
         />
       </div>
@@ -231,7 +230,7 @@ function BlockBody({ block }: { block: Block }) {
               {project.href && (
                 <span
                   aria-hidden="true"
-                  className="mt-5 inline-flex items-center gap-1 text-sm font-black tracking-wide uppercase"
+                  className="mt-5 inline-flex items-center gap-1 text-sm font-black"
                 >
                   {block.ui.viewProject}
                   <ArrowUpRight className="rtl:-scale-x-100 size-5 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
@@ -338,7 +337,7 @@ function BlockBody({ block }: { block: Block }) {
             <li key={entry.id} className="min-w-0 border-s-4 border-accent ps-5">
               {entry.start && (
                 <p
-                  className={`${monoText} mb-2 inline-block bg-ink px-2 py-0.5 text-xs font-bold tracking-widest text-page uppercase tabular-nums`}
+                  className={`${monoText} mb-2 inline-block bg-ink px-2 py-0.5 text-xs font-bold text-page tabular-nums`}
                 >
                   <DateRange
                     start={entry.start}
@@ -356,7 +355,7 @@ function BlockBody({ block }: { block: Block }) {
                   roles={entry.roles}
                   className="mt-4 space-y-5 border-s-2 border-ink ps-4"
                   titleClassName="text-xl leading-tight font-black"
-                  datesClassName={`${monoText} text-xs font-bold tracking-widest text-muted uppercase tabular-nums`}
+                  datesClassName={`${monoText} text-xs font-bold text-muted tabular-nums`}
                   descriptionClassName="mt-2"
                 />
               )}
@@ -430,15 +429,12 @@ function Footer({ footer }: { footer: FooterModel }) {
 
 export default function CreativeTheme({ profile, idPrefix = '', view, nav }: ThemeProps) {
   const blocks = buildBlocks(profile, idPrefix, view);
-  const animate = !idPrefix;
   return (
     <ThemeWrapper theme="creative" profile={profile} nav={nav} className={fontClass}>
       <Header header={buildHeader(profile)} />
       <main id={`${idPrefix}main`} className="mx-auto max-w-5xl px-5 pb-20 sm:px-8">
-        {blocks.map((block, index) => (
-          <Reveal key={block.id} enabled={animate}>
-            <ThemeSection block={block} index={index} />
-          </Reveal>
+        {blocks.map((block) => (
+          <ThemeSection key={block.id} block={block} />
         ))}
         {blocks.length === 0 && (
           <EmptyPage
@@ -452,19 +448,23 @@ export default function CreativeTheme({ profile, idPrefix = '', view, nav }: The
   );
 }
 
-function ThemeSection({ block, index }: { block: Block; index: number }): ReactNode {
+// The big outlined number is this theme's one signature. It is on the work only, and says how many
+// projects there are.
+function ThemeSection({ block }: { block: Block }): ReactNode {
   return (
     <section
       aria-labelledby={block.id}
       className="grid gap-6 border-t-4 border-ink py-12 first:border-t-0 md:grid-cols-[14rem_minmax(0,1fr)] md:gap-10"
     >
       <div className="min-w-0 md:sticky md:top-[calc(2rem+var(--nav-h,0px))] md:self-start">
-        <span
-          aria-hidden="true"
-          className="block text-7xl leading-none font-black text-transparent [-webkit-text-stroke:2px_var(--text)] sm:text-8xl"
-        >
-          {String(index + 1).padStart(2, '0')}
-        </span>
+        {block.kind === 'projects' && (
+          <span
+            aria-hidden="true"
+            className="block text-7xl leading-none font-black text-transparent [-webkit-text-stroke:2px_var(--text)] sm:text-8xl"
+          >
+            {String(block.projects.length + block.rest.length).padStart(2, '0')}
+          </span>
+        )}
         <h2
           id={block.id}
           className="mt-2 text-3xl leading-tight font-black tracking-tight text-balance"

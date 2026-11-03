@@ -72,8 +72,4 @@
     transition-delay: 0s !important;
     scroll-behavior: auto !important;
   }
-  html[data-read-motion='reduce'] [data-reading] [data-reveal] {
-    opacity: 1 !important;
-    transform: none !important;
-  }
 }

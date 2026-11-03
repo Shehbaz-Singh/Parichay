@@ -117,7 +117,7 @@ const SM = ['', 'sm:col-span-1', 'sm:col-span-2'];
 
 function Heading({ id, children }: { id: string; children: ReactNode }) {
   return (
-    <h2 id={id} className="mb-4 text-xs font-semibold tracking-[0.14em] text-muted uppercase">
+    <h2 id={id} className="mb-4 text-sm font-semibold text-muted">
       {children}
     </h2>
   );
@@ -393,7 +393,7 @@ function blockTiles(block: Block): Tile[] {
       ];
     }
     case 'projects': {
-      const tiles: Tile[] = block.projects.map((project) => ({
+      const tiles: Tile[] = block.projects.map((project, position) => ({
         key: `${block.id}-${project.id}`,
         span: spanFor(len(project.name, project.description) + project.tags.length * 8, 2, 3),
         tone: 'plain',
@@ -402,7 +402,9 @@ function blockTiles(block: Block): Tile[] {
             aria-labelledby={`${block.id}-${project.id}`}
             className="flex h-full min-w-0 flex-col"
           >
-            <p className="mb-4 text-xs font-semibold tracking-[0.14em] text-muted uppercase">
+            {/* The section's heading is said once, on the first tile; the others carry it for screen
+                readers only, so every tile does not repeat a label. */}
+            <p className={position === 0 ? 'mb-4 text-sm font-semibold text-muted' : 'sr-only'}>
               {block.title}
             </p>
             <h2
@@ -648,7 +650,6 @@ export default function BentoTheme({
     all.map((tile) => (tile.span >= 4 ? 2 : 1)),
     2,
   );
-  const animate = !idPrefix;
   const empty = all.length === 2 && buildBlocks(profile, idPrefix, view).length === 0;
 
   return (
@@ -667,7 +668,7 @@ export default function BentoTheme({
                 key={tile.key}
                 data-tone={tile.tone}
                 style={{ '--i': i } as CSSProperties}
-                className={`bento-tile relative min-w-0 rounded-3xl border p-6 transition duration-300 motion-safe:hover:-translate-y-1 hover:shadow-raised sm:p-7 ${SM[sm[i]]} ${LG[lg[i]]} ${animate ? 'bento-in' : ''}`}
+                className={`bento-tile relative min-w-0 rounded-3xl border p-6 transition duration-300 hover:shadow-raised sm:p-7 ${SM[sm[i]]} ${LG[lg[i]]}`}
               >
                 {tile.node}
               </li>

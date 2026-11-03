@@ -194,21 +194,6 @@ button,
   --surface: color-mix(in srgb, var(--on-accent) 16%, transparent);
   --accent-fg: var(--on-accent);
 }
-/* Tiles rise in one after another (--i is the tile's position). Held back for people who prefer
-   less motion; `backwards` so the hover lift is not overridden once the entrance is over. */
-@media (prefers-reduced-motion: no-preference) {
-  @keyframes bento-in {
-    from {
-      opacity: 0;
-      transform: translateY(14px) scale(0.98);
-    }
-  }
-  .bento-in {
-    animation: bento-in 0.55s cubic-bezier(0.2, 0.7, 0.2, 1) backwards;
-    animation-delay: calc(min(var(--i, 0), 12) * 60ms);
-  }
-}
-
 /* Soft: a pastel page tinted from the accent (very little of it), white cards, a plum-gray text. */
 /* Executive: a document on a light gray desk. The sidebar is dark (tinted by the accent) and re-scopes
    the color variables, so text-ink and friends work inside it. In print everything is black on white. */
@@ -262,17 +247,6 @@ button,
   --muted: #5f5868;
   --border: color-mix(in srgb, var(--accent) 20%, #e9e2e6);
 }
-@media (prefers-reduced-motion: no-preference) {
-  @keyframes soft-float {
-    50% {
-      transform: translateY(-6px) rotate(3deg);
-    }
-  }
-  .soft-float {
-    animation: soft-float 9s ease-in-out infinite;
-  }
-}
-
 .theme-editorial {
   --bg: #faf8f4;
   --surface: #f0ece4;
@@ -399,8 +373,7 @@ main:focus {
 }
 
 /* Motion on the public pages. Only for people who have not asked for less: the header rises in
-   once, and a section that starts below the fold fades up as it scrolls into view (the Reveal
-   component sets data-reveal; without it, or without JavaScript, everything is simply there). */
+   once. Nothing else moves as you scroll. */
 @keyframes rise {
   from {
     opacity: 0;
@@ -414,17 +387,6 @@ main:focus {
 @media (prefers-reduced-motion: no-preference) {
   .rise-in {
     animation: rise 0.7s ease-out both;
-  }
-  [data-reveal='hidden'] {
-    opacity: 0;
-    transform: translateY(18px);
-  }
-  [data-reveal='shown'] {
-    opacity: 1;
-    transform: none;
-    transition:
-      opacity 0.7s ease-out,
-      transform 0.7s ease-out;
   }
 }
 
@@ -701,4 +663,16 @@ html:has(.dashboard-root)::-webkit-scrollbar-button,
 /* A split portfolio has a sticky navigation (SiteNav): links to #anchors and focus land below it. */
 html:has([data-sitenav]) {
   scroll-padding-top: 4rem;
+}
+
+/* Typographic details on every public page: headings break into even lines, paragraphs avoid a lone
+   last word, and numbers in dates line up. */
+[data-portfolio] :is(h1, h2, h3) {
+  text-wrap: balance;
+}
+[data-portfolio] p {
+  text-wrap: pretty;
+}
+[data-portfolio] time {
+  font-variant-numeric: tabular-nums;
 }

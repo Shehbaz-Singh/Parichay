@@ -31,7 +31,6 @@ import {
   FooterLines,
   MoreLinkView,
 } from './parts';
-import { Reveal } from './Reveal';
 import { ThemeWrapper } from './ThemeWrapper';
 import type { ThemeProps } from './types';
 
@@ -68,34 +67,24 @@ const focusRing =
   'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-fg';
 const link = `ed-underline text-accent-fg ${focusRing}`;
 
-function Section({
-  block,
-  animate,
-  children,
-}: {
-  block: Block;
-  animate: boolean;
-  children: ReactNode;
-}) {
+function Section({ block, children }: { block: Block; children: ReactNode }) {
   // On a wide screen the label sits in a left rail (and stays in view while you read the section)
   // and the content takes the rest, so the page uses the width instead of one narrow column.
   return (
-    <Reveal enabled={animate}>
-      <section
-        aria-labelledby={block.id}
-        className="mt-16 sm:mt-24 lg:grid lg:grid-cols-[12rem_minmax(0,1fr)] lg:gap-x-12 xl:grid-cols-[16rem_minmax(0,1fr)] xl:gap-x-20"
+    <section
+      aria-labelledby={block.id}
+      className="mt-16 sm:mt-24 lg:grid lg:grid-cols-[12rem_minmax(0,1fr)] lg:gap-x-12 xl:grid-cols-[16rem_minmax(0,1fr)] xl:gap-x-20"
+    >
+      <h2
+        id={block.id}
+        className={`${caps} mb-8 flex items-center gap-4 lg:sticky lg:top-[calc(2rem+var(--nav-h,0px))] lg:mb-0 lg:flex-col lg:items-start lg:gap-3 lg:self-start`}
       >
-        <h2
-          id={block.id}
-          className={`${caps} mb-8 flex items-center gap-4 lg:sticky lg:top-[calc(2rem+var(--nav-h,0px))] lg:mb-0 lg:flex-col lg:items-start lg:gap-3 lg:self-start`}
-        >
-          <span aria-hidden="true" className="h-px w-8 shrink-0 bg-accent" />
-          <span className="min-w-0">{block.title}</span>
-          <span aria-hidden="true" className="h-px min-w-6 flex-1 bg-line lg:hidden" />
-        </h2>
-        <div className="min-w-0">{children}</div>
-      </section>
-    </Reveal>
+        <span aria-hidden="true" className="h-px w-8 shrink-0 bg-accent" />
+        <span className="min-w-0">{block.title}</span>
+        <span aria-hidden="true" className="h-px min-w-6 flex-1 bg-line lg:hidden" />
+      </h2>
+      <div className="min-w-0">{children}</div>
+    </section>
   );
 }
 
@@ -452,7 +441,7 @@ export default function EditorialTheme({ profile, idPrefix = '', view, nav }: Th
       >
         <Masthead header={buildHeader(profile)} />
         {blocks.map((block) => (
-          <Section key={block.id} block={block} animate={!idPrefix}>
+          <Section key={block.id} block={block}>
             <BlockView block={block} />
           </Section>
         ))}

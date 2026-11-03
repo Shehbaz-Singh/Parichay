@@ -19,12 +19,13 @@ export function ReadMore({
   lines?: number;
   from?: number; // the length from which it is cut
 }) {
-  if (text.length < from) return <p className={`whitespace-pre-line ${className ?? ''}`}>{text}</p>;
+  if (text.length < from)
+    return <p className={`max-w-[68ch] whitespace-pre-line ${className ?? ''}`}>{text}</p>;
   const { readMore, readLess } = uiFor(locale).density;
   return (
     <ClampedText
       text={text}
-      className={`whitespace-pre-line ${className ?? ''}`}
+      className={`max-w-[68ch] whitespace-pre-line ${className ?? ''}`}
       more={readMore}
       less={readLess}
       lines={lines}

@@ -32,7 +32,6 @@ import {
   FooterLines,
   MoreLinkView,
 } from './parts';
-import { Reveal } from './Reveal';
 import { ThemeWrapper } from './ThemeWrapper';
 import type { ThemeProps } from './types';
 
@@ -66,7 +65,7 @@ const display = 'font-(family-name:--font-theme-display)';
 const focusRing =
   'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-fg';
 const card = 'rounded-[2rem] bg-surface shadow-[0_2px_0_0_var(--border)]';
-const lift = 'transition duration-300 motion-safe:hover:-translate-y-1 hover:shadow-raised';
+const lift = 'transition duration-300 hover:shadow-raised';
 
 // Tints of the accent, used in turn, so a row of pills or cards is colorful without a second hue.
 const TINTS = [
@@ -80,28 +79,11 @@ const EDGES = [
   'border-s-[color-mix(in_srgb,var(--accent)_35%,white)]',
 ];
 
-function Blob() {
-  return (
-    <svg
-      aria-hidden="true"
-      viewBox="0 0 200 200"
-      className="soft-float absolute -inset-5 -z-10 size-[calc(100%+2.5rem)] text-accent/25"
-    >
-      <path
-        fill="currentColor"
-        d="M44.7,-58.1C57.6,-48.6,67.3,-34.6,71.8,-18.9C76.3,-3.2,75.5,14.2,68.2,28.3C60.9,42.4,47.1,53.2,32,60.6C16.9,68,0.6,72,-16.1,70.1C-32.8,68.2,-49.9,60.4,-60.2,47.3C-70.5,34.2,-74,15.8,-72.2,-1.1C-70.4,-18,-63.3,-33.4,-52.2,-43.3C-41.1,-53.2,-26,-57.6,-10.5,-59.9C5,-62.2,31.8,-67.6,44.7,-58.1Z"
-        transform="translate(100 100)"
-      />
-    </svg>
-  );
-}
-
 function Header({ header }: { header: HeaderModel }) {
   const pill = `inline-flex max-w-full items-center gap-2 rounded-full border border-line bg-surface px-4 py-2 text-sm font-bold transition duration-200 hover:bg-page motion-safe:hover:-translate-y-0.5 ${focusRing}`;
   return (
     <header className="rise-in flex flex-col items-center gap-8 text-center sm:flex-row sm:gap-12 sm:text-start">
       <div className="relative isolate shrink-0">
-        <Blob />
         <Avatar
           avatar={header.avatar}
           className="size-40 rounded-full border-4 border-surface shadow-raised sm:size-52"
@@ -112,7 +94,7 @@ function Header({ header }: { header: HeaderModel }) {
         <h1
           className={`${display} text-[clamp(2.25rem,7vw,4rem)] leading-[1.08] font-semibold text-balance`}
         >
-          Hi, I’m {header.name}
+          {header.name}
         </h1>
         {header.tagline && (
           <p className="mt-4 text-xl leading-snug text-pretty text-muted sm:text-2xl">
@@ -165,28 +147,14 @@ function Header({ header }: { header: HeaderModel }) {
   );
 }
 
-function Section({
-  block,
-  animate,
-  children,
-}: {
-  block: Block;
-  animate: boolean;
-  children: ReactNode;
-}) {
+function Section({ block, children }: { block: Block; children: ReactNode }) {
   return (
-    <Reveal enabled={animate}>
-      <section aria-labelledby={block.id} className="mt-20 sm:mt-24">
-        <h2
-          id={block.id}
-          className={`${display} mb-8 flex items-center gap-4 text-3xl font-semibold text-balance`}
-        >
-          <span aria-hidden="true" className="h-3 w-10 shrink-0 rounded-full bg-accent" />
-          <span className="min-w-0">{block.title}</span>
-        </h2>
-        {children}
-      </section>
-    </Reveal>
+    <section aria-labelledby={block.id} className="mt-20 sm:mt-24">
+      <h2 id={block.id} className={`${display} mb-8 text-3xl font-semibold text-balance`}>
+        {block.title}
+      </h2>
+      {children}
+    </section>
   );
 }
 
@@ -491,7 +459,7 @@ export default function SoftTheme({ profile, idPrefix = '', view, nav }: ThemePr
       <main id={`${idPrefix}main`} className="mx-auto max-w-4xl px-5 py-12 sm:px-8 sm:py-20">
         <Header header={buildHeader(profile)} />
         {blocks.map((block) => (
-          <Section key={block.id} block={block} animate={!idPrefix}>
+          <Section key={block.id} block={block}>
             <BlockView block={block} />
           </Section>
         ))}
