@@ -1,4 +1,6 @@
 import type { ReactNode } from 'react';
+import { pageLabel } from '@/lib/pages';
+import Link from 'next/link';
 import { Bricolage_Grotesque, Space_Mono } from 'next/font/google';
 import { ArrowUpRight, MapPin } from 'lucide-react';
 import { ShareButton } from '../ShareButton';
@@ -30,7 +32,14 @@ import {
   TotalExperience,
   MoreLinkView,
   PageHeading,
+  ProjectCover,
+  ProjectVisit,
+  CtaView,
+  IdentityStrip,
+  isHeroProject,
 } from './parts';
+import { CreativePages } from './templates/CreativePages';
+import { pageView } from './templates/model';
 import { ThemeWrapper } from './ThemeWrapper';
 import type { ThemeProps } from './types';
 
@@ -191,23 +200,21 @@ function BlockBody({ block }: { block: Block }) {
           {items.map((project) => (
             <li
               key={project.id}
-              className={`group relative flex min-w-0 flex-col rounded-2xl border-2 border-ink bg-page p-6 shadow-[6px_6px_0_0_var(--accent)] transition-all duration-200 ${
-                project.href
-                  ? 'focus-within:-translate-x-0.5 focus-within:-translate-y-0.5 focus-within:shadow-[9px_9px_0_0_var(--accent)] motion-safe:hover:-translate-x-0.5 motion-safe:hover:-translate-y-0.5 hover:shadow-[9px_9px_0_0_var(--accent)]'
-                  : ''
-              }`}
+              className={`group relative flex min-w-0 flex-col rounded-2xl border-2 border-ink bg-page p-6 shadow-[6px_6px_0_0_var(--accent)] ${isHeroProject(block, project) ? 'lg:col-span-2' : ''} transition-all duration-200 focus-within:-translate-x-0.5 focus-within:-translate-y-0.5 focus-within:shadow-[9px_9px_0_0_var(--accent)] motion-safe:hover:-translate-x-0.5 motion-safe:hover:-translate-y-0.5 hover:shadow-[9px_9px_0_0_var(--accent)]`}
             >
-              <h3 className="text-2xl leading-tight font-black">
-                {project.href ? (
-                  <NewTabLink
-                    href={project.href}
-                    className={`after:absolute after:inset-0 after:rounded-2xl ${focusRing}`}
-                  >
-                    {project.name}
-                  </NewTabLink>
-                ) : (
-                  project.name
-                )}
+              <ProjectCover
+                project={project}
+                className={`mb-4 w-full rounded-lg border-2 border-ink object-cover ${isHeroProject(block, project) ? 'aspect-[21/9]' : 'aspect-[40/21]'}`}
+              />
+              <h3
+                className={`leading-tight font-black ${isHeroProject(block, project) ? 'text-4xl sm:text-5xl' : 'text-2xl'}`}
+              >
+                <Link
+                  href={project.detailHref}
+                  className={`after:absolute after:inset-0 after:rounded-2xl ${focusRing}`}
+                >
+                  {project.name}
+                </Link>
               </h3>
               {project.description && (
                 <ReadMore
@@ -228,15 +235,13 @@ function BlockBody({ block }: { block: Block }) {
                   ))}
                 </ul>
               )}
-              {project.href && (
-                <span
-                  aria-hidden="true"
-                  className="mt-5 inline-flex items-center gap-1 text-sm font-black"
-                >
-                  {block.ui.viewProject}
-                  <ArrowUpRight className="rtl:-scale-x-100 size-5 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
-                </span>
-              )}
+              <ProjectVisit
+                project={project}
+                label={block.ui.viewProject}
+                className={`inline-flex items-center gap-1 text-sm font-black underline underline-offset-4 hover:no-underline ${focusRing}`}
+              >
+                <ArrowUpRight aria-hidden="true" className="rtl:-scale-x-100 size-5" />
+              </ProjectVisit>
             </li>
           ))}
         </ul>
@@ -320,6 +325,13 @@ function BlockBody({ block }: { block: Block }) {
         </>
       );
     }
+    case 'cta':
+      return (
+        <CtaView
+          block={block}
+          linkClassName={`inline-flex items-center gap-2 rounded-full border-2 border-ink bg-ink px-5 py-2 font-bold text-page transition motion-safe:hover:-translate-y-0.5 ${focusRing}`}
+        />
+      );
     case 'contact':
       return (
         <div className="max-w-xl print:hidden">
@@ -429,24 +441,71 @@ function Footer({ footer }: { footer: FooterModel }) {
 export default function CreativeTheme({
   profile,
   idPrefix = '',
-  view,
+  page,
   nav,
   heading,
-  projectId,
+  lead,
+  project,
+  contact,
 }: ThemeProps) {
-  const blocks = buildBlocks(profile, idPrefix, view, projectId);
+  // A multi-page portfolio (and a project page in either mode) is drawn by the page templates.
+  const view = pageView(profile, { page, project, contact });
+  if (view) {
+    return (
+      <CreativePages
+        profile={profile}
+        view={view}
+        nav={nav}
+        idPrefix={idPrefix}
+        fontClass={fontClass}
+        hero={<Header header={buildHeader(profile)} />}
+        footer={<Footer footer={buildFooter(profile)} />}
+        renderBlock={(block) => <BlockView block={block} />}
+      />
+    );
+  }
+  const blocks = buildBlocks(profile, idPrefix, page);
+  const identity =
+    heading && !lead && page && (page.key === 'work' || page.key === 'about') ? (
+      <IdentityStrip
+        header={buildHeader(profile)}
+        full={page.key === 'about'}
+        wrapClassName="mt-8 flex items-center gap-5 border-b-4 border-ink pb-8"
+        avatarClassName="size-20 shrink-0 rounded-2xl border-2 border-ink sm:size-28"
+        placeholderClassName={`bg-accent-soft text-3xl font-black text-ink`}
+        nameClassName={`text-2xl font-black`}
+        taglineClassName="mt-1 text-lg font-bold text-muted"
+        metaClassName="mt-1 text-sm font-bold text-muted"
+        pillClassName={`inline-flex items-center gap-2 rounded-full border-2 border-ink px-4 py-1.5 text-sm font-bold transition hover:bg-ink hover:text-page ${focusRing}`}
+        badgeClassName="mt-3 text-sm font-bold"
+        badgeDotClassName="bg-accent"
+        badgeLinkClassName={`font-black underline underline-offset-4 hover:no-underline ${focusRing}`}
+      />
+    ) : null;
+  const inner = !!heading || !!lead;
   return (
     <ThemeWrapper theme="creative" profile={profile} nav={nav} className={fontClass}>
-      {!heading && <Header header={buildHeader(profile)} />}
+      {!inner && <Header header={buildHeader(profile)} />}
       <main
         id={`${idPrefix}main`}
-        className={`mx-auto max-w-5xl px-5 pb-20 sm:px-8 ${heading ? 'pt-6' : ''}`}
+        className={`mx-auto max-w-5xl px-5 pb-20 sm:px-8 ${inner ? 'pt-6' : ''}`}
       >
-        {heading && <PageHeading heading={heading} />}
+        {lead ??
+          (heading && (
+            <PageHeading
+              heading={heading}
+              title={page ? pageLabel(profile, page) : undefined}
+              kicker={profile.fullName}
+              wrapClassName="border-b-4 border-ink py-10 sm:py-14"
+              kickerClassName={`mb-3 inline-block rounded-md bg-accent-soft px-2 py-0.5 text-sm font-black text-accent-fg`}
+              className={`text-[clamp(3.5rem,13vw,9rem)] leading-[0.9] font-black tracking-tighter text-balance`}
+            />
+          ))}
+        {identity}
         {blocks.map((block) => (
           <ThemeSection key={block.id} block={block} />
         ))}
-        {blocks.length === 0 && (
+        {blocks.length === 0 && !lead && (
           <EmptyPage
             text={uiFor(profile.locale).emptyPage}
             className="py-16 text-2xl font-black text-balance sm:text-3xl"
@@ -472,7 +531,7 @@ function ThemeSection({ block }: { block: Block }): ReactNode {
             aria-hidden="true"
             className="block text-7xl leading-none font-black text-transparent [-webkit-text-stroke:2px_var(--text)] sm:text-8xl"
           >
-            {String(block.projects.length + block.rest.length).padStart(2, '0')}
+            {String(block.total).padStart(2, '0')}
           </span>
         )}
         <h2

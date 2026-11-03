@@ -4,6 +4,8 @@ import { CUSTOM_DESCRIPTION_MAX, CUSTOM_SUBTITLE_MAX, CUSTOM_TITLE_MAX } from '.
 import { CONTACT_INTRO_MAX } from './contact';
 import { LINK_BIO_LABEL_MAX } from './link-bio';
 import { LOCALE_CODES } from './languages';
+import { CUSTOM_PAGE_BODY_MAX, PAGE_TITLE_MAX } from './pages';
+import { IMAGE_ALT_MAX } from './portfolio';
 import { POST_BODY_MAX, POST_EXCERPT_MAX, POST_TITLE_MAX } from './posts';
 import { SECTION_TITLE_MAX } from './section-config';
 import { SHARE_MESSAGE_MAX } from './share';
@@ -25,6 +27,9 @@ export const TRANSLATABLE_ENTITIES = [
   'customItem',
   'post',
   'linkBioLink', // a custom button of the link-in-bio card; the address is shared by all languages
+  'page', // the name of a built-in page; entityId is the page key
+  'customPage', // a page the owner made: its title and text
+  'projectImage', // the alt text of a gallery image
 ] as const;
 export const translatableEntitySchema = z.enum(TRANSLATABLE_ENTITIES);
 export type TranslatableEntity = z.infer<typeof translatableEntitySchema>;
@@ -51,7 +56,7 @@ export const TRANSLATABLE: Record<TranslatableEntity, Record<string, Translatabl
   section: { title: line(SECTION_TITLE_MAX) },
   experience: { title: line(100), description: block(3000) },
   education: { degree: line(150) },
-  project: { name: line(100), description: block(3000) },
+  project: { name: line(100), description: block(3000), coverAlt: line(IMAGE_ALT_MAX, false) },
   skill: { name: line(60, false) },
   customSection: { title: line(CUSTOM_TITLE_MAX) },
   customItem: {
@@ -65,6 +70,9 @@ export const TRANSLATABLE: Record<TranslatableEntity, Record<string, Translatabl
     body: block(POST_BODY_MAX),
   },
   linkBioLink: { label: line(LINK_BIO_LABEL_MAX) },
+  page: { title: line(PAGE_TITLE_MAX, false) },
+  customPage: { title: line(PAGE_TITLE_MAX), body: block(CUSTOM_PAGE_BODY_MAX) },
+  projectImage: { alt: line(IMAGE_ALT_MAX, false) },
 };
 
 export const fieldRule = (entity: TranslatableEntity, field: string) =>

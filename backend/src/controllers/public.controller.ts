@@ -109,6 +109,11 @@ export const getSitemapPosts = asyncHandler(async (_req, res) => {
   res.json(await publicService.getPostsForSitemap());
 });
 
+export const getSitemapPages = asyncHandler(async (_req, res) => {
+  res.set('Cache-Control', CACHE_CONTROL);
+  res.json(await publicService.getPagesForSitemap());
+});
+
 export const getSitemapLocales = asyncHandler(async (_req, res) => {
   res.set('Cache-Control', CACHE_CONTROL);
   res.json(await publicService.getLocalesForSitemap());

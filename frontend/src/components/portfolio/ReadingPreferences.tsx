@@ -65,14 +65,20 @@ const GROUPS: {
 // are made and are kept in this browser only (lib/reading-prefs.ts). The dialog is the app's modal
 // <dialog>: the page behind it is inert, Tab stays inside, Escape closes it, and focus returns to
 // this button. The radios are native, so the arrow keys move within a group.
-export function ReadingPreferences({ ui }: { ui: Text }) {
+export function ReadingPreferences({
+  ui,
+  triggerClassName,
+}: {
+  ui: Text;
+  // The button's own look, for a place that is not the strip (the navigation of a multi-page portfolio).
+  triggerClassName?: string;
+}) {
   const [open, setOpen] = useState(false);
   const prefs = useSyncExternalStore(subscribePrefs, getPrefs, getServerPrefs);
   const id = useId();
 
   // The pre-paint script has set the attributes already; this keeps them right after a client-side
-  // navigation, and takes them off again when the visitor leaves the public pages (the dashboard
-  // must not get them).
+  // navigation, and takes them off again when the visitor leaves the public pages
   useEffect(() => {
     applyPrefs(getPrefs());
     return clearPrefs;
@@ -86,7 +92,10 @@ export function ReadingPreferences({ ui }: { ui: Text }) {
         type="button"
         onClick={() => setOpen(true)}
         aria-haspopup="dialog"
-        className="inline-flex items-center gap-1.5 rounded border border-[#d8cdbd] bg-white/60 px-2.5 py-1 text-[#7f301a] hover:bg-white focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-[#9e3d21]"
+        className={
+          triggerClassName ??
+          'inline-flex items-center gap-1.5 rounded border border-[#d8cdbd] bg-white/60 px-2.5 py-1 text-[#7f301a] hover:bg-white focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-[#9e3d21]'
+        }
       >
         <ALargeSmall aria-hidden="true" className="size-4" />
         {ui.button}

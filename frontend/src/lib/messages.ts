@@ -60,6 +60,16 @@ export const NOTICES = {
   signatureHtmlCopied: 'Copied the HTML code.',
   signatureTextCopied: 'Copied the plain text version.',
   signatureDownloaded: 'Downloaded the signature as an .html file.',
+  pageAdded: 'Page added. Put sections on it below, and it appears in your navigation.',
+  pageSaved: 'Page saved.',
+  pageDeleted: 'Page deleted. Its sections moved back to the standard pages.',
+  layoutMulti: 'Your portfolio is now a site of pages.',
+  layoutSingle: 'Your portfolio is one page again. Your page settings are kept.',
+  splitApplied: 'Sections arranged into pages. Adjust them below.',
+  projectCoverSaved: 'Cover image saved.',
+  projectCoverRemoved: 'Cover image removed.',
+  projectImageAdded: 'Image added to the gallery.',
+  projectImageRemoved: 'Image removed from the gallery.',
 } as const;
 
 export const PROBLEMS = {
@@ -85,6 +95,8 @@ export const PROBLEMS = {
   sectionTitle: 'Enter a title (up to 80 characters).',
   passwordsDiffer: 'Those two passwords are different. Type the new one the same way twice.',
   saveFailed: 'We couldn’t save. Your changes are still here',
+  imageOrderNotSaved: (reason: string) => `Couldn't save the new image order. ${reason}`,
+  altNotSaved: (reason: string) => `Couldn't save the image description. ${reason}`,
 } as const;
 
 export const CONFIRMS = {
@@ -99,6 +111,12 @@ export const CONFIRMS = {
     `The message from ${name} will be deleted for good. This cannot be undone.`,
   reportSpam: (name: string) =>
     `The message from ${name} will be deleted for good, as spam. This cannot be undone.`,
+  switchToMulti:
+    'Your portfolio becomes a short Home page plus a page for your work, one for your story and any you add. Your sections and everything you wrote stay as they are. Links keep working: an old link to a section such as /name#projects takes visitors to the right page. You can switch back at any time and nothing is lost.',
+  switchToSingle:
+    'Your portfolio goes back to one long page with every section on it. Your page settings are kept, so switching to pages again brings the same arrangement back. Links keep working: the page addresses send visitors to the matching section of your page, and your project pages stay.',
+  deleteCustomPage: (title: string) =>
+    `“${title}” will be deleted, and its text with it. Sections on it move back to the standard pages. This can’t be undone.`,
   deletePost: (title: string) =>
     `“${title}” will be removed for good, along with its cover image. This can’t be undone.`,
 } as const;

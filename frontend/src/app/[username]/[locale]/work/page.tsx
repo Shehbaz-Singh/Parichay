@@ -1,5 +1,5 @@
-import type { Metadata } from 'next';
-import { WorkView, workMetadata } from '@/components/portfolio/inner-pages';
+import type { Metadata, Viewport } from 'next';
+import { WorkView, workMetadata, pageViewport } from '@/components/portfolio/inner-pages';
 import { localeParams } from '@/lib/route-locale';
 
 type Props = { params: Promise<{ username: string; locale: string }> };
@@ -9,7 +9,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return workMetadata(username, locale);
 }
 
-export default async function LocaleWorkPage({ params }: Props) {
+export async function generateViewport({ params }: Props): Promise<Viewport> {
+  const { username, locale } = await localeParams(params);
+  return pageViewport(username, locale);
+}
+
+export default async function LocalePage({ params }: Props) {
   const { username, locale } = await localeParams(params);
   return <WorkView username={username} locale={locale} />;
 }

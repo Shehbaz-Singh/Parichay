@@ -14,10 +14,14 @@ export function LanguageSwitcher({
   links,
   current,
   label,
+  inNav = false,
 }: {
   links: LanguageLink[];
   current: string;
   label: string;
+  // In the navigation of a multi-page portfolio: the theme's own colors, and the current language is
+  // underlined as well as bold, so it does not rely on color.
+  inNav?: boolean;
 }) {
   return (
     <nav aria-label={label}>
@@ -33,7 +37,11 @@ export function LanguageSwitcher({
                 hrefLang={code}
                 dir={language.dir}
                 aria-current={active ? 'page' : undefined}
-                className={`inline-block rounded px-2.5 py-1 focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-[#9e3d21] ${active ? 'bg-[#1f1a17] font-semibold text-[#fbf7f0]' : 'text-[#7f301a] underline underline-offset-2 hover:no-underline'}`}
+                className={
+                  inNav
+                    ? `inline-block min-h-6 rounded px-2 py-1 underline-offset-4 focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-accent-fg ${active ? 'font-semibold underline decoration-2' : 'hover:underline'}`
+                    : `inline-block rounded px-2.5 py-1 focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-[#9e3d21] ${active ? 'bg-[#1f1a17] font-semibold text-[#fbf7f0]' : 'text-[#7f301a] underline underline-offset-2 hover:no-underline'}`
+                }
               >
                 {language.nativeName}
               </Link>

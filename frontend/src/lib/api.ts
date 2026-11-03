@@ -90,3 +90,15 @@ export const getSitemapPosts = () =>
 // Which published profiles offer other languages, and which ones are ready, for the sitemap.
 export const getSitemapLocales = () =>
   fetchSitemapList('_locales', z.object({ username: z.string(), locales: z.array(z.string()) }));
+
+// The pages of the profiles that asked to be in the sitemap (opt-in), and their projects. Each path is
+// under /<username> in the default language: "" is the profile itself, "/work", "/p/speaking".
+export const getSitemapPages = () =>
+  fetchSitemapList(
+    '_pages',
+    z.object({
+      username: z.string(),
+      paths: z.array(z.string()),
+      projects: z.array(z.string()),
+    }),
+  );

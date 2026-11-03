@@ -1,4 +1,6 @@
 import type { ReactNode } from 'react';
+import { pageLabel } from '@/lib/pages';
+import Link from 'next/link';
 import { Fraunces, Nunito_Sans } from 'next/font/google';
 import { ArrowUpRight, MapPin } from 'lucide-react';
 import { ShareButton } from '../ShareButton';
@@ -32,8 +34,15 @@ import {
   FooterLines,
   MoreLinkView,
   PageHeading,
+  ProjectCover,
+  ProjectVisit,
+  CtaView,
+  IdentityStrip,
+  isHeroProject,
 } from './parts';
 import { ThemeWrapper } from './ThemeWrapper';
+import { SoftPages } from './templates/SoftPages';
+import { pageView } from './templates/model';
 import type { ThemeProps } from './types';
 
 // Warm and calm. A centered introduction (a big round photo, the name, one line), then one narrow
@@ -196,18 +205,23 @@ function BlockBody({ block }: { block: Block }) {
       const listProjects = (items: typeof block.projects) => (
         <ul className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {items.map((project) => (
-            <li key={project.id} className={`${card} group relative flex min-w-0 flex-col p-5`}>
-              <h3 className={`${display} text-xl leading-snug font-medium`}>
-                {project.href ? (
-                  <NewTabLink
-                    href={project.href}
-                    className={`underline decoration-line underline-offset-4 group-hover:decoration-current after:absolute after:inset-0 after:rounded-3xl ${focusRing}`}
-                  >
-                    {project.name}
-                  </NewTabLink>
-                ) : (
-                  project.name
-                )}
+            <li
+              key={project.id}
+              className={`${card} group relative flex min-w-0 flex-col p-5 ${isHeroProject(block, project) ? 'md:col-span-2 lg:col-span-3 md:p-7' : ''}`}
+            >
+              <ProjectCover
+                project={project}
+                className={`mb-4 w-full rounded-2xl object-cover ${isHeroProject(block, project) ? 'aspect-[21/9]' : 'aspect-[40/21]'}`}
+              />
+              <h3
+                className={`${display} leading-snug font-medium ${isHeroProject(block, project) ? 'text-3xl' : 'text-xl'}`}
+              >
+                <Link
+                  href={project.detailHref}
+                  className={`underline decoration-line underline-offset-4 group-hover:decoration-current after:absolute after:inset-0 after:rounded-3xl ${focusRing}`}
+                >
+                  {project.name}
+                </Link>
               </h3>
               {project.description && (
                 <ReadMore
@@ -219,6 +233,11 @@ function BlockBody({ block }: { block: Block }) {
               {project.tags.length > 0 && (
                 <p className="mt-4 text-sm text-muted">{project.tags.join(' · ')}</p>
               )}
+              <ProjectVisit
+                project={project}
+                label={block.ui.viewProject}
+                className={`inline-flex items-center gap-1 text-sm font-bold text-accent-fg underline underline-offset-4 hover:no-underline ${focusRing}`}
+              />
             </li>
           ))}
         </ul>
@@ -302,6 +321,13 @@ function BlockBody({ block }: { block: Block }) {
         </>
       );
     }
+    case 'cta':
+      return (
+        <CtaView
+          block={block}
+          linkClassName={`inline-flex items-center gap-2 rounded-full bg-ink px-6 py-2.5 text-sm font-bold text-page transition-opacity duration-200 hover:opacity-90 ${focusRing}`}
+        />
+      );
     case 'contact':
       return (
         <div className="max-w-xl print:hidden">
@@ -405,22 +431,71 @@ function Footer({ footer }: { footer: FooterModel }) {
 export default function SoftTheme({
   profile,
   idPrefix = '',
-  view,
+  page,
   nav,
   heading,
-  projectId,
+  lead,
+  project,
+  contact,
 }: ThemeProps) {
-  const blocks = buildBlocks(profile, idPrefix, view, projectId);
+  // A multi-page portfolio's pages (and a project's page) have templates of their own.
+  const view = pageView(profile, { page, project, contact });
+  if (view) {
+    return (
+      <SoftPages
+        profile={profile}
+        view={view}
+        nav={nav}
+        idPrefix={idPrefix}
+        fontClass={fontClass}
+        renderBlock={(block) => <BlockView block={block} />}
+        Section={Section}
+        hero={<Header header={buildHeader(profile)} />}
+        footer={<Footer footer={buildFooter(profile)} />}
+      />
+    );
+  }
+  const blocks = buildBlocks(profile, idPrefix, page);
+  const identity =
+    heading && !lead && page && (page.key === 'work' || page.key === 'about') ? (
+      <IdentityStrip
+        header={buildHeader(profile)}
+        full={page.key === 'about'}
+        wrapClassName="mx-auto mt-6 mb-4 flex max-w-2xl flex-col items-center gap-4 text-center sm:flex-row sm:gap-6 sm:text-start"
+        avatarClassName="size-24 shrink-0 rounded-full ring-4 ring-surface sm:size-28"
+        placeholderClassName={`${display} bg-accent-soft text-4xl font-medium text-ink`}
+        nameClassName={`${display} text-xl font-medium`}
+        taglineClassName="mt-1 text-lg leading-snug text-muted"
+        metaClassName="mt-2 text-sm text-muted"
+        pillClassName={`inline-flex max-w-full items-center gap-2 rounded-full border border-line bg-surface px-4 py-2 text-sm font-semibold transition-colors duration-200 hover:bg-accent-soft ${focusRing}`}
+        badgeClassName="mt-3 max-w-xl justify-center rounded-3xl bg-accent-soft px-4 py-2 text-start text-sm text-ink sm:justify-start"
+        badgeDotClassName="bg-accent-fg"
+        badgeLinkClassName={`font-bold text-accent-fg underline underline-offset-2 hover:no-underline ${focusRing}`}
+      />
+    ) : null;
   return (
     <ThemeWrapper theme="soft" profile={profile} nav={nav} className={fontClass}>
       <main id={`${idPrefix}main`} className="mx-auto max-w-5xl px-5 py-8 sm:px-8 sm:py-12">
-        {heading ? <PageHeading heading={heading} /> : <Header header={buildHeader(profile)} />}
+        {lead ??
+          (heading ? (
+            <PageHeading
+              heading={heading}
+              title={page ? pageLabel(profile, page) : undefined}
+              kicker={profile.fullName}
+              wrapClassName="mb-2 text-center sm:mb-4"
+              kickerClassName="mb-3 text-sm text-muted"
+              className={`${display} text-[clamp(2.25rem,7vw,3.75rem)] leading-[1.1] font-medium text-balance`}
+            />
+          ) : (
+            <Header header={buildHeader(profile)} />
+          ))}
+        {identity}
         {blocks.map((block) => (
           <Section key={block.id} block={block}>
             <BlockView block={block} />
           </Section>
         ))}
-        {blocks.length === 0 && (
+        {blocks.length === 0 && !lead && (
           <EmptyPage
             text={uiFor(profile.locale).emptyPage}
             className="mt-16 text-center text-muted"

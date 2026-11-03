@@ -10,7 +10,9 @@ import {
   myTestimonials,
   orderedList,
   profileSelect,
+  projectList,
 } from '../lib/selects';
+import { withPages } from './page-layout.service';
 import { withSections } from './section-layout.service';
 import { assertSlugAvailable, slugTaken } from './slug.service';
 import { ERRORS } from '../lib/messages';
@@ -20,10 +22,14 @@ import { ownProfile } from '../lib/profile';
 const fullProfileSelect = {
   ...profileSelect,
   sectionConfig: true,
+  customPages: {
+    select: { id: true, slug: true, title: true, body: true },
+    orderBy: [{ createdAt: 'asc' }, { id: 'asc' }],
+  },
   links: orderedList,
   skills: orderedList,
   experience: orderedList,
-  projects: orderedList,
+  projects: projectList,
   education: orderedList,
   customSections: {
     select: { id: true, title: true, visible: true, order: true, items: customItems },
@@ -36,7 +42,7 @@ const fullProfileSelect = {
 
 export async function getProfile(profileId: string) {
   const profile = await ownProfile(profileId, fullProfileSelect);
-  return withSections(profile);
+  return withPages(withSections(profile));
 }
 
 // The "Working together" card has to make sense before it is saved: it needs a time zone to be of
@@ -73,12 +79,14 @@ export async function updateProfile(profileId: string, input: ProfileUpdateInput
   await assertWorkCard(profileId, input);
 
   try {
-    return withSections(
-      await prisma.profile.update({
-        where: { id: profileId },
-        data: { ...fields, ...(slug && { slug }) },
-        select: fullProfileSelect,
-      }),
+    return withPages(
+      withSections(
+        await prisma.profile.update({
+          where: { id: profileId },
+          data: { ...fields, ...(slug && { slug }) },
+          select: fullProfileSelect,
+        }),
+      ),
     );
   } catch (err) {
     // Someone else claimed the slug between the check and the update.

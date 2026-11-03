@@ -68,3 +68,14 @@ export const coverUpload = singleFileUpload({
   sizeMessage: ERRORS.imageTooLarge,
   invalidMessage: ERRORS.sendCover,
 });
+
+// One image in the "image" field, up to 2 MB (the same limits as the avatar), into req.file: a project's
+// gallery image.
+export const imageUpload = singleFileUpload({
+  field: 'image',
+  maxBytes: IMAGE_MAX_BYTES,
+  allowedTypes: [...IMAGE_TYPES],
+  typeMessage: ERRORS.imageTypes,
+  sizeMessage: ERRORS.imageTooLarge,
+  invalidMessage: ERRORS.sendImage,
+});

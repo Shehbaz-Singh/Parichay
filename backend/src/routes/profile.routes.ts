@@ -4,6 +4,7 @@ import {
   contactListQuerySchema,
   contactSettingsSchema,
   contactStatusUpdateSchema,
+  customPageInputSchema,
   customItemInputSchema,
   customSectionInputSchema,
   postInputSchema,
@@ -11,6 +12,8 @@ import {
   publishSchema,
   reorderSchema,
   languageSettingsSchema,
+  pagesUpdateSchema,
+  projectImageInputSchema,
   linkBioButtonInputSchema,
   linkBioSettingsSchema,
   sectionsUpdateSchema,
@@ -31,6 +34,20 @@ import {
   updateCustomItem,
   updateCustomSection,
 } from '../controllers/custom-section.controller';
+import {
+  createCustomPage,
+  deleteCustomPage,
+  deleteProjectCover,
+  deleteProjectImage,
+  getMyPages,
+  listCustomPages,
+  reorderProjectImages,
+  updateCustomPage,
+  updateMyPages,
+  updateProjectImage,
+  uploadProjectCover,
+  uploadProjectImage,
+} from '../controllers/page.controller';
 import {
   createLinkBioButton,
   deleteLinkBioButton,
@@ -96,7 +113,7 @@ import {
 } from '../controllers/translation.controller';
 import { requireAuth } from '../middleware/auth';
 import { resumeLimiter, uploadLimiter } from '../middleware/rate-limit';
-import { avatarUpload, coverUpload, resumeUpload } from '../middleware/upload';
+import { avatarUpload, coverUpload, imageUpload, resumeUpload } from '../middleware/upload';
 import { sectionParam, validateSectionBody } from '../middleware/section';
 import { validateBody, validateQuery } from '../middleware/validate';
 
@@ -122,6 +139,29 @@ profileRouter.post('/me/resume', resumeLimiter, resumeUpload, parseMyResume);
 // /me/:section like the others, so "sections" is not read as a section name.
 profileRouter.get('/me/sections', getMySections);
 profileRouter.put('/me/sections', validateBody(sectionsUpdateSchema), updateMySections);
+
+// Multi-page mode: the layout switch with the page list, the pages the owner made, and a project's
+// cover and gallery. Declared before /me/:section like the others.
+profileRouter.get('/me/pages', getMyPages);
+profileRouter.put('/me/pages', validateBody(pagesUpdateSchema), updateMyPages);
+profileRouter.get('/me/custom-pages', listCustomPages);
+profileRouter.post('/me/custom-pages', validateBody(customPageInputSchema), createCustomPage);
+profileRouter.put('/me/custom-pages/:id', validateBody(customPageInputSchema), updateCustomPage);
+profileRouter.delete('/me/custom-pages/:id', deleteCustomPage);
+profileRouter.post('/me/projects/:id/cover', uploadLimiter, coverUpload, uploadProjectCover);
+profileRouter.delete('/me/projects/:id/cover', deleteProjectCover);
+profileRouter.post('/me/projects/:id/images', uploadLimiter, imageUpload, uploadProjectImage);
+profileRouter.patch(
+  '/me/projects/:id/images/reorder',
+  validateBody(reorderSchema),
+  reorderProjectImages,
+);
+profileRouter.put(
+  '/me/projects/:id/images/:imageId',
+  validateBody(projectImageInputSchema),
+  updateProjectImage,
+);
+profileRouter.delete('/me/projects/:id/images/:imageId', deleteProjectImage);
 
 // Sections the user made up, and their items. Also declared before /me/:section. The items'
 // reorder route comes before /items/:itemId so "reorder" is not read as an item id.

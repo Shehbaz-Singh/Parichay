@@ -3,6 +3,12 @@ import { availabilityStatusSchema } from './availability';
 import { publicContactFormSchema } from './contact';
 import { myLinkBioButtonSchema } from './link-bio';
 import { linkTypeSchema, profileSchema } from './portfolio';
+import {
+  myCustomPageSchema,
+  pageConfigSchema,
+  publicPageSchema,
+  normalizePageConfig,
+} from './pages';
 import { myPostSummarySchema, publicPostSummarySchema } from './posts';
 import { myTestimonialSchema, publicTestimonialSchema } from './testimonials';
 import { preferredContactSchema, replyTimeSchema, workingHoursSchema } from './work-card';
@@ -45,9 +51,24 @@ export const publicExperienceSchema = z.object({
   order: z.number(),
 });
 
+// A gallery image of a project. The size is there so the page can reserve the space before it loads.
+export const publicProjectImageSchema = z.object({
+  id: z.string(),
+  url: z.string(),
+  alt: z.string().nullable(),
+  width: z.number(),
+  height: z.number(),
+  order: z.number(),
+});
+
 export const publicProjectSchema = z.object({
   id: z.string(),
   slug: z.string(),
+  coverUrl: z.string().nullable().default(null),
+  coverAlt: z.string().nullable().default(null),
+  coverWidth: z.number().nullable().default(null),
+  coverHeight: z.number().nullable().default(null),
+  images: z.array(publicProjectImageSchema).default([]),
   name: z.string(),
   url: z.string().nullable(),
   description: z.string(),
@@ -103,6 +124,8 @@ export const publicProfileSchema = profileSchema
   .omit({
     id: true,
     published: true,
+    pageConfig: true,
+    sitemapListed: true,
     availabilityEnabled: true,
     availabilityStatus: true,
     availabilityMessage: true,
@@ -139,6 +162,9 @@ export const publicProfileSchema = profileSchema
     // The language this response is in (one of `locales`, or the default). `locales` here lists only
     // the extra languages that are ready for visitors.
     locale: z.string().default('en'),
+    // Multi mode only: the pages that exist for a visitor, in navigation order (Home first). Empty in
+    // single mode.
+    pages: z.array(publicPageSchema).default([]),
     sections: z.array(publicSectionSchema).default(() => SECTION_KEYS.map((key) => ({ key }))),
     // The visible custom sections that have items, in page order. Each has an entry in `sections`.
     customSections: z.array(publicCustomSectionSchema).default([]),
@@ -156,6 +182,9 @@ export const publicProfileSchema = profileSchema
 // The body of GET /profile/me: what the editor needs. Unlike the public view it keeps the
 // profile id and published flag, and hidden links (with their visible flag).
 export const myProfileSchema = profileSchema.extend({
+  // The page list of multi mode, complete (hidden pages included), and the pages the owner made.
+  pageConfig: pageConfigSchema.default(() => normalizePageConfig([])),
+  customPages: z.array(myCustomPageSchema).default([]),
   // All sections, hidden ones included, in page order (GET/PUT /profile/me/sections).
   sectionConfig: sectionConfigSchema.default(defaultSectionConfig),
   customSections: z.array(myCustomSectionSchema).default([]),

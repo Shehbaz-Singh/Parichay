@@ -56,6 +56,11 @@ enum PostStatus {
   published
 }
 
+enum LayoutMode {
+  single
+  multi
+}
+
 enum LinkType {
   linkedin
   github
@@ -120,6 +125,13 @@ model Profile {
   linkBioShowResume   Boolean            @default(true)
   linkBioShowShare    Boolean            @default(true)
   linkBioShowWork     Boolean            @default(true)
+  // One long page, or a site of pages (shared/src/pages.ts). In multi mode pageConfig holds the pages:
+  // which are shown, their names and order, and which sections each takes. Single mode ignores it, so
+  // switching back and forth loses nothing.
+  layoutMode          LayoutMode         @default(single)
+  pageConfig          Json               @default("[]")
+  // Whether the sitemap lists this profile's pages (search engines find them). Off until the owner opts in.
+  sitemapListed       Boolean            @default(false)
   defaultLocale       String             @default("en")
   locales             String[]           @default([])
   // Whether visitors may submit testimonials (POST /public/:slug/testimonials).
@@ -139,6 +151,7 @@ model Profile {
   projects        Project[]
   education       Education[]
   customSections  CustomSection[]
+  customPages     CustomPage[]
   testimonials    Testimonial[]
   contactMessages ContactMessage[]
   linkBioLinks    LinkBioLink[]
@@ -197,12 +210,34 @@ model Project {
   techTags    String[]
   // Chosen by the owner to lead the public page (at most FEATURED_PROJECTS_MAX).
   featured    Boolean  @default(false)
+  // The cover image (Cloudinary, only ever set by the upload endpoint) with its alt text and size.
+  coverUrl    String?
+  coverAlt    String?  @db.VarChar(140)
+  coverWidth  Int?
+  coverHeight Int?
   order       Int      @default(0)
 
-  profile Profile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  profile Profile        @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  images  ProjectImage[]
 
   @@unique([profileId, slug])
   @@index([profileId])
+}
+
+// A gallery image of a project (at most MAX_PROJECT_IMAGES). The file is in Cloudinary and the row is
+// only ever made by the upload endpoint.
+model ProjectImage {
+  id        String  @id @default(cuid())
+  projectId String
+  url       String
+  alt       String? @db.VarChar(140)
+  width     Int
+  height    Int
+  order     Int     @default(0)
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([projectId])
 }
 
 model Education {
@@ -249,6 +284,23 @@ model CustomSectionItem {
   section CustomSection @relation(fields: [sectionId], references: [id], onDelete: Cascade)
 
   @@index([sectionId])
+}
+
+// An extra page of a multi-page portfolio ("Speaking", "Uses", "Press"), at /<slug>/p/<page slug>. Its
+// text is plain text or limited Markdown; the sections on it are listed in Profile.pageConfig under
+// the key "page:<id>". At most MAX_CUSTOM_PAGES per profile.
+model CustomPage {
+  id        String   @id @default(cuid())
+  profileId String
+  slug      String   @db.VarChar(30)
+  title     String   @db.VarChar(30)
+  body      String?
+  createdAt DateTime @default(now())
+
+  profile Profile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+
+  @@unique([profileId, slug])
+  @@index([profileId])
 }
 
 // A quote about the profile's owner, submitted by a visitor (pending until approved) or added by
@@ -343,6 +395,9 @@ enum TranslatableEntity {
   customItem
   post
   linkBioLink
+  page
+  customPage
+  projectImage
 }
 
 // One owner-written text in one extra language. There is no foreign key to the thing translated

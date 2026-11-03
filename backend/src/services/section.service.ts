@@ -4,7 +4,9 @@ import { AppError } from '../lib/errors';
 import { prisma } from '../lib/prisma';
 import { assertExactIds } from '../lib/reorder';
 import { slugifyTitle } from '../lib/slug';
-import { orNotFound } from '../lib/prisma-errors';
+import { isUniqueViolation, orNotFound } from '../lib/prisma-errors';
+import { projectList } from '../lib/selects';
+import { deleteFiles, projectFileUrls } from './project-image.service';
 import { deleteTranslationsFor } from './translation.service';
 import { ERRORS } from '../lib/messages';
 
@@ -32,6 +34,9 @@ const delegatesOf = (db: Prisma.TransactionClient | typeof prisma) =>
 const delegates = delegatesOf(prisma);
 
 const omit = { profileId: true };
+// A project comes with its gallery; the other sections are plain rows.
+const shape = (section: Section) =>
+  section === 'projects' ? { omit, include: projectList.include } : { omit };
 const notFound = () => AppError.notFound(ERRORS.itemNotFound);
 
 // Every query below filters by profileId. A record id that belongs to someone else simply
@@ -41,18 +46,23 @@ export function listItems(section: Section, profileId: string) {
   return delegates[section].findMany({
     where: { profileId },
     orderBy: [{ order: 'asc' }, { id: 'asc' }],
-    omit,
+    ...shape(section),
   });
 }
 
 export async function getItem(section: Section, profileId: string, id: string) {
-  const item = await delegates[section].findFirst({ where: { id, profileId }, omit });
+  const item = await delegates[section].findFirst({ where: { id, profileId }, ...shape(section) });
   if (!item) throw notFound();
   return item;
 }
 
 // At most FEATURED_PROJECTS_MAX projects lead the page; `except` is the project being saved.
-async function assertFeaturedRoom(section: Section, profileId: string, input: Row, except?: string) {
+async function assertFeaturedRoom(
+  section: Section,
+  profileId: string,
+  input: Row,
+  except?: string,
+) {
   if (section !== 'projects' || input.featured !== true) return;
   const others = await delegates.projects.count({
     where: { profileId, featured: true, ...(except && { id: { not: except } }) },
@@ -97,23 +107,40 @@ export async function createItem(section: Section, profileId: string, input: Row
     order = (_max.order ?? -1) + 1;
   }
 
-  return delegate.create({
-    data: {
-      ...input,
-      ...(order !== undefined && { order }),
-      ...(section === 'projects' && { slug: await projectSlug(profileId, String(input.name)) }),
-      profileId,
-    },
-    omit,
-  });
+  try {
+    return await delegate.create({
+      data: {
+        ...input,
+        ...(order !== undefined && { order }),
+        ...(section === 'projects' && {
+          slug: input.slug ?? (await projectSlug(profileId, String(input.name))),
+        }),
+        profileId,
+      },
+      ...shape(section),
+    });
+  } catch (err) {
+    if (section === 'projects' && isUniqueViolation(err)) {
+      throw AppError.conflict('SLUG_TAKEN', ERRORS.projectSlugTaken);
+    }
+    throw err;
+  }
 }
 
 export async function updateItem(section: Section, profileId: string, id: string, input: Row) {
   await assertFeaturedRoom(section, profileId, input, id);
-  return orNotFound(
-    delegates[section].update({ where: { id, profileId }, data: input, omit }),
-    notFound,
-  );
+  try {
+    return await orNotFound(
+      delegates[section].update({ where: { id, profileId }, data: input, ...shape(section) }),
+      notFound,
+    );
+  } catch (err) {
+    // A project's address, when the owner changes it to one another of their projects has.
+    if (section === 'projects' && isUniqueViolation(err)) {
+      throw AppError.conflict('SLUG_TAKEN', ERRORS.projectSlugTaken);
+    }
+    throw err;
+  }
 }
 
 // The entity types that have translations, by the section they are in (links have none).
@@ -125,11 +152,28 @@ const translated = {
 } as const;
 
 export async function deleteItem(section: Section, profileId: string, id: string) {
+  // A project's files are read first and removed after the row is gone, so a failed delete there
+  // leaves an unused image behind and never a broken one.
+  const files = section === 'projects' ? await projectFileUrls(profileId, id) : [];
   // One transaction, so a translation never outlives its text, nor the text its translations.
   await prisma.$transaction(async (tx) => {
+    const images =
+      section === 'projects'
+        ? await tx.projectImage.findMany({
+            where: { projectId: id, project: { profileId } },
+            select: { id: true },
+          })
+        : [];
     await orNotFound(delegatesOf(tx)[section].delete({ where: { id, profileId } }), notFound);
     if (section !== 'links') await deleteTranslationsFor(tx, profileId, translated[section], [id]);
+    await deleteTranslationsFor(
+      tx,
+      profileId,
+      'projectImage',
+      images.map((image) => image.id),
+    );
   });
+  await deleteFiles(profileId, files);
 }
 
 // `ids` is the new order. It must list every item in the section exactly once, which also

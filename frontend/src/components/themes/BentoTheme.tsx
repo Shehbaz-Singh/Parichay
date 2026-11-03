@@ -1,4 +1,6 @@
 import type { CSSProperties, ReactNode } from 'react';
+import { pageLabel } from '@/lib/pages';
+import Link from 'next/link';
 import { Plus_Jakarta_Sans, Sora } from 'next/font/google';
 import { ArrowUpRight, MapPin } from 'lucide-react';
 import { accentVars } from '@/lib/color';
@@ -34,8 +36,15 @@ import {
   FooterLines,
   MoreLinkView,
   PageHeading,
+  ProjectCover,
+  ProjectVisit,
+  CtaView,
+  IdentityStrip,
+  isHeroProject,
 } from './parts';
 import { ThemeWrapper } from './ThemeWrapper';
+import { BentoPages } from './templates/BentoPages';
+import { pageView } from './templates/model';
 import type { ThemeProps } from './types';
 
 // A bento grid: the page is rounded tiles of different sizes. The person and the links come first,
@@ -396,13 +405,19 @@ function blockTiles(block: Block): Tile[] {
     case 'projects': {
       const tiles: Tile[] = block.projects.map((project, position) => ({
         key: `${block.id}-${project.id}`,
-        span: spanFor(len(project.name, project.description) + project.tags.length * 8, 2, 3),
+        span: isHeroProject(block, project)
+          ? 6
+          : spanFor(len(project.name, project.description) + project.tags.length * 8, 2, 3),
         tone: 'plain',
         node: (
           <section
             aria-labelledby={`${block.id}-${project.id}`}
             className="flex h-full min-w-0 flex-col"
           >
+            <ProjectCover
+              project={project}
+              className="mb-4 aspect-[40/21] w-full rounded-2xl object-cover"
+            />
             {/* The section's heading is said once, on the first tile; the others carry it for screen
                 readers only, so every tile does not repeat a label. */}
             <p className={position === 0 ? 'mb-4 text-sm font-semibold text-muted' : 'sr-only'}>
@@ -412,22 +427,16 @@ function blockTiles(block: Block): Tile[] {
               id={`${block.id}-${project.id}`}
               className={`${display} flex items-start justify-between gap-3 text-xl leading-snug font-bold`}
             >
-              {project.href ? (
-                <>
-                  <NewTabLink
-                    href={project.href}
-                    className={`min-w-0 after:absolute after:inset-0 after:rounded-3xl ${focusRing}`}
-                  >
-                    {project.name}
-                  </NewTabLink>
-                  <ArrowUpRight
-                    aria-hidden="true"
-                    className="rtl:-scale-x-100 mt-1 size-5 shrink-0 text-muted"
-                  />
-                </>
-              ) : (
-                project.name
-              )}
+              <Link
+                href={project.detailHref}
+                className={`min-w-0 after:absolute after:inset-0 after:rounded-3xl ${focusRing}`}
+              >
+                {project.name}
+              </Link>
+              <ArrowUpRight
+                aria-hidden="true"
+                className="rtl:-scale-x-100 mt-1 size-5 shrink-0 text-muted"
+              />
             </h2>
             {project.description && (
               <ReadMore
@@ -445,6 +454,11 @@ function blockTiles(block: Block): Tile[] {
                 ))}
               </ul>
             )}
+            <ProjectVisit
+              project={project}
+              label={block.ui.viewProject}
+              className={`text-sm font-semibold underline underline-offset-4 hover:no-underline ${focusRing}`}
+            />
           </section>
         ),
       }));
@@ -470,13 +484,9 @@ function blockTiles(block: Block): Tile[] {
                 {block.rest.map((project) => (
                   <li key={project.id} className="min-w-0">
                     <h3 className={`${display} text-lg leading-snug font-bold`}>
-                      {project.href ? (
-                        <NewTabLink href={project.href} className={`underline ${focusRing}`}>
-                          {project.name}
-                        </NewTabLink>
-                      ) : (
-                        project.name
-                      )}
+                      <Link href={project.detailHref} className={`underline ${focusRing}`}>
+                        {project.name}
+                      </Link>
                     </h3>
                     {project.description && (
                       <ReadMore
@@ -515,6 +525,23 @@ function blockTiles(block: Block): Tile[] {
                 metaClassName="mt-1 text-sm font-medium text-muted"
                 excerptClassName="mt-2 leading-relaxed text-muted"
                 moreClassName={`mt-6 inline-block text-sm font-semibold text-accent-fg underline underline-offset-2 hover:no-underline ${focusRing}`}
+              />
+            </TileBody>
+          ),
+        },
+      ];
+    case 'cta':
+      return [
+        {
+          key: block.id,
+          span: 6,
+          tone: 'plain',
+          node: (
+            <TileBody id={block.id} title={block.title}>
+              <CtaView
+                block={block}
+                className="print:hidden"
+                linkClassName={`inline-flex items-center gap-2 rounded-full bg-ink px-5 py-2 text-sm font-semibold text-page transition-opacity hover:opacity-90 ${focusRing}`}
               />
             </TileBody>
           ),
@@ -628,18 +655,57 @@ function Footer({ footer }: { footer: FooterModel }) {
 export default function BentoTheme({
   profile,
   idPrefix = '',
-  view,
+  page,
   nav,
   heading,
-  projectId,
+  lead: leadNode,
+  project,
+  contact,
   tiles = 'light',
 }: ThemeProps & { tiles?: 'light' | 'dark' }) {
+  const vars = { '--accent-fg-dark': accentVars(profile.accentColor, DARK_TILE)['--accent-fg'] };
+  // The pages of a multi-page portfolio (and a project's own page) are tile compositions of their own.
+  const view = pageView(profile, { page, project, contact });
+  if (view) {
+    return (
+      <BentoPages
+        profile={profile}
+        view={view}
+        nav={nav}
+        idPrefix={idPrefix}
+        tiles={tiles}
+        fontClass={fontClass}
+        vars={vars}
+        footer={<Footer footer={buildFooter(profile)} />}
+        blockTiles={blockTiles}
+      />
+    );
+  }
   const header = buildHeader(profile);
   // An inner page has no identity and links tiles: just its sections.
-  const lead = heading ? 0 : 2;
+  const inner = !!heading || !!leadNode;
+  const lead = inner ? 0 : 2;
+  const blocks = buildBlocks(profile, idPrefix, page);
+  const identity =
+    heading && !lead && page && (page.key === 'work' || page.key === 'about') ? (
+      <IdentityStrip
+        header={buildHeader(profile)}
+        full={page.key === 'about'}
+        wrapClassName="mb-5 flex items-center gap-4 rounded-3xl border border-line bg-surface p-5 sm:gap-6 sm:p-6"
+        avatarClassName="size-20 shrink-0 rounded-2xl sm:size-28"
+        placeholderClassName={`${display} bg-page text-3xl font-bold text-ink`}
+        nameClassName={`${display} text-xl font-bold`}
+        taglineClassName="mt-1 text-muted"
+        metaClassName="mt-1 text-sm text-muted"
+        pillClassName={`inline-flex items-center gap-2 rounded-full border border-line bg-page px-4 py-2 text-sm font-semibold hover:bg-surface ${focusRing}`}
+        badgeClassName="mt-3 text-sm text-ink"
+        badgeDotClassName="bg-accent-fg"
+        badgeLinkClassName={`font-semibold text-accent-fg underline underline-offset-2 hover:no-underline ${focusRing}`}
+      />
+    ) : null;
   const all: Tile[] = [
-    ...(heading ? [] : [identityTile(header), linksTile(header, idPrefix)]),
-    ...buildBlocks(profile, idPrefix, view, projectId).flatMap(blockTiles),
+    ...(inner ? [] : [identityTile(header), linksTile(header, idPrefix)]),
+    ...blocks.flatMap(blockTiles),
   ];
   // Every third tile after the first two is a little stronger, so the grid has a rhythm.
   all.forEach((tile, i) => {
@@ -653,19 +719,24 @@ export default function BentoTheme({
     all.map((tile) => (tile.span >= 4 ? 2 : 1)),
     2,
   );
-  const empty = all.length === lead && buildBlocks(profile, idPrefix, view, projectId).length === 0;
+  const empty = all.length === lead && blocks.length === 0 && !leadNode;
 
   return (
-    <ThemeWrapper
-      theme="bento"
-      profile={profile}
-      nav={nav}
-      className={fontClass}
-      vars={{ '--accent-fg-dark': accentVars(profile.accentColor, DARK_TILE)['--accent-fg'] }}
-    >
+    <ThemeWrapper theme="bento" profile={profile} nav={nav} className={fontClass} vars={vars}>
       <div data-tiles={tiles}>
         <main id={`${idPrefix}main`} className="mx-auto max-w-6xl px-4 py-6 sm:px-6 sm:py-10">
-          {heading && <PageHeading heading={heading} />}
+          {leadNode ??
+            (heading && (
+              <PageHeading
+                heading={heading}
+                title={page ? pageLabel(profile, page) : undefined}
+                kicker={profile.fullName}
+                wrapClassName="mb-5 px-1 sm:mb-7"
+                kickerClassName={`mb-1 text-sm font-semibold text-muted`}
+                className={`${display} text-4xl leading-tight font-bold tracking-tight text-balance sm:text-6xl`}
+              />
+            ))}
+          {identity}
           <ul className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-6">
             {all.map((tile, i) => (
               <li

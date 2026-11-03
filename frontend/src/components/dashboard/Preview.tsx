@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { Monitor, Smartphone, Tablet } from 'lucide-react';
 import { languageOf } from '@parichay/shared';
+import { pageLabel } from '@/lib/pages';
 import { Select, Skeleton } from '../ui';
 import { cx } from '../ui/cx';
 import { useEditor } from './editor-context';
@@ -22,7 +23,19 @@ const STAGE_HEIGHT = '(100vh - 12rem)';
 // reacts to that width. The profile being edited, unsaved typing included, is sent to it as a
 // message each time it changes. The frame is shrunk to fit the column and cannot be clicked into.
 export function Preview() {
-  const { localizedPreview: preview, profile, previewLocale, setPreviewLocale } = useEditor();
+  const {
+    localizedPreview: preview,
+    profile,
+    previewLocale,
+    setPreviewLocale,
+    previewPageKey,
+    setPreviewPageKey,
+  } = useEditor();
+  // A multi-page portfolio is previewed one page at a time; a page that no longer exists is Home.
+  const multi = preview.layoutMode === 'multi' && preview.pages.length > 1;
+  const pageKey = preview.pages.some((page) => page.key === previewPageKey)
+    ? previewPageKey
+    : 'home';
   const [deviceId, setDeviceId] = useState<DeviceId>(() =>
     window.innerWidth >= 1280 ? 'desktop' : 'phone',
   );
@@ -49,10 +62,10 @@ export function Preview() {
   useEffect(() => {
     if (!ready) return;
     frame.current?.contentWindow?.postMessage(
-      { type: 'preview-profile', profile: preview },
+      { type: 'preview-profile', profile: preview, pageKey },
       window.location.origin,
     );
-  }, [ready, preview]);
+  }, [ready, preview, pageKey]);
 
   useEffect(() => {
     const el = box.current;
@@ -88,6 +101,24 @@ export function Preview() {
                 options={[profile.defaultLocale, ...profile.locales].map((code) => ({
                   value: code,
                   label: languageOf(code).name,
+                }))}
+              />
+            </div>
+          </div>
+        )}
+        {multi && (
+          <div className="flex items-center gap-2">
+            <label htmlFor="preview-page" className="text-xs font-medium text-muted">
+              Page
+            </label>
+            <div className="min-w-36">
+              <Select
+                id="preview-page"
+                value={pageKey}
+                onChange={setPreviewPageKey}
+                options={preview.pages.map((page) => ({
+                  value: page.key,
+                  label: pageLabel(preview, page),
                 }))}
               />
             </div>

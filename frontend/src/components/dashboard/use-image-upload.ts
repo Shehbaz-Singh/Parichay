@@ -15,13 +15,26 @@ interface Options {
   removed: string; // ... and after a removal
   // Called with the new address, or null when the image was removed.
   onChange: (url: string | null) => void;
+  // Called with the whole reply of an upload, when the caller needs more than the address (the size
+  // of a project cover, the row of a gallery image).
+  onResult?: (result: Record<string, unknown>) => void;
 }
 
 // An image that can be uploaded and removed: the same limits as the API checked first so a wrong
 // file fails at once, then the request, a toast and the `busy` flag around it.
 export function useImageUpload(options: Options) {
-  const { endpoint, field, resultKey, types, maxBytes, tooLarge, uploaded, removed, onChange } =
-    options;
+  const {
+    endpoint,
+    field,
+    resultKey,
+    types,
+    maxBytes,
+    tooLarge,
+    uploaded,
+    removed,
+    onChange,
+    onResult,
+  } = options;
   const { notify, attempt } = useEditor();
   const input = useRef<HTMLInputElement>(null);
   const [busy, setBusy] = useState(false);
@@ -35,8 +48,9 @@ export function useImageUpload(options: Options) {
     form.append(field, file);
     setBusy(true);
     await attempt(async () => {
-      const result = await api<Record<string, string>>(endpoint, { method: 'POST', form });
-      onChange(result[resultKey]);
+      const result = await api<Record<string, unknown>>(endpoint, { method: 'POST', form });
+      onResult?.(result);
+      onChange(result[resultKey] as string);
     }, uploaded);
     setBusy(false);
   }

@@ -7,6 +7,7 @@ import {
   availabilityStatusSchema,
 } from './availability';
 import { isLocaleCode } from './languages';
+import { DEFAULT_LAYOUT_MODE, layoutModeSchema } from './layout-mode';
 import { optionalBlock, optionalLine } from './text';
 import { SHARE_MESSAGE_MAX } from './share';
 import { VALIDATION } from './messages';
@@ -124,6 +125,10 @@ export const profileInputSchema = z.object({
   location: optionalText(100),
   avatarUrl: httpUrl.nullish().transform((v) => v ?? null),
   theme: themeSchema.default(DEFAULT_THEME),
+  // One page or a site of pages (pages.ts). Changed by its own endpoint, together with the page list.
+  layoutMode: layoutModeSchema.default(DEFAULT_LAYOUT_MODE),
+  // Whether the sitemap lists the pages (opt-in: a portfolio is personal). Saved with the pages.
+  sitemapListed: z.boolean().default(false),
   accentColor: accentColorSchema.default(DEFAULT_ACCENT),
   published: z.boolean().default(false),
   // Whether visitors may submit testimonials (see testimonials.ts). Changed by its own endpoint.
@@ -178,6 +183,8 @@ export const profileSchema = profileInputSchema.extend({
   // the languages endpoints only, so they are not in profileInputSchema.
   defaultLocale: z.string().default('en'),
   locales: z.array(z.string()).default([]),
+  // The pages of multi mode, as stored (pages.ts). Read through normalizePageConfig, never trusted raw.
+  pageConfig: z.unknown().default([]),
 });
 export type Profile = z.infer<typeof profileSchema>;
 
@@ -186,6 +193,8 @@ export const profileUpdateSchema = profileInputSchema
   .omit({
     slug: true,
     published: true,
+    layoutMode: true,
+    sitemapListed: true,
     acceptTestimonials: true,
     contactFormEnabled: true,
     contactFormIntro: true,
@@ -264,8 +273,29 @@ export type ExperienceInput = z.infer<typeof experienceInputSchema>;
 // go behind "more" (a few projects are all shown).
 export const FEATURED_PROJECTS_MAX = 6;
 
+// A project's gallery, besides its cover image. They go through Cloudinary with the avatar's limits.
+export const MAX_PROJECT_IMAGES = 6;
+export const IMAGE_ALT_MAX = 140;
+
+// The address of a project's page (/<slug>/work/<address>): lowercase words with hyphens.
+export const projectSlugSchema = z
+  .string()
+  .trim()
+  .toLowerCase()
+  .min(1)
+  .max(60)
+  .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, VALIDATION.slugFormat);
+
+// A gallery image's alt text, saved on its own once the image is uploaded.
+export const projectImageInputSchema = z.object({ alt: optionalLine(IMAGE_ALT_MAX) });
+export type ProjectImageInput = z.infer<typeof projectImageInputSchema>;
+
 export const projectInputSchema = z.object({
   name: trimmed(100),
+  // Made from the name when it is created; the owner may change it (the old address then stops working).
+  slug: projectSlugSchema.optional(),
+  // What the cover image shows, for people who cannot see it. The image itself has its own upload.
+  coverAlt: optionalLine(IMAGE_ALT_MAX),
   url: httpUrl.nullish().transform((v) => v ?? null),
   description: z.string().trim().max(DESCRIPTION_MAX).default(''),
   techTags: z.array(trimmed(30)).max(20).default([]),

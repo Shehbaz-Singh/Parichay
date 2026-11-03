@@ -82,8 +82,31 @@ export function RoleList({
 
 // The title of an inner page, for screen readers: those pages have no big header, and a page needs
 // its heading.
-export function PageHeading({ heading }: { heading: string }) {
-  return <h1 className="sr-only">{heading}</h1>;
+export function PageHeading({
+  heading,
+  title,
+  kicker,
+  className,
+  kickerClassName,
+  wrapClassName,
+}: {
+  heading: string;
+  // Set on the pages of a multi-page portfolio: the page's name, drawn large in the theme's own voice
+  // (the className), with the owner's name small above it (the kicker). Without it the heading is for
+  // screen readers only.
+  title?: string;
+  kicker?: string;
+  className?: string;
+  kickerClassName?: string;
+  wrapClassName?: string;
+}) {
+  if (!title) return <h1 className="sr-only">{heading}</h1>;
+  return (
+    <div className={wrapClassName}>
+      {kicker && <p className={kickerClassName}>{kicker}</p>}
+      <h1 className={className}>{title}</h1>
+    </div>
+  );
 }
 
 // A way on to the rest of a heavy profile ("View all projects"), under the block it belongs to.
@@ -461,4 +484,148 @@ export function FooterLines({
       </p>
     </>
   );
+}
+
+// ---- projects with a page of their own
+
+type ProjectItem = Extract<Block, { kind: 'projects' }>['projects'][number];
+
+// The cover of a project, above its title. The size is the image's own, so the space is reserved before
+// it loads; it is lazy because project lists are below the fold. The alt text is the owner's; with none,
+// the picture is decoration next to the project's title.
+export function ProjectCover({ project, className }: { project: ProjectItem; className: string }) {
+  if (!project.cover) return null;
+  const { src, alt, width, height } = project.cover;
+  return (
+    <img
+      src={src}
+      alt={alt}
+      width={width}
+      height={height}
+      loading="lazy"
+      decoding="async"
+      className={className}
+    />
+  );
+}
+
+// The project elsewhere (its site or repository), next to the card's own link. It sits above the card's
+// stretched link so it can be clicked and focused on its own.
+export function ProjectVisit({
+  project,
+  label,
+  className,
+  children,
+}: {
+  project: ProjectItem;
+  label: string;
+  className: string;
+  children?: ReactNode;
+}) {
+  if (!project.href) return null;
+  return (
+    <p className="relative z-10 mt-4">
+      <NewTabLink href={project.href} context={project.name} className={className}>
+        {label}
+        {children}
+      </NewTabLink>
+    </p>
+  );
+}
+
+// The short home page's pointer to the Contact page: a heading (the section's), a line and a link.
+export function CtaView({
+  block,
+  className,
+  linkClassName,
+}: {
+  block: Extract<Block, { kind: 'cta' }>;
+  className?: string;
+  linkClassName: string;
+}) {
+  return (
+    <div className={className}>
+      <p className="max-w-xl text-lg leading-relaxed">{block.text}</p>
+      <p className="mt-5">
+        <Link href={block.href} className={linkClassName}>
+          {block.label}
+          <ArrowRight aria-hidden="true" className="size-4 rtl:-scale-x-100" />
+        </Link>
+      </p>
+    </div>
+  );
+}
+
+// ---- who this is, on the inner pages of a multi-page portfolio
+
+// The owner's photo, name and line on a page that is not Home, so a page never feels like it belongs to
+// nobody. `full` (the About page) adds the location and the links; the compact one (Work) is the photo,
+// the name, the line and the availability. The name is a paragraph: the page's h1 is its title. The theme
+// gives it its look through the class names.
+export function IdentityStrip({
+  header,
+  full = false,
+  wrapClassName,
+  avatarClassName,
+  placeholderClassName,
+  nameClassName,
+  taglineClassName,
+  metaClassName,
+  pillClassName,
+  badgeClassName,
+  badgeDotClassName,
+  badgeLinkClassName,
+}: {
+  header: HeaderModel;
+  full?: boolean;
+  wrapClassName: string;
+  avatarClassName: string;
+  placeholderClassName: string;
+  nameClassName: string;
+  taglineClassName: string;
+  metaClassName: string;
+  pillClassName: string;
+  badgeClassName: string;
+  badgeDotClassName: string;
+  badgeLinkClassName: string;
+}) {
+  return (
+    <div className={wrapClassName}>
+      <Avatar
+        avatar={header.avatar}
+        className={avatarClassName}
+        placeholderClassName={placeholderClassName}
+      />
+      <div className="min-w-0">
+        <p className={nameClassName}>{header.name}</p>
+        {header.tagline && <p className={taglineClassName}>{header.tagline}</p>}
+        {full && header.location && <p className={metaClassName}>{header.location}</p>}
+        <AvailabilityBadge
+          availability={header.availability}
+          ui={header.ui}
+          className={badgeClassName}
+          dotClassName={badgeDotClassName}
+          linkClassName={badgeLinkClassName}
+        />
+        {full && header.links.length > 0 && (
+          <ul className="mt-4 flex flex-wrap gap-2.5">
+            {header.links.map((link) => (
+              <li key={link.id} className="max-w-full">
+                <HeaderLink link={link} className={pillClassName} />
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// The first project of the Work page leads, wider and with a larger cover (a page of several projects
+// has something to look at first).
+export function isHeroProject(
+  block: Extract<Block, { kind: 'projects' }>,
+  project: { id: string },
+) {
+  return block.hero && block.projects[0]?.id === project.id;
 }

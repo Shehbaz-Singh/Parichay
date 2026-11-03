@@ -7,6 +7,7 @@ import {
   myTestimonials,
   orderedList,
   profileSelect,
+  projectList,
 } from '../lib/selects';
 import { ERRORS } from '../lib/messages';
 
@@ -28,7 +29,12 @@ export async function exportAccountData(userId: string) {
           links: orderedList,
           skills: orderedList,
           experience: orderedList,
-          projects: orderedList,
+          projects: projectList,
+          // The extra pages of multi mode (the page list itself is pageConfig, with the profile).
+          customPages: {
+            omit: { profileId: true },
+            orderBy: [{ createdAt: 'asc' }, { id: 'asc' }],
+          },
           education: orderedList,
           customSections: {
             select: { id: true, title: true, visible: true, order: true, items: customItems },

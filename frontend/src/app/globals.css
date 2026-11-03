@@ -682,3 +682,19 @@ html:has([data-sitenav]) {
 [data-portfolio] :is(h1, h2, h3, h4, li, blockquote) {
   overflow-wrap: break-word;
 }
+
+/* After a navigation between the pages of a portfolio focus is moved to the page's main heading
+   (RouteFocus). It is a landing spot, not a control, so it has no ring of its own. */
+main [tabindex='-1']:focus {
+  outline: none;
+}
+
+/* The thin bar of app/[username]/loading.tsx. */
+@keyframes portfolio-load {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(300%);
+  }
+}

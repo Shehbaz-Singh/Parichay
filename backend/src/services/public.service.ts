@@ -1,4 +1,13 @@
-import { normalizeSectionConfig, publicLayout, readWorkingHours } from '@parichay/shared';
+import {
+  customIdOf,
+  isCustomKey,
+  normalizePageConfig,
+  normalizeSectionConfig,
+  publicLayout,
+  readWorkingHours,
+  resolvePublicPages,
+  type AnyPageKey,
+} from '@parichay/shared';
 import type { Prisma } from '../generated/prisma/client';
 import { config } from '../lib/config';
 import { AppError } from '../lib/errors';
@@ -8,6 +17,7 @@ import {
   customItems,
   orderedList,
   publicPostSummarySelect,
+  projectList,
   publicProfileSelect,
   publicTestimonials,
 } from '../lib/selects';
@@ -20,6 +30,12 @@ const publicSelect = {
   ...publicProfileSelect,
   id: true,
   sectionConfig: true,
+  // The pages of multi mode: how they are set up, and the ones the owner made.
+  pageConfig: true,
+  customPages: {
+    select: { id: true, slug: true, title: true, body: true },
+    orderBy: [{ createdAt: 'asc' }, { id: 'asc' }],
+  },
   // Hidden links are filtered in the database. `visible` is dropped since it is always true.
   links: {
     where: { visible: true },
@@ -28,7 +44,7 @@ const publicSelect = {
   },
   skills: orderedList,
   experience: orderedList,
-  projects: orderedList,
+  projects: projectList,
   education: orderedList,
   // Whether one is shown is decided by the layout (sectionConfig), not by these rows.
   customSections: {
@@ -75,13 +91,76 @@ export async function getPublicProfile(slug: string, lang?: string) {
   // `sections` lists what is shown, in order. The content of a hidden section is left out too:
   // hiding is about privacy as much as layout, and the JSON is as public as the page. Custom
   // sections come back in layout order, visible ones that have items only.
-  const { sectionConfig, customSections: own, posts, id, ...rest } = profile;
+  const {
+    sectionConfig,
+    pageConfig,
+    customPages: ownPages,
+    customSections: own,
+    posts,
+    id,
+    ...rest
+  } = profile;
   const layout = normalizeSectionConfig(
     sectionConfig,
     own.map((section) => section.id),
   );
   const { sections, customSections } = publicLayout(layout, own);
   const has = (key: string) => sections.some((section) => section.key === key);
+  const pages = publicPages();
+  // The pages of multi mode that exist for a visitor (none in single mode): shown by the owner, and
+  // with something on them. The owner's names for them, and the texts of the pages they made, are in the
+  // language asked for.
+  function publicPages() {
+    if (rest.layoutMode !== 'multi') return [];
+    const custom = ownPages.map((page) => ({
+      ...page,
+      title: t('customPage', page.id, 'title', page.title),
+      body: tn('customPage', page.id, 'body', page.body),
+    }));
+    const contentOf = (key: string) => {
+      if (isCustomKey(key)) {
+        return own.some((section) => section.id === customIdOf(key) && section.items.length > 0);
+      }
+      switch (key) {
+        case 'about':
+          return !!rest.about;
+        case 'skills':
+          return rest.skills.length > 0;
+        case 'experience':
+          return rest.experience.length > 0;
+        case 'projects':
+          return rest.projects.length > 0;
+        case 'education':
+          return rest.education.length > 0;
+        case 'testimonials':
+          return rest.testimonials.length > 0 || rest.acceptTestimonials;
+        case 'writing':
+          return posts.length > 0;
+        case 'contact':
+          return rest.contactFormEnabled && !rest.isSample;
+        default:
+          return false;
+      }
+    };
+    return resolvePublicPages({
+      config: normalizePageConfig(
+        pageConfig,
+        ownPages.map((page) => page.id),
+        layout.map((item) => item.key),
+      ),
+      customPages: custom,
+      visibleSections: sections.map((section) => section.key),
+      hasContent: contentOf,
+      hasContactDetails:
+        rest.links.length > 0 ||
+        (rest.contactFormEnabled && !rest.isSample) ||
+        (rest.workCardEnabled && !!rest.timezone),
+      titleOf: (key: AnyPageKey, fallback) =>
+        key.startsWith('page:')
+          ? fallback
+          : (tn('page', key, 'title', fallback ?? null) ?? undefined),
+    });
+  }
   // The badge is only part of the page while it is switched on.
   const { availabilityEnabled, availabilityStatus, availabilityMessage, ...withoutBadge } = rest;
   // Likewise the "Working together" card: nothing of it is public while it is switched off.
@@ -98,6 +177,7 @@ export async function getPublicProfile(slug: string, lang?: string) {
   } = withoutBadge;
   return {
     ...visible,
+    pages,
     // The contact form: nothing of it is public while it is switched off, and a sample has none.
     ...(contactFormEnabled &&
       !rest.isSample && {
@@ -140,6 +220,11 @@ export async function getPublicProfile(slug: string, lang?: string) {
           ...row,
           name: t('project', row.id, 'name', row.name),
           description: t('project', row.id, 'description', row.description),
+          coverAlt: tn('project', row.id, 'coverAlt', row.coverAlt),
+          images: row.images.map((image) => ({
+            ...image,
+            alt: tn('projectImage', image.id, 'alt', image.alt),
+          })),
         }))
       : [],
     education: has('education')
@@ -193,13 +278,27 @@ async function writingContext(slug: string, lang?: string) {
     defaultLocale: true,
     locales: true,
     sectionConfig: true,
+    layoutMode: true,
+    pageConfig: true,
     customSections: { select: { id: true } },
+    customPages: { select: { id: true } },
   });
   const layout = normalizeSectionConfig(
     profile.sectionConfig,
     profile.customSections.map((section) => section.id),
   );
   if (!layout.some((item) => item.key === 'writing' && item.visible)) {
+    throw AppError.notFound(ERRORS.profileNotFound);
+  }
+  // In multi mode the list of posts is a page like the others: hidden, it is a 404.
+  if (
+    profile.layoutMode === 'multi' &&
+    !normalizePageConfig(
+      profile.pageConfig,
+      profile.customPages.map((page) => page.id),
+      layout.map((item) => item.key),
+    ).some((page) => page.key === 'writing' && page.visible)
+  ) {
     throw AppError.notFound(ERRORS.profileNotFound);
   }
   const { lookup } = await languageLookup(profile, lang);
@@ -271,4 +370,37 @@ export async function getPostsForSitemap() {
       ).some((item) => item.key === 'writing' && item.visible),
     )
     .map((row) => ({ username: row.profile.slug, postSlug: row.slug, updatedAt: row.updatedAt }));
+}
+
+// The profiles that asked to be listed (Profile.sitemapListed) with the pages and projects a crawler may
+// visit, for the sitemap. Each has the pages of its default language; the languages come from
+// /public/_locales. Single mode lists only the profile itself. Capped, and read a few at a time.
+export async function getPagesForSitemap() {
+  const listed = await prisma.profile.findMany({
+    where: { published: true, sitemapListed: true, isSample: false },
+    select: { slug: true },
+    orderBy: { id: 'asc' },
+    take: 500,
+  });
+  const rows: { username: string; paths: string[]; projects: string[] }[] = [];
+  for (let at = 0; at < listed.length; at += 20) {
+    const batch = await Promise.all(
+      listed.slice(at, at + 20).map(async ({ slug }) => {
+        const profile = await getPublicProfile(slug);
+        const paths =
+          profile.layoutMode === 'multi'
+            ? profile.pages.map((page) =>
+                page.key === 'home'
+                  ? ''
+                  : page.slug !== undefined
+                    ? `/p/${page.slug}`
+                    : `/${page.key}`,
+              )
+            : [''];
+        return { username: slug, paths, projects: profile.projects.map((project) => project.slug) };
+      }),
+    );
+    rows.push(...batch);
+  }
+  return rows;
 }

@@ -1,7 +1,10 @@
 import {
   SECTION_LABELS,
   TRANSLATABLE,
+  PAGE_LABELS,
   isCustomKey,
+  isCustomPageKey,
+  normalizePageConfig,
   normalizeSectionConfig,
   type MyProfile,
   type TranslatableEntity,
@@ -53,7 +56,14 @@ const LABELS: Partial<Record<TranslatableEntity, Record<string, string>>> = {
   linkBioLink: { label: 'Button text' },
   experience: { title: 'Job title', description: 'Description' },
   education: { degree: 'Degree' },
-  project: { name: 'Project name', description: 'Description' },
+  project: {
+    name: 'Project name',
+    description: 'Description',
+    coverAlt: 'Cover image description',
+  },
+  projectImage: { alt: 'Image description' },
+  page: { title: 'Page name' },
+  customPage: { title: 'Page title', body: 'Page text' },
   skill: { name: 'Skill name' },
   customSection: { title: 'Section title' },
   customItem: { title: 'Title', subtitle: 'Subtitle', description: 'Description' },
@@ -143,6 +153,35 @@ export function buildGroups(profile: MyProfile): FieldGroup[] {
     ),
   );
 
+  const pages = normalizePageConfig(
+    profile.pageConfig,
+    profile.customPages.map((page) => page.id),
+    config.map((item) => item.key),
+  );
+  add(
+    {
+      id: 'pages',
+      title: 'Pages',
+      note: 'Only names you gave a page are listed. The standard names are translated by the page itself.',
+    },
+    [
+      ...pages.flatMap((item) =>
+        isCustomPageKey(item.key)
+          ? []
+          : [
+              card(`page:${item.key}`, PAGE_LABELS[item.key], [
+                spec('page', item.key, 'title', item.title),
+              ]),
+            ],
+      ),
+      ...profile.customPages.map((page) =>
+        card(`cp:${page.id}`, `Page: ${page.title}`, [
+          spec('customPage', page.id, 'title', page.title),
+          spec('customPage', page.id, 'body', page.body),
+        ]),
+      ),
+    ],
+  );
   add(
     { id: 'experience', title: 'Experience' },
     profile.experience.map((row) =>
@@ -166,6 +205,9 @@ export function buildGroups(profile: MyProfile): FieldGroup[] {
       card(row.id, row.name, [
         spec('project', row.id, 'name', row.name),
         spec('project', row.id, 'description', row.description),
+        // The cover's description only means something while there is a cover.
+        spec('project', row.id, 'coverAlt', row.coverUrl ? row.coverAlt : null),
+        ...row.images.map((image) => spec('projectImage', image.id, 'alt', image.alt)),
       ]),
     ),
   );

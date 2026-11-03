@@ -15,7 +15,9 @@ import {
   LINK_BIO_SETTING_KEYS,
   publicLayout,
   type LinkBioSettings,
+  type MyCustomPage,
   type MyCustomSection,
+  type PageConfig,
   type MyLinkBioButton,
   type MyProfile,
   type MyTestimonial,
@@ -29,6 +31,7 @@ import {
 import { ApiError, api } from '@/lib/client-api';
 import { applyTranslations } from '@/lib/translate-preview';
 import { ToastRegion, type ToastData } from '../ui';
+import { previewPages } from './page-content';
 import { saveProfile } from './save-profile';
 import { PROBLEMS } from '@/lib/messages';
 
@@ -43,6 +46,8 @@ export type Draft = Partial<
     | 'theme'
     | 'accentColor'
     | 'sectionConfig'
+    | 'layoutMode'
+    | 'pageConfig'
     | 'availabilityEnabled'
     | 'availabilityStatus'
     | 'availabilityMessage'
@@ -107,6 +112,9 @@ interface EditorContextValue {
   localizedPreview: PublicProfile;
   previewLocale: string; // always the default language or one of the profile's extra ones
   setPreviewLocale: (locale: string) => void;
+  // The page of a multi-page portfolio the preview shows (a page key; Home when it no longer exists).
+  previewPageKey: string;
+  setPreviewPageKey: (key: string) => void;
   // The translation editor hands in the texts of one language as they are being typed, for the
   // preview; dropTranslations forgets a language that was removed.
   setTranslations: (locale: string, entries: StoredTranslation[]) => void;
@@ -181,6 +189,7 @@ export function EditorProvider({ initial, children }: { initial: MyProfile; chil
     [drafts],
   );
   const [wantedLocale, setPreviewLocale] = useState(initial.defaultLocale);
+  const [previewPageKey, setPreviewPageKey] = useState('home');
   const [translations, setTranslationsState] = useState<Record<string, StoredTranslation[]>>({});
   const setTranslations = useCallback(
     (locale: string, entries: StoredTranslation[]) =>
@@ -372,10 +381,13 @@ export function EditorProvider({ initial, children }: { initial: MyProfile; chil
     const published = (profile.posts ?? [])
       .flatMap((post) => (post.status === 'published' && post.publishedAt ? [post] : []))
       .sort((a, b) => (b.publishedAt ?? '').localeCompare(a.publishedAt ?? ''));
+    // The pages of multi mode, from the unsaved layout too (the Pages screen drafts it).
+    const pages = previewPages({ ...profile, ...draft });
     return {
       ...profile,
       ...draft,
       locale: profile.defaultLocale,
+      pages,
       // Like the public API, the badge is only there while it is switched on.
       ...((draft?.availabilityEnabled ?? profile.availabilityEnabled)
         ? { availabilityEnabled: true as const }
@@ -473,6 +485,8 @@ export function EditorProvider({ initial, children }: { initial: MyProfile; chil
       localizedPreview,
       previewLocale,
       setPreviewLocale,
+      previewPageKey,
+      setPreviewPageKey,
       setTranslations,
       dropTranslations,
       update,
@@ -503,6 +517,7 @@ export function EditorProvider({ initial, children }: { initial: MyProfile; chil
       preview,
       localizedPreview,
       previewLocale,
+      previewPageKey,
       setTranslations,
       dropTranslations,
       update,
@@ -678,6 +693,52 @@ export function useCustomSections() {
   );
 
   return { sections: profile.customSections, create, rename, remove };
+}
+
+// The pages the owner made (/<slug>/p/<page>). The API sends the page list back after a change that
+// adds or removes one (a deleted page's sections go back to their standard pages), and it is stored
+// with the profile.
+export function useCustomPages() {
+  const { profile, update } = useEditor();
+  const base = '/profile/me/custom-pages';
+
+  const create = useCallback(
+    async (input: { title: string; slug?: string; body?: string }) => {
+      const { page, pages } = await api<{ page: MyCustomPage; pages: PageConfig }>(base, {
+        method: 'POST',
+        body: input,
+      });
+      update((p) => ({ ...p, customPages: [...p.customPages, page], pageConfig: pages }));
+      return page;
+    },
+    [update],
+  );
+
+  const save = useCallback(
+    async (id: string, input: { title: string; slug?: string; body?: string }) => {
+      const page = await api<MyCustomPage>(`${base}/${id}`, { method: 'PUT', body: input });
+      update((p) => ({
+        ...p,
+        customPages: p.customPages.map((own) => (own.id === id ? page : own)),
+      }));
+      return page;
+    },
+    [update],
+  );
+
+  const remove = useCallback(
+    async (id: string) => {
+      const { pages } = await api<{ pages: PageConfig }>(`${base}/${id}`, { method: 'DELETE' });
+      update((p) => ({
+        ...p,
+        customPages: p.customPages.filter((own) => own.id !== id),
+        pageConfig: pages,
+      }));
+    },
+    [update],
+  );
+
+  return { pages: profile.customPages, create, save, remove };
 }
 
 // Testimonials: all of them, whatever their status. Adding one here makes it approved at once.

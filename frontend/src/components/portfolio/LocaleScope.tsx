@@ -3,8 +3,8 @@ import { languageOf } from '@parichay/shared';
 import { uiFor } from '@/lib/i18n';
 import { localeFontClass } from '@/lib/locale-fonts';
 import { atkinson } from '@/lib/reading-font';
-import { PRE_PAINT_SCRIPT } from '@/lib/reading-prefs';
 import { HtmlLang } from './HtmlLang';
+import { PrePaintScript } from './PrePaintScript';
 import { LanguageSwitcher, type LanguageLink } from './LanguageSwitcher';
 import { ReadingPreferences } from './ReadingPreferences';
 
@@ -20,11 +20,15 @@ export async function LocaleScope({
   locale,
   links,
   label,
+  bare = false,
   children,
 }: {
   locale: string;
   links: LanguageLink[]; // empty: no switcher
   label: string; // "Language"
+  // A multi-page portfolio has the language links and the reading preferences in its own navigation,
+  // so it has no strip above the theme.
+  bare?: boolean;
   children: ReactNode;
 }) {
   const language = languageOf(locale);
@@ -37,16 +41,18 @@ export async function LocaleScope({
       data-reading=""
       className={`${fontClass} ${atkinson.variable}`}
     >
-      <script dangerouslySetInnerHTML={{ __html: PRE_PAINT_SCRIPT }} />
+      <PrePaintScript />
       <HtmlLang lang={language.code} dir={language.dir} />
-      <div className="brand border-b border-[#d8cdbd] bg-[#f4ede2] px-4 py-1.5 text-sm text-[#1f1a17]">
-        <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-end gap-x-3 gap-y-1">
-          {links.length > 1 && (
-            <LanguageSwitcher links={links} current={language.code} label={label} />
-          )}
-          <ReadingPreferences ui={uiFor(language.code).reading} />
+      {!bare && (
+        <div className="brand border-b border-[#d8cdbd] bg-[#f4ede2] px-4 py-1.5 text-sm text-[#1f1a17]">
+          <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-end gap-x-3 gap-y-1">
+            {links.length > 1 && (
+              <LanguageSwitcher links={links} current={language.code} label={label} />
+            )}
+            <ReadingPreferences ui={uiFor(language.code).reading} />
+          </div>
         </div>
-      </div>
+      )}
       {children}
     </div>
   );

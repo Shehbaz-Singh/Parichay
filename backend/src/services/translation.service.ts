@@ -1,6 +1,8 @@
 import {
   MAX_EXTRA_LANGUAGES,
   fieldRule,
+  isCustomPageKey,
+  normalizePageConfig,
   normalizeSectionConfig,
   translationKey,
   type LanguageStatus,
@@ -43,7 +45,17 @@ export async function loadSource(profileId: string): Promise<Source> {
       sectionConfig: true,
       experience: { select: { id: true, title: true, description: true } },
       education: { select: { id: true, degree: true } },
-      projects: { select: { id: true, name: true, description: true } },
+      pageConfig: true,
+      customPages: { select: { id: true, title: true, body: true } },
+      projects: {
+        select: {
+          id: true,
+          name: true,
+          description: true,
+          coverAlt: true,
+          images: { select: { id: true, alt: true } },
+        },
+      },
       skills: { select: { id: true, name: true } },
       customSections: {
         select: {
@@ -85,9 +97,23 @@ export async function loadSource(profileId: string): Promise<Source> {
   for (const item of config) {
     if (!item.key.startsWith('custom:')) add('section', item.key, { title: item.title ?? null });
   }
+  // The owner's own names for the built-in pages, and the pages they made.
+  for (const page of normalizePageConfig(
+    profile.pageConfig,
+    profile.customPages.map((own) => own.id),
+    config.map((item) => item.key),
+  )) {
+    if (!isCustomPageKey(page.key)) add('page', page.key, { title: page.title ?? null });
+  }
+  for (const page of profile.customPages) add('customPage', page.id, page);
   for (const row of profile.experience) add('experience', row.id, row);
   for (const row of profile.education) add('education', row.id, row);
-  for (const row of profile.projects) add('project', row.id, row);
+  for (const { images, ...row } of profile.projects) {
+    // The cover's alt text is only a text to translate while there is a cover; the cover's own
+    // field is cleared with it.
+    add('project', row.id, row);
+    for (const image of images) add('projectImage', image.id, { alt: image.alt });
+  }
   for (const row of profile.skills) add('skill', row.id, row);
   for (const section of profile.customSections) {
     add('customSection', section.id, { title: section.title });

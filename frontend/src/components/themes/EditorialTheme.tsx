@@ -1,4 +1,6 @@
 import type { ReactNode } from 'react';
+import { pageLabel } from '@/lib/pages';
+import Link from 'next/link';
 import { Hanken_Grotesk, Newsreader } from 'next/font/google';
 import { MapPin } from 'lucide-react';
 import { ShareButton } from '../ShareButton';
@@ -31,7 +33,14 @@ import {
   FooterLines,
   MoreLinkView,
   PageHeading,
+  ProjectCover,
+  ProjectVisit,
+  CtaView,
+  IdentityStrip,
+  isHeroProject,
 } from './parts';
+import { EditorialPages } from './templates/EditorialPages';
+import { pageView } from './templates/model';
 import { ThemeWrapper } from './ThemeWrapper';
 import type { ThemeProps } from './types';
 
@@ -224,18 +233,23 @@ function BlockBody({ block }: { block: Block }) {
       const listProjects = (items: typeof block.projects) => (
         <ul className="grid gap-y-12 xl:grid-cols-2 xl:gap-x-14 2xl:grid-cols-3">
           {items.map((project) => (
-            <li key={project.id} className="ed-hover group relative min-w-0">
-              <h3 className={`${display} text-2xl leading-tight font-medium sm:text-3xl`}>
-                {project.href ? (
-                  <NewTabLink
-                    href={project.href}
-                    className={`after:absolute after:inset-0 ${focusRing}`}
-                  >
-                    <span className="ed-underline">{project.name}</span>
-                  </NewTabLink>
-                ) : (
-                  project.name
-                )}
+            <li
+              key={project.id}
+              className={`ed-hover group relative min-w-0 ${isHeroProject(block, project) ? 'xl:col-span-2 2xl:col-span-3' : ''}`}
+            >
+              <ProjectCover
+                project={project}
+                className={`mb-4 w-full object-cover ${isHeroProject(block, project) ? 'aspect-[21/9]' : 'aspect-[40/21]'}`}
+              />
+              <h3
+                className={`${display} leading-tight font-medium ${isHeroProject(block, project) ? 'text-4xl sm:text-6xl' : 'text-2xl sm:text-3xl'}`}
+              >
+                <Link
+                  href={project.detailHref}
+                  className={`after:absolute after:inset-0 ${focusRing}`}
+                >
+                  <span className="ed-underline">{project.name}</span>
+                </Link>
               </h3>
               {project.description && (
                 <ReadMore
@@ -247,6 +261,11 @@ function BlockBody({ block }: { block: Block }) {
               {project.tags.length > 0 && (
                 <p className={`${display} mt-3 text-muted italic`}>{project.tags.join(' · ')}</p>
               )}
+              <ProjectVisit
+                project={project}
+                label={block.ui.viewProject}
+                className={`text-accent-fg underline underline-offset-4 hover:no-underline ${focusRing}`}
+              />
             </li>
           ))}
         </ul>
@@ -332,6 +351,13 @@ function BlockBody({ block }: { block: Block }) {
         </>
       );
     }
+    case 'cta':
+      return (
+        <CtaView
+          block={block}
+          linkClassName={`inline-flex items-center gap-2 font-medium text-accent-fg underline underline-offset-4 hover:no-underline ${focusRing}`}
+        />
+      );
     case 'contact':
       return (
         <div className="max-w-xl print:hidden">
@@ -433,25 +459,74 @@ function Footer({ footer }: { footer: FooterModel }) {
 export default function EditorialTheme({
   profile,
   idPrefix = '',
-  view,
+  page,
   nav,
   heading,
-  projectId,
+  lead,
+  project,
+  contact,
 }: ThemeProps) {
-  const blocks = buildBlocks(profile, idPrefix, view, projectId);
+  // A multi-page portfolio (or a project's own page) is drawn by the theme's page templates.
+  const view = pageView(profile, { page, project, contact });
+  if (view) {
+    return (
+      <EditorialPages
+        profile={profile}
+        view={view}
+        nav={nav}
+        idPrefix={idPrefix}
+        fontClass={fontClass}
+        hero={<Masthead header={buildHeader(profile)} />}
+        renderBlock={(block) => <BlockView block={block} />}
+        Section={Section}
+        footer={<Footer footer={buildFooter(profile)} />}
+      />
+    );
+  }
+  const blocks = buildBlocks(profile, idPrefix, page);
+  const identity =
+    heading && !lead && page && (page.key === 'work' || page.key === 'about') ? (
+      <IdentityStrip
+        header={buildHeader(profile)}
+        full={page.key === 'about'}
+        wrapClassName="mb-12 flex items-center gap-5 border-b border-line pb-8"
+        avatarClassName="size-20 shrink-0 rounded-full sm:size-28"
+        placeholderClassName={`${display} bg-surface text-3xl text-ink`}
+        nameClassName={`${display} text-2xl font-medium`}
+        taglineClassName="mt-1 text-lg text-muted italic"
+        metaClassName="mt-1 text-sm text-muted"
+        pillClassName={`inline-flex items-center gap-2 border-b border-ink pb-0.5 text-sm hover:border-b-2 ${focusRing}`}
+        badgeClassName="mt-3 text-sm text-ink"
+        badgeDotClassName="bg-accent-fg"
+        badgeLinkClassName={`font-medium text-accent-fg underline underline-offset-2 hover:no-underline ${focusRing}`}
+      />
+    ) : null;
   return (
     <ThemeWrapper theme="editorial" profile={profile} nav={nav} className={fontClass}>
       <main
         id={`${idPrefix}main`}
         className="mx-auto max-w-[110rem] px-5 sm:px-8 lg:px-[clamp(3rem,6vw,8rem)] py-10 sm:py-16"
       >
-        {heading ? <PageHeading heading={heading} /> : <Masthead header={buildHeader(profile)} />}
+        {lead ??
+          (heading ? (
+            <PageHeading
+              heading={heading}
+              title={page ? pageLabel(profile, page) : undefined}
+              kicker={profile.fullName}
+              wrapClassName="mb-10 border-b border-ink pb-8 sm:mb-14"
+              kickerClassName={`${display} mb-3 text-lg text-muted italic`}
+              className={`${display} text-6xl leading-[0.95] font-medium tracking-tight text-balance sm:text-8xl`}
+            />
+          ) : (
+            <Masthead header={buildHeader(profile)} />
+          ))}
+        {identity}
         {blocks.map((block) => (
           <Section key={block.id} block={block}>
             <BlockView block={block} />
           </Section>
         ))}
-        {blocks.length === 0 && (
+        {blocks.length === 0 && !lead && (
           <EmptyPage
             text={uiFor(profile.locale).emptyPage}
             className={`${display} mt-16 text-center text-muted italic`}

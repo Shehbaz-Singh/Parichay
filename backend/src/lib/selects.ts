@@ -11,6 +11,8 @@ export const profileSelect = Object.fromEntries(
 const publicProfileShape = profileSchema.omit({
   id: true,
   published: true,
+  pageConfig: true,
+  sitemapListed: true,
   linkBioEnabled: true,
   linkBioStyle: true,
   linkBioShowContact: true,
@@ -80,3 +82,13 @@ export const publicPostSummarySelect = {
   coverImageUrl: true,
   publishedAt: true,
 } satisfies Prisma.PostSelect;
+
+// The projects of a profile in display order, each with its gallery. profileId and the gallery's
+// projectId are dropped: the client already knows them.
+export const projectList = {
+  omit: { profileId: true },
+  include: {
+    images: { omit: { projectId: true }, orderBy: [{ order: 'asc' }, { id: 'asc' }] },
+  },
+  orderBy: [{ order: 'asc' }, { id: 'asc' }],
+} satisfies Prisma.ProjectFindManyArgs;

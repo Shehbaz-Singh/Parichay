@@ -58,7 +58,25 @@ export function applyTranslations(
       ...row,
       name: t('project', row.id, 'name', row.name),
       description: t('project', row.id, 'description', row.description),
+      coverAlt: tn('project', row.id, 'coverAlt', row.coverAlt),
+      images: row.images.map((image) => ({
+        ...image,
+        alt: tn('projectImage', image.id, 'alt', image.alt),
+      })),
     })),
+    // The owner's names for the pages, and the texts of the pages they made.
+    pages: preview.pages.map((page) => {
+      const own = page.key.startsWith('page:') ? page.key.slice('page:'.length) : null;
+      return own
+        ? {
+            ...page,
+            title: t('customPage', own, 'title', page.title ?? ''),
+            body: tn('customPage', own, 'body', page.body),
+          }
+        : page.title
+          ? { ...page, title: t('page', page.key, 'title', page.title) }
+          : page;
+    }),
     education: preview.education.map((row) => ({
       ...row,
       degree: t('education', row.id, 'degree', row.degree),

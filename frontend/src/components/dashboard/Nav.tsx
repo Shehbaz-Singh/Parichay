@@ -10,6 +10,7 @@ import {
   Inbox,
   Languages,
   LayoutList,
+  LayoutPanelTop,
   LogOut,
   Menu,
   MessageSquareQuote,
@@ -50,6 +51,7 @@ const GROUPS: NavGroup[] = [
     label: 'Look',
     items: [
       { href: '/dashboard/themes', label: 'Themes', Icon: Palette },
+      { href: '/dashboard/pages', label: 'Pages', Icon: LayoutPanelTop },
       { href: '/dashboard/sections', label: 'Sections', Icon: LayoutList },
       { href: '/dashboard/languages', label: 'Languages', Icon: Languages },
     ],

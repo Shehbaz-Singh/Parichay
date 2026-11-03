@@ -12,7 +12,9 @@ import { SITE_URL } from '@/lib/config';
 import { formatDate, initials, safeHttpUrl, truncate } from '@/lib/format';
 import { fill, pagePath, uiFor } from '@/lib/i18n';
 import { alternateLanguages, languageLinks } from '@/lib/portfolio-links';
+import { findPage, isMulti, pageLabel } from '@/lib/pages';
 import { LocaleScope } from './LocaleScope';
+import { breadcrumbList } from './structured-data';
 
 // The Writing pages, in the profile's default language (/<slug>/writing) or another one
 // (/<slug>/<locale>/writing).
@@ -23,11 +25,17 @@ const readingMinutes = (text: string) =>
 
 // ---- the list
 
+// The page's name: the owner's own in a multi-page portfolio, else the default for the language.
+const listTitle = (profile: NonNullable<Awaited<ReturnType<typeof getPublicProfile>>>) => {
+  const page = findPage(profile, 'writing');
+  return page ? pageLabel(profile, page) : uiFor(profile.locale).writing.title;
+};
+
 export async function writingListMetadata(username: string, locale?: string): Promise<Metadata> {
   const profile = await getPublicProfile(username, locale);
   if (!profile) notFound();
   const ui = uiFor(profile.locale);
-  const title = `${ui.writing.title} | ${profile.fullName}`;
+  const title = `${listTitle(profile)} | ${profile.fullName}`;
   const base = pagePath(profile.slug, profile.locale, profile.defaultLocale);
   return {
     title: { absolute: title },
@@ -58,9 +66,14 @@ export async function WritingListView({ username, locale }: { username: string; 
       locale={profile.locale}
       links={languageLinks(profile, '/writing')}
       label={ui.switcher.label}
+      bare={isMulti(profile)}
     >
-      <WritingShell profile={profile} current="writing">
-        <h1 className="wr-display type-page">{ui.writing.title}</h1>
+      <WritingShell
+        profile={profile}
+        current="writing"
+        languages={languageLinks(profile, '/writing')}
+      >
+        <h1 className="wr-display type-page">{listTitle(profile)}</h1>
         <p className="mt-1 text-muted">{fill(ui.writing.intro, { name: profile.fullName })}</p>
         <div className="mt-10">
           {entries.length > 0 ? (
@@ -157,26 +170,38 @@ export async function PostView({
 
   // Article structured data. The text comes from the owner, so "<" is escaped: nothing in it can end
   // the script element.
-  const structuredData = JSON.stringify({
-    '@context': 'https://schema.org',
-    '@type': 'Article',
-    inLanguage: profile.locale,
-    headline: post.title,
-    description: post.excerpt ?? undefined,
-    datePublished: post.publishedAt,
-    dateModified: post.updatedAt,
-    mainEntityOfPage: url,
-    image: cover ? [cover] : undefined,
-    author: { '@type': 'Person', name: profile.fullName, url: `${SITE_URL}${base}` },
-  }).replace(/</g, '\\u003c');
+  const structuredData = JSON.stringify([
+    {
+      '@context': 'https://schema.org',
+      '@type': 'Article',
+      inLanguage: profile.locale,
+      headline: post.title,
+      description: post.excerpt ?? undefined,
+      datePublished: post.publishedAt,
+      dateModified: post.updatedAt,
+      mainEntityOfPage: url,
+      image: cover ? [cover] : undefined,
+      author: { '@type': 'Person', name: profile.fullName, url: `${SITE_URL}${base}` },
+    },
+    breadcrumbList([
+      { name: ui.pages.home, path: base },
+      { name: ui.writing.title, path: `${base}/writing` },
+      { name: post.title, path: `${base}/writing/${post.slug}` },
+    ]),
+  ]).replace(/</g, '\\u003c');
 
   return (
     <LocaleScope
       locale={profile.locale}
       links={languageLinks(profile, `/writing/${post.slug}`)}
       label={ui.switcher.label}
+      bare={isMulti(profile)}
     >
-      <WritingShell profile={profile} current="writing">
+      <WritingShell
+        profile={profile}
+        current="writing"
+        languages={languageLinks(profile, `/writing/${post.slug}`)}
+      >
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: structuredData }} />
         <Link
           href={`${base}/writing`}

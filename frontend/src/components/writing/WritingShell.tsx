@@ -5,8 +5,9 @@ import { pagePath, uiFor } from '@/lib/i18n';
 import { loadThemeFonts } from '@/lib/theme-loader';
 import { getTheme } from '@/lib/themes';
 import { SampleBanner } from '../SampleBanner';
-import { SiteNav, type NavPage } from '../portfolio/SiteNav';
-import { pageSplit } from '../themes/blocks';
+import type { LanguageLink } from '../portfolio/LanguageSwitcher';
+import { SiteNav } from '../portfolio/SiteNav';
+import { isMulti } from '@/lib/pages';
 import { ThemeWrapper } from '../themes/ThemeWrapper';
 
 // The frame of the Writing pages (the list and a single post): the owner's theme colors and accent,
@@ -16,11 +17,13 @@ export async function WritingShell({
   profile,
   allPosts = true,
   current,
+  languages,
   children,
 }: {
   profile: PublicProfile;
   allPosts?: boolean; // the link to the list of posts (the Writing pages); off for other pages
-  current?: NavPage; // the page it is, to mark in the navigation of a profile that has one
+  current?: string; // the page it is (a page key), to mark in the navigation of a multi-page profile
+  languages?: LanguageLink[]; // the links the navigation carries, to this same page in each language
   children: ReactNode;
 }) {
   const theme = getTheme(profile.theme).key;
@@ -29,14 +32,16 @@ export async function WritingShell({
   const base = pagePath(profile.slug, profile.locale, profile.defaultLocale);
   // `.wr-display` marks headings that use the theme's display face. Creative has none of its own (its
   // body font is the display font), so there it changes nothing.
-  const split = current !== undefined && pageSplit(profile).split;
+  const split = current !== undefined && isMulti(profile);
   const display =
     theme === 'creative' ? '' : '[&_.wr-display]:font-(family-name:--font-theme-display)';
   return (
     <ThemeWrapper
       theme={theme}
       profile={profile}
-      nav={split ? <SiteNav profile={profile} current={current} /> : undefined}
+      nav={
+        split ? <SiteNav profile={profile} current={current} languages={languages} /> : undefined
+      }
       className={`${fonts} ${display}`}
     >
       {profile.isSample && <SampleBanner ui={ui.sample} />}

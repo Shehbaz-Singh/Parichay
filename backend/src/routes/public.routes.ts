@@ -13,6 +13,7 @@ import {
   getPublicProfile,
   getSiteInfo,
   getSitemapLocales,
+  getSitemapPages,
   getSitemapPosts,
   submitContact,
   submitTestimonial,
@@ -28,6 +29,7 @@ export const publicRouter = Router();
 publicRouter.get('/_info', getSiteInfo);
 publicRouter.get('/_posts', getSitemapPosts);
 publicRouter.get('/_locales', getSitemapLocales);
+publicRouter.get('/_pages', getSitemapPages);
 publicRouter.get('/:slug', getPublicProfile);
 publicRouter.get('/:slug/posts', getPublicPosts);
 publicRouter.get('/:slug/links', getLinkCard);

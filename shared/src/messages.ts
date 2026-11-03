@@ -31,6 +31,10 @@ export const VALIDATION = {
   // section-config.ts
   sectionRepeated: (key: string) => `Each section can appear only once (${key} is repeated)`,
 
+  // pages.ts
+  pageRepeated: 'Each page can appear only once',
+  pageSlugReserved: 'This address is reserved, choose another',
+
   // testimonials.ts
   emailInvalid: 'Enter a valid email address',
 

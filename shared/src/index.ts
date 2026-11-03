@@ -23,6 +23,8 @@ export * from './contact-card';
 export * from './portfolio';
 export * from './public';
 export * from './section-config';
+export * from './layout-mode';
+export * from './pages';
 export * from './custom-sections';
 export * from './posts';
 export * from './samples';

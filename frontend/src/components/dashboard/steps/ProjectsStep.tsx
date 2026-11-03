@@ -15,16 +15,19 @@ import { TextArea, TextField } from '../../form-fields';
 import { EditorForm } from '../EditorForm';
 import { useEditor, useSection, type SectionItem } from '../editor-context';
 import { LengthNote } from '../LengthNote';
+import { ProjectMedia } from './ProjectMedia';
 import { Button } from '../../ui';
 import { SectionManager, type ItemFormProps } from '../SectionManager';
 
 // Tags are typed as "Go, Rust, SQL" and sent as a list.
 type Fields = {
   name: string;
+  slug: string;
   url: string;
   description: string;
   techTags: string;
   featured: boolean;
+  coverAlt: string;
 };
 const splitTags = (text: string) =>
   text
@@ -42,6 +45,8 @@ function ProjectForm({ item, draft, onDone, onSaved }: ItemFormProps<'projects'>
     })),
     defaultValues: {
       name: source?.name ?? '',
+      slug: item?.slug ?? '',
+      coverAlt: item?.coverAlt ?? '',
       url: source?.url ?? '',
       description: source?.description ?? '',
       techTags: source?.techTags.join(', ') ?? '',
@@ -50,13 +55,21 @@ function ProjectForm({ item, draft, onDone, onSaved }: ItemFormProps<'projects'>
   });
 
   async function onSubmit(values: ProjectInput) {
-    await (item ? updateItem(item.id, values) : create(values));
+    // A description of a cover that is not there any more is not kept.
+    const input = { ...values, coverAlt: item?.coverUrl ? values.coverAlt : null };
+    await (item ? updateItem(item.id, input) : create(input));
     onSaved?.();
     onDone();
   }
 
   return (
-    <EditorForm form={form} onSubmit={onSubmit} submitLabel="Save project" onCancel={onDone}>
+    <EditorForm
+      form={form}
+      onSubmit={onSubmit}
+      submitLabel="Save project"
+      onCancel={onDone}
+      codeFields={{ SLUG_TAKEN: 'slug' }}
+    >
       <TextField
         name="name"
         label="Project name"
@@ -85,6 +98,20 @@ function ProjectForm({ item, draft, onDone, onSaved }: ItemFormProps<'projects'>
         placeholder="React, Node.js, PostgreSQL"
         hint="Separate with commas. Up to 20."
       />
+      <TextField
+        name="slug"
+        label="Page address"
+        placeholder={item ? undefined : 'made from the name'}
+        hint={
+          item
+            ? 'Lowercase letters, numbers and hyphens: yourname/work/address. Changing it breaks links people already have to this project’s page.'
+            : 'Optional. Made from the name if you leave it blank.'
+        }
+        autoCapitalize="none"
+        spellCheck={false}
+        maxLength={60}
+      />
+      <ProjectMedia project={item} />
     </EditorForm>
   );
 }
@@ -105,6 +132,7 @@ function FeaturedToggle({ project }: { project: SectionItem<'projects'> }) {
         url: project.url,
         description: project.description,
         techTags: project.techTags,
+        coverAlt: project.coverAlt,
         featured: !project.featured,
       });
     } catch (err) {

@@ -4,7 +4,9 @@ import {
   closedWeek,
   customIdOf,
   isCustomKey,
+  pagePathOf,
   type PublicLink,
+  type PublicPage,
   type PublicPostSummary,
   type PublicProfile,
   type SectionKey,
@@ -50,11 +52,13 @@ export interface Entry {
   description: string | null;
 }
 
-interface ProjectEntry {
+export interface ProjectEntry {
   id: string;
   slug: string; // the project's own page (/work/<slug>)
+  detailHref: string; // that page, in this language
   name: string;
-  href: string | null;
+  href: string | null; // the project itself, elsewhere (checked to be http(s))
+  cover: { src: string; alt: string; width: number; height: number } | null;
   description: string;
   tags: string[];
 }
@@ -121,9 +125,13 @@ export type Block =
   | (BlockBase & {
       kind: 'projects';
       projects: ProjectEntry[]; // the lead: the featured ones, or the first few of a long list
+      hero?: boolean; // the first one leads (the Work page of a portfolio with several projects)
+      total: number; // all the projects the owner shows, whatever part of them is drawn here
       rest: ProjectEntry[]; // behind "more projects"
     })
   | (BlockBase & { kind: 'contact'; form: ContactFormModel })
+  // The short home page of a multi-page site, pointing at its Contact page.
+  | (BlockBase & { kind: 'cta'; text: string; href: string; label: string })
   | (BlockBase & {
       kind: 'testimonials';
       testimonials: TestimonialEntry[];
@@ -144,56 +152,14 @@ export type Block =
 // How much of a long list a visitor is shown before the rest goes behind a button. Short lists are
 // shown whole. The rest is still in the page (see Collapse.tsx), so nothing is lost.
 export const SHOW = { projects: 4, jobs: 4, skills: 12, testimonials: 6 } as const;
+// How many projects the short home page of a multi-page site leads with.
+const HOME_PROJECTS = 4;
 
 // The first `count` items, and the others. A list only a little longer than `count` is not split:
 // a button for one or two items is worse than showing them.
 function curate<T>(items: T[], count: number): { shown: T[]; rest: T[] } {
   if (items.length <= count + 1) return { shown: items, rest: [] };
   return { shown: items.slice(0, count), rest: items.slice(count) };
-}
-
-// ---- one page, or several
-// A profile with a lot on it is split: a short home page, and a page for the work and one for the rest
-// of the story. A light one stays a single page, with nothing to click through. "A lot" is any of
-// these, counted among the sections the owner shows.
-export const SPLIT_AT = { projects: 6, jobs: 5, skills: 12 } as const;
-
-// What a page of the portfolio shows. 'all' is the single page; the other three exist only when the
-// profile is split.
-export type ThemeView = 'all' | 'home' | 'work' | 'about';
-
-export interface PageSplit {
-  split: boolean;
-  work: boolean; // there is a work page
-  about: boolean; // there is an about page
-  writing: boolean; // the Writing section is shown and has posts (it has had its own page all along)
-}
-
-export function pageSplit(profile: PublicProfile): PageSplit {
-  const shows = (key: string) => profile.sections.some((section) => section.key === key);
-  const split =
-    (shows('projects') && profile.projects.length > SPLIT_AT.projects) ||
-    (shows('experience') && profile.experience.length > SPLIT_AT.jobs) ||
-    (shows('skills') && profile.skills.length > SPLIT_AT.skills);
-  const hasAbout =
-    (shows('about') && !!profile.about) ||
-    (shows('experience') && profile.experience.length > 0) ||
-    (shows('education') && profile.education.length > 0) ||
-    (shows('skills') && profile.skills.length > 0) ||
-    (shows('testimonials') && (profile.testimonials.length > 0 || profile.acceptTestimonials)) ||
-    profile.sections.some(
-      ({ key }) =>
-        isCustomKey(key) &&
-        profile.customSections.some(
-          (custom) => custom.id === customIdOf(key) && custom.items.length > 0,
-        ),
-    );
-  return {
-    split,
-    work: split && shows('projects') && profile.projects.length > 0,
-    about: split && hasAbout,
-    writing: shows('writing') && profile.writing.length > 0,
-  };
 }
 
 // The short version of an About text for the home page: whole paragraphs up to about this long (a
@@ -363,18 +329,6 @@ function leadProjects(items: { featured: boolean; entry: ProjectEntry }[], all: 
   return { projects: shown, rest };
 }
 
-// Which sections a page of a split profile draws. The single page draws them all.
-const ON_PAGE: Record<Exclude<ThemeView, 'all'>, readonly string[]> = {
-  home: ['about', 'projects', 'writing', 'contact'],
-  work: ['projects'],
-  about: ['about', 'experience', 'education', 'skills', 'testimonials'],
-};
-function onPage(view: ThemeView | 'complete', key: string): boolean {
-  if (view === 'all' || view === 'complete') return true;
-  if (isCustomKey(key)) return view === 'about';
-  return ON_PAGE[view].includes(key);
-}
-
 const isBuiltIn = (key: string): key is SectionKey => Object.hasOwn(SECTION_LABELS, key);
 
 export function buildContactForm(
@@ -405,25 +359,36 @@ export function buildContactForm(
 export function buildBlocks(
   profile: PublicProfile,
   idPrefix = '',
-  requested: ThemeView | 'complete' = 'all', // 'complete': everything, uncut (the resume PDF)
-  projectId?: string, // with 'work': just this project
+  // The page of a multi-page site to draw (Home is a short recipe, the others draw the sections they
+  // hold). Left out, the whole single page. 'complete': everything, uncut (the resume PDF).
+  requested?: PublicPage | 'complete',
 ): Block[] {
   const blocks: Block[] = [];
   const { locale } = profile;
-  const pages = pageSplit(profile);
-  // Only a split profile has more than one page.
-  const view: ThemeView | 'complete' =
-    requested === 'complete' ? 'complete' : pages.split || projectId ? requested : 'all';
-  // The work and about pages show everything, uncut; the home page and the single page are curated.
-  const full = view === 'work' || view === 'about' || view === 'complete';
+  const complete = requested === 'complete';
+  const page = typeof requested === 'object' ? requested : undefined;
+  const home = page?.key === 'home';
+  // A page of its own and the resume show everything, uncut; Home and the single page are curated.
+  const full = complete || (!!page && !home);
   const cut: typeof curate = full ? (items) => ({ shown: items, rest: [] }) : curate;
   const root = pagePath(profile.slug, locale, profile.defaultLocale);
   const ui = uiFor(locale);
   const t = translatorFor(locale);
   const fmt: DateFmt = { locale, present: ui.present };
+  // The pages that exist, to link to from Home. Single mode has none.
+  const pageOf = (key: string) => profile.pages.find((item) => item.key === key);
+  const linkTo = (key: string) => {
+    const target = pageOf(key);
+    return target ? `${root}${pagePathOf(target)}` : null;
+  };
+  const titles = new Map(profile.sections.map((section) => [section.key, section.title]));
+  // A page draws the sections it holds, in its order; Home draws pieces of a few; the rest draw all.
+  const keys = page && !home ? page.sections : profile.sections.map((section) => section.key);
+  const onHome = ['about', 'projects', 'writing', 'contact'];
 
-  for (const { key, title } of profile.sections) {
-    if (!onPage(view, key)) continue;
+  for (const key of keys) {
+    if (home && !onHome.includes(key)) continue;
+    const title = titles.get(key);
     if (isCustomKey(key)) {
       const section = profile.customSections.find((s) => s.id === customIdOf(key));
       if (!section || section.items.length === 0) continue;
@@ -454,12 +419,13 @@ export function buildBlocks(
     switch (key) {
       case 'about':
         if (profile.about) {
-          if (view === 'home' && pages.about) {
+          const aboutPage = home ? linkTo('about') : null;
+          if (aboutPage) {
             blocks.push({
               kind: 'about',
               ...base,
               text: brief(profile.about).text,
-              moreLink: { href: `${root}/about`, label: ui.density.moreAbout },
+              moreLink: { href: aboutPage, label: ui.density.moreAbout },
             });
           } else blocks.push({ kind: 'about', ...base, text: profile.about });
         }
@@ -495,31 +461,52 @@ export function buildBlocks(
         }
         break;
       case 'projects': {
-        const projects = projectId
-          ? profile.projects.filter((project) => project.id === projectId)
-          : profile.projects;
-        if (projects.length > 0) {
+        const entries = profile.projects.map((project) => ({
+          featured: project.featured,
+          entry: {
+            id: project.id,
+            slug: project.slug,
+            detailHref: `${root}/work/${project.slug}`,
+            name: project.name,
+            href: safeHttpUrl(project.url),
+            cover:
+              project.coverUrl && project.coverWidth && project.coverHeight
+                ? {
+                    src: project.coverUrl,
+                    alt: project.coverAlt ?? '',
+                    width: project.coverWidth,
+                    height: project.coverHeight,
+                  }
+                : null,
+            description: project.description,
+            tags: project.techTags,
+          },
+        }));
+        if (entries.length === 0) break;
+        if (home) {
+          // Home: the featured ones, or the first few, and the way to the rest.
+          const lead = entries.filter((item) => item.featured);
+          const shown = (lead.length > 0 ? lead : entries).slice(0, HOME_PROJECTS);
+          const workPage = linkTo('work');
           blocks.push({
             kind: 'projects',
             ...base,
-            ...leadProjects(
-              projects.map((project) => ({
-                featured: project.featured,
-                entry: {
-                  id: project.id,
-                  slug: project.slug,
-                  name: project.name,
-                  href: safeHttpUrl(project.url),
-                  description: project.description,
-                  tags: project.techTags,
-                },
-              })),
-              full,
-            ),
-            ...(view === 'home' && pages.work ? { rest: [] } : {}),
-            ...(view === 'home' && pages.work && profile.projects.length > SHOW.projects
-              ? { moreLink: { href: `${root}/work`, label: ui.density.viewAllProjects } }
+            total: entries.length,
+            projects: shown.map((item) => item.entry),
+            rest: workPage
+              ? []
+              : entries.filter((item) => !shown.includes(item)).map((i) => i.entry),
+            ...(workPage && entries.length > shown.length
+              ? { moreLink: { href: workPage, label: ui.density.viewAllProjects } }
               : {}),
+          });
+        } else {
+          blocks.push({
+            kind: 'projects',
+            ...base,
+            total: entries.length,
+            hero: page?.key === 'work' && entries.length >= 3,
+            ...leadProjects(entries, full),
           });
         }
         break;
@@ -547,6 +534,8 @@ export function buildBlocks(
         }
         break;
       case 'contact':
+        // On Home the Contact page has the form; Home only points to it (below).
+        if (home && pageOf('contact')) break;
         if (profile.contactForm) {
           blocks.push({
             kind: 'contact',
@@ -560,7 +549,7 @@ export function buildBlocks(
         }
         break;
       case 'writing': {
-        const root = pagePath(profile.slug, locale, profile.defaultLocale);
+        if (home && pageOf('writing')) break;
         const posts = writingEntries(profile.slug, profile.writing, root);
         if (posts.length > 0) {
           blocks.push({
@@ -594,6 +583,19 @@ export function buildBlocks(
         }
         break;
     }
+  }
+  const contactPage = home ? linkTo('contact') : null;
+  if (contactPage) {
+    blocks.push({
+      kind: 'cta',
+      id: `${idPrefix}cta`,
+      locale,
+      ui,
+      title: ui.pages.ctaTitle,
+      text: ui.pages.ctaText,
+      href: contactPage,
+      label: ui.pages.ctaLink,
+    });
   }
   return blocks;
 }

@@ -1,4 +1,6 @@
 import type { ReactNode } from 'react';
+import { pageLabel } from '@/lib/pages';
+import Link from 'next/link';
 import { Source_Sans_3, Source_Serif_4 } from 'next/font/google';
 import { ArrowUpRight, MapPin } from 'lucide-react';
 import { ShareButton } from '../ShareButton';
@@ -31,9 +33,15 @@ import {
   FooterLines,
   MoreLinkView,
   PageHeading,
+  ProjectCover,
+  ProjectVisit,
+  CtaView,
+  isHeroProject,
 } from './parts';
 import { ThemeWrapper } from './ThemeWrapper';
 import type { ThemeProps } from './types';
+import { ExecutivePages } from './templates/ExecutivePages';
+import { pageView } from './templates/model';
 
 // A professional, resume-like page: a document on a gray desk with two columns. The left sidebar
 // (dark, tinted by the accent) holds the photo, name, tagline, contact links and skills; the wider
@@ -71,9 +79,11 @@ function Sidebar({
   header,
   skills,
   idPrefix,
+  nameAsParagraph = false,
 }: {
   header: HeaderModel;
   idPrefix: string;
+  nameAsParagraph?: boolean; // the page's own template carries the h1
   skills: Extract<Block, { kind: 'skills' }> | undefined;
 }) {
   const contact = `flex max-w-full items-start gap-2.5 py-1 text-sm hover:underline ${focusRing}`;
@@ -96,9 +106,15 @@ function Sidebar({
         className="size-28 rounded-full ring-4 ring-white/20 print:ring-0"
         placeholderClassName={`${display} bg-surface text-4xl font-semibold`}
       />
-      <h1 className={`${display} mt-6 text-3xl leading-tight font-semibold text-balance`}>
-        {header.name}
-      </h1>
+      {nameAsParagraph ? (
+        <p className={`${display} mt-6 text-3xl leading-tight font-semibold text-balance`}>
+          {header.name}
+        </p>
+      ) : (
+        <h1 className={`${display} mt-6 text-3xl leading-tight font-semibold text-balance`}>
+          {header.name}
+        </h1>
+      )}
       {header.tagline && (
         <p className="mt-2 leading-snug text-pretty text-muted">{header.tagline}</p>
       )}
@@ -222,21 +238,14 @@ function BlockBody({ block }: { block: Block }) {
         <ul className="space-y-5">
           {items.map((project) => (
             <li key={project.id} className="min-w-0 break-inside-avoid">
+              <ProjectCover
+                project={project}
+                className={`mb-2 h-auto w-full border border-line print:hidden ${isHeroProject(block, project) ? 'max-w-2xl' : 'max-w-sm'}`}
+              />
               <h3 className="font-bold">
-                {project.href ? (
-                  <NewTabLink
-                    href={project.href}
-                    className={`inline-flex items-baseline gap-1 ${link}`}
-                  >
-                    {project.name}
-                    <ArrowUpRight
-                      aria-hidden="true"
-                      className="rtl:-scale-x-100 size-3.5 shrink-0 self-center print:hidden"
-                    />
-                  </NewTabLink>
-                ) : (
-                  project.name
-                )}
+                <Link href={project.detailHref} className={link}>
+                  {project.name}
+                </Link>
               </h3>
               {project.description && (
                 <ReadMore
@@ -248,6 +257,16 @@ function BlockBody({ block }: { block: Block }) {
               {project.tags.length > 0 && (
                 <p className="mt-1 text-sm text-muted">{project.tags.join(' · ')}</p>
               )}
+              <ProjectVisit
+                project={project}
+                label={block.ui.viewProject}
+                className={`inline-flex items-baseline gap-1 text-sm ${link}`}
+              >
+                <ArrowUpRight
+                  aria-hidden="true"
+                  className="rtl:-scale-x-100 size-3.5 shrink-0 self-center print:hidden"
+                />
+              </ProjectVisit>
             </li>
           ))}
         </ul>
@@ -326,6 +345,14 @@ function BlockBody({ block }: { block: Block }) {
         </>
       );
     }
+    case 'cta':
+      return (
+        <CtaView
+          block={block}
+          className="print:hidden"
+          linkClassName={`inline-flex items-center gap-2 rounded border border-ink px-4 py-1.5 text-sm font-semibold transition-colors hover:bg-page ${focusRing}`}
+        />
+      );
     case 'contact':
       return (
         <div className="max-w-xl print:hidden">
@@ -421,12 +448,39 @@ function Footer({ footer }: { footer: FooterModel }) {
 export default function ExecutiveTheme({
   profile,
   idPrefix = '',
-  view,
+  page,
   nav,
   heading,
-  projectId,
+  lead,
+  project,
+  contact,
 }: ThemeProps) {
-  const blocks = buildBlocks(profile, idPrefix, view, projectId);
+  // The pages of a multi-page portfolio (and a project's own page) have templates of their own.
+  const view = pageView(profile, { page, project, contact });
+  if (view) {
+    const all = buildBlocks(profile, idPrefix);
+    return (
+      <ExecutivePages
+        profile={profile}
+        view={view}
+        nav={nav}
+        idPrefix={idPrefix}
+        fontClass={fontClass}
+        sidebar={
+          <Sidebar
+            header={buildHeader(profile)}
+            skills={all.find((block) => block.kind === 'skills')}
+            idPrefix={idPrefix}
+            nameAsParagraph
+          />
+        }
+        footer={<Footer footer={buildFooter(profile)} />}
+        renderBlock={(block) => <BlockView block={block} />}
+        Section={Section}
+      />
+    );
+  }
+  const blocks = buildBlocks(profile, idPrefix, page);
   const skills = blocks.find((block) => block.kind === 'skills');
   const main = blocks.filter((block) => block.kind !== 'skills');
   return (
@@ -438,7 +492,17 @@ export default function ExecutiveTheme({
             id={`${idPrefix}main`}
             className="min-w-0 p-7 sm:p-10 lg:px-[clamp(2.5rem,4vw,6rem)] lg:py-14 print:p-5 print:pt-1"
           >
-            {heading && <PageHeading heading={heading} />}
+            {lead ??
+              (heading && (
+                <PageHeading
+                  heading={heading}
+                  title={page ? pageLabel(profile, page) : undefined}
+                  kicker={profile.fullName}
+                  wrapClassName="mb-8 border-b-2 border-ink pb-3"
+                  kickerClassName={`mb-1 text-xs font-semibold tracking-[0.14em] text-muted uppercase`}
+                  className={`text-3xl font-bold tracking-tight text-balance sm:text-4xl`}
+                />
+              ))}
             {/* Sections flow down the page in the order the owner chose, and on a wide screen
                 across two or three columns instead of one long strip. */}
             <div className="2xl:columns-2 2xl:gap-x-20 min-[2200px]:columns-3 print:columns-1">
@@ -448,7 +512,7 @@ export default function ExecutiveTheme({
                 </Section>
               ))}
             </div>
-            {main.length === 0 && (
+            {main.length === 0 && !lead && (
               <EmptyPage text={uiFor(profile.locale).emptyPage} className="text-muted" />
             )}
             <Footer footer={buildFooter(profile)} />

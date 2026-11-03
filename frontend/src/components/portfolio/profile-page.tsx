@@ -2,15 +2,16 @@ import type { Metadata, Viewport } from 'next';
 import { notFound, permanentRedirect } from 'next/navigation';
 import { SampleBanner } from '@/components/SampleBanner';
 import { getPublicProfile } from '@/lib/api';
-import { SITE_URL } from '@/lib/config';
 import { truncate } from '@/lib/format';
 import { pagePath, uiFor } from '@/lib/i18n';
+import { findPage, isMulti, pageHref } from '@/lib/pages';
 import { alternateLanguages, languageLinks } from '@/lib/portfolio-links';
 import { loadTheme } from '@/lib/theme-loader';
 import { getTheme } from '@/lib/themes';
 import { LocaleScope } from './LocaleScope';
+import { AnchorForward } from './AnchorForward';
 import { SiteNav } from './SiteNav';
-import { pageSplit } from '@/components/themes/blocks';
+import { JsonLd, personData } from './structured-data';
 
 // The portfolio page, in the profile's default language (/<slug>) or another one (/<slug>/<locale>).
 // The route files only pass the language; everything else is here, so the two cannot drift apart.
@@ -71,37 +72,34 @@ export async function ProfileView({ username, locale }: { username: string; loca
 
   const Theme = await loadTheme(getTheme(profile.theme).key);
 
-  // Structured data in the page's language. The text comes from the owner, so "<" is escaped.
-  const sameAs = profile.links
-    .filter((link) => /^https?:\/\//i.test(link.url) && link.type !== 'other')
-    .map((link) => link.url);
-  const structuredData = JSON.stringify({
-    '@context': 'https://schema.org',
-    '@type': 'ProfilePage',
-    inLanguage: profile.locale,
-    url: `${SITE_URL}${path}`,
-    mainEntity: {
-      '@type': 'Person',
-      name: profile.fullName,
-      jobTitle: profile.tagline ?? undefined,
-      description: profile.about ? truncate(profile.about, 300) : undefined,
-      url: `${SITE_URL}${path}`,
-      sameAs: sameAs.length > 0 ? sameAs : undefined,
-    },
-  }).replace(/</g, '\u003c');
+  // The old single page had a section for everything: a link to /<slug>#projects now goes to the page
+  // that has the projects, when this Home page does not have that anchor itself.
+  const multi = isMulti(profile);
+  const forward: Record<string, string> = {};
+  for (const page of profile.pages) {
+    if (page.key === 'home') continue;
+    for (const key of page.sections) {
+      const id = key.startsWith('custom:') ? `custom-${key.slice('custom:'.length)}` : key;
+      forward[id] = ['projects', 'writing', 'contact'].includes(key)
+        ? pageHref(profile, page)
+        : `${pageHref(profile, page)}#${id}`;
+    }
+  }
 
   return (
     <LocaleScope
       locale={profile.locale}
       links={languageLinks(profile)}
       label={uiFor(profile.locale).switcher.label}
+      bare={multi}
     >
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: structuredData }} />
+      <JsonLd data={personData(profile, path)} />
+      {multi && <AnchorForward targets={forward} />}
       {profile.isSample && <SampleBanner ui={uiFor(profile.locale).sample} />}
       <Theme
         profile={profile}
-        view={pageSplit(profile).split ? 'home' : 'all'}
-        nav={<SiteNav profile={profile} current="home" />}
+        page={multi ? findPage(profile, 'home') : undefined}
+        nav={<SiteNav profile={profile} current="home" languages={languageLinks(profile)} />}
       />
     </LocaleScope>
   );

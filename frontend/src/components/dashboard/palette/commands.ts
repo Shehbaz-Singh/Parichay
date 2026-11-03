@@ -183,6 +183,24 @@ const GO_TO: {
     keywords: ['order', 'reorder', 'hide', 'show', 'rename', 'layout', 'headings'],
   },
   {
+    id: 'pages',
+    title: 'Edit pages',
+    href: '/dashboard/pages',
+    icon: LayoutPanelTop,
+    keywords: [
+      'pages',
+      'multi-page',
+      'single page',
+      'navigation',
+      'menu',
+      'layout',
+      'work page',
+      'about page',
+      'split',
+      'sitemap',
+    ],
+  },
+  {
     id: 'languages',
     title: 'Languages',
     href: '/dashboard/languages',
@@ -371,6 +389,28 @@ const actions: Source = ({ profile, actions: getActions, notify }) => {
   ];
 };
 
+// Switching layouts needs the explanation and the confirmation of the Pages screen, so the command
+// opens it and asks for the switch (see PagesStep).
+const layout: Source = ({ profile, go, requestJump }) => {
+  const multi = profile.layoutMode === 'multi';
+  return [
+    {
+      id: 'action:layout',
+      group: 'Actions',
+      title: multi ? 'Switch to single-page layout' : 'Switch to multi-page layout',
+      subtitle: multi
+        ? 'Everything on one page again'
+        : 'A short Home page and a page for each part',
+      keywords: ['layout', 'pages', 'multi-page', 'single page', 'one page', 'navigation', 'split'],
+      icon: LayoutPanelTop,
+      run: async () => {
+        await go('/dashboard/pages');
+        requestJump('layout', multi ? 'single' : 'multi');
+      },
+    },
+  ];
+};
+
 const themes: Source = ({ profile, saveFields, notify }) =>
   THEME_LIST.map((theme) => ({
     id: `theme:${theme.key}`,
@@ -490,7 +530,7 @@ const help: Source = ({ showShortcuts }) => [
 ];
 
 // The order here is the order within a group.
-const SOURCES: Source[] = [goTo, actions, themes, accents, items, help];
+const SOURCES: Source[] = [goTo, actions, layout, themes, accents, items, help];
 
 export const buildCommands = (ctx: PaletteContext): Command[] =>
   SOURCES.flatMap((source) => source(ctx));

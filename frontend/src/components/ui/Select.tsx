@@ -29,6 +29,7 @@ export function Select({
   onBlur?: () => void;
   disabled?: boolean;
   className?: string;
+  'aria-label'?: string;
   'aria-required'?: boolean;
   'aria-invalid'?: boolean;
   'aria-describedby'?: string;
