@@ -406,13 +406,14 @@ export function buildBlocks(
   profile: PublicProfile,
   idPrefix = '',
   requested: ThemeView | 'complete' = 'all', // 'complete': everything, uncut (the resume PDF)
+  projectId?: string, // with 'work': just this project
 ): Block[] {
   const blocks: Block[] = [];
   const { locale } = profile;
   const pages = pageSplit(profile);
   // Only a split profile has more than one page.
   const view: ThemeView | 'complete' =
-    requested === 'complete' ? 'complete' : pages.split ? requested : 'all';
+    requested === 'complete' ? 'complete' : pages.split || projectId ? requested : 'all';
   // The work and about pages show everything, uncut; the home page and the single page are curated.
   const full = view === 'work' || view === 'about' || view === 'complete';
   const cut: typeof curate = full ? (items) => ({ shown: items, rest: [] }) : curate;
@@ -493,13 +494,16 @@ export function buildBlocks(
           });
         }
         break;
-      case 'projects':
-        if (profile.projects.length > 0) {
+      case 'projects': {
+        const projects = projectId
+          ? profile.projects.filter((project) => project.id === projectId)
+          : profile.projects;
+        if (projects.length > 0) {
           blocks.push({
             kind: 'projects',
             ...base,
             ...leadProjects(
-              profile.projects.map((project) => ({
+              projects.map((project) => ({
                 featured: project.featured,
                 entry: {
                   id: project.id,
@@ -519,6 +523,7 @@ export function buildBlocks(
           });
         }
         break;
+      }
       case 'testimonials':
         // Shown when there is something to read, or when it invites visitors to write one.
         if (profile.testimonials.length > 0 || profile.acceptTestimonials) {

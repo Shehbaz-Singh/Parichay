@@ -80,6 +80,12 @@ export function RoleList({
   );
 }
 
+// The title of an inner page, for screen readers: those pages have no big header, and a page needs
+// its heading.
+export function PageHeading({ heading }: { heading: string }) {
+  return <h1 className="sr-only">{heading}</h1>;
+}
+
 // A way on to the rest of a heavy profile ("View all projects"), under the block it belongs to.
 export function MoreLinkView({ more, className }: { more: MoreLink; className?: string }) {
   return (

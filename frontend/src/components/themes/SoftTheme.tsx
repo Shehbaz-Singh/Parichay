@@ -31,6 +31,7 @@ import {
   TotalExperience,
   FooterLines,
   MoreLinkView,
+  PageHeading,
 } from './parts';
 import { ThemeWrapper } from './ThemeWrapper';
 import type { ThemeProps } from './types';
@@ -450,12 +451,19 @@ function Footer({ footer }: { footer: FooterModel }) {
   );
 }
 
-export default function SoftTheme({ profile, idPrefix = '', view, nav }: ThemeProps) {
-  const blocks = buildBlocks(profile, idPrefix, view);
+export default function SoftTheme({
+  profile,
+  idPrefix = '',
+  view,
+  nav,
+  heading,
+  projectId,
+}: ThemeProps) {
+  const blocks = buildBlocks(profile, idPrefix, view, projectId);
   return (
     <ThemeWrapper theme="soft" profile={profile} nav={nav} className={fontClass}>
       <main id={`${idPrefix}main`} className="mx-auto max-w-4xl px-5 py-12 sm:px-8 sm:py-20">
-        <Header header={buildHeader(profile)} />
+        {heading ? <PageHeading heading={heading} /> : <Header header={buildHeader(profile)} />}
         {blocks.map((block) => (
           <Section key={block.id} block={block}>
             <BlockView block={block} />

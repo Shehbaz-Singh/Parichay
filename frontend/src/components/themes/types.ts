@@ -14,6 +14,11 @@ export interface ThemeProps {
   view?: ThemeView;
   // The slim navigation of a split profile, drawn at the very top (see SiteNav).
   nav?: ReactNode;
+  // Set on the inner pages (work, a project, about): the page's title. The theme then draws its sections
+  // without the big identity header, and the title is the page's heading for screen readers.
+  heading?: string;
+  // With view 'work': only this project (its own page).
+  projectId?: string;
 }
 
 export type ThemeComponent = (props: ThemeProps) => ReactElement;

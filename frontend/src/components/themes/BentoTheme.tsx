@@ -33,6 +33,7 @@ import {
   TotalExperience,
   FooterLines,
   MoreLinkView,
+  PageHeading,
 } from './parts';
 import { ThemeWrapper } from './ThemeWrapper';
 import type { ThemeProps } from './types';
@@ -629,17 +630,20 @@ export default function BentoTheme({
   idPrefix = '',
   view,
   nav,
+  heading,
+  projectId,
   tiles = 'light',
 }: ThemeProps & { tiles?: 'light' | 'dark' }) {
   const header = buildHeader(profile);
+  // An inner page has no identity and links tiles: just its sections.
+  const lead = heading ? 0 : 2;
   const all: Tile[] = [
-    identityTile(header),
-    linksTile(header, idPrefix),
-    ...buildBlocks(profile, idPrefix, view).flatMap(blockTiles),
+    ...(heading ? [] : [identityTile(header), linksTile(header, idPrefix)]),
+    ...buildBlocks(profile, idPrefix, view, projectId).flatMap(blockTiles),
   ];
   // Every third tile after the first two is a little stronger, so the grid has a rhythm.
   all.forEach((tile, i) => {
-    if (i >= 2 && tile.tone === 'plain' && i % 3 === 1) tile.tone = 'strong';
+    if (i >= lead && tile.tone === 'plain' && i % 3 === 1) tile.tone = 'strong';
   });
   const lg = pack(
     all.map((tile) => tile.span),
@@ -649,7 +653,7 @@ export default function BentoTheme({
     all.map((tile) => (tile.span >= 4 ? 2 : 1)),
     2,
   );
-  const empty = all.length === 2 && buildBlocks(profile, idPrefix, view).length === 0;
+  const empty = all.length === lead && buildBlocks(profile, idPrefix, view, projectId).length === 0;
 
   return (
     <ThemeWrapper
@@ -661,6 +665,7 @@ export default function BentoTheme({
     >
       <div data-tiles={tiles}>
         <main id={`${idPrefix}main`} className="mx-auto max-w-6xl px-4 py-6 sm:px-6 sm:py-10">
+          {heading && <PageHeading heading={heading} />}
           <ul className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-6">
             {all.map((tile, i) => (
               <li

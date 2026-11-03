@@ -29,6 +29,7 @@ import {
   RoleList,
   TotalExperience,
   MoreLinkView,
+  PageHeading,
 } from './parts';
 import { ThemeWrapper } from './ThemeWrapper';
 import type { ThemeProps } from './types';
@@ -425,12 +426,23 @@ function Footer({ footer }: { footer: FooterModel }) {
   );
 }
 
-export default function CreativeTheme({ profile, idPrefix = '', view, nav }: ThemeProps) {
-  const blocks = buildBlocks(profile, idPrefix, view);
+export default function CreativeTheme({
+  profile,
+  idPrefix = '',
+  view,
+  nav,
+  heading,
+  projectId,
+}: ThemeProps) {
+  const blocks = buildBlocks(profile, idPrefix, view, projectId);
   return (
     <ThemeWrapper theme="creative" profile={profile} nav={nav} className={fontClass}>
-      <Header header={buildHeader(profile)} />
-      <main id={`${idPrefix}main`} className="mx-auto max-w-5xl px-5 pb-20 sm:px-8">
+      {!heading && <Header header={buildHeader(profile)} />}
+      <main
+        id={`${idPrefix}main`}
+        className={`mx-auto max-w-5xl px-5 pb-20 sm:px-8 ${heading ? 'pt-6' : ''}`}
+      >
+        {heading && <PageHeading heading={heading} />}
         {blocks.map((block) => (
           <ThemeSection key={block.id} block={block} />
         ))}

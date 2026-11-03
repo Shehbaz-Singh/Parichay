@@ -9,9 +9,17 @@ export type NavPage = 'home' | 'work' | 'about' | 'writing';
 // is one page has none. It names the pages with the owner's own section headings. The current page
 // is underlined and marked aria-current, so it does not depend on color; the links are few enough to
 // sit in one row on a phone, so there is no menu to open.
-export function SiteNav({ profile, current }: { profile: PublicProfile; current: NavPage }) {
+export function SiteNav({
+  profile,
+  current,
+  always = false,
+}: {
+  profile: PublicProfile;
+  current: NavPage;
+  always?: boolean; // a single-page profile has none, except on a page that needs a way back (a project)
+}) {
   const pages = pageSplit(profile);
-  if (!pages.split) return null;
+  if (!pages.split && !always) return null;
 
   const ui = uiFor(profile.locale);
   const base = pagePath(profile.slug, profile.locale, profile.defaultLocale);

@@ -30,6 +30,7 @@ import {
   TotalExperience,
   FooterLines,
   MoreLinkView,
+  PageHeading,
 } from './parts';
 import { ThemeWrapper } from './ThemeWrapper';
 import type { ThemeProps } from './types';
@@ -417,8 +418,15 @@ function Footer({ footer }: { footer: FooterModel }) {
   );
 }
 
-export default function ExecutiveTheme({ profile, idPrefix = '', view, nav }: ThemeProps) {
-  const blocks = buildBlocks(profile, idPrefix, view);
+export default function ExecutiveTheme({
+  profile,
+  idPrefix = '',
+  view,
+  nav,
+  heading,
+  projectId,
+}: ThemeProps) {
+  const blocks = buildBlocks(profile, idPrefix, view, projectId);
   const skills = blocks.find((block) => block.kind === 'skills');
   const main = blocks.filter((block) => block.kind !== 'skills');
   return (
@@ -430,6 +438,7 @@ export default function ExecutiveTheme({ profile, idPrefix = '', view, nav }: Th
             id={`${idPrefix}main`}
             className="min-w-0 p-7 sm:p-10 lg:px-[clamp(2.5rem,4vw,6rem)] lg:py-14 print:p-5 print:pt-1"
           >
+            {heading && <PageHeading heading={heading} />}
             {/* Sections flow down the page in the order the owner chose, and on a wide screen
                 across two or three columns instead of one long strip. */}
             <div className="2xl:columns-2 2xl:gap-x-20 min-[2200px]:columns-3 print:columns-1">
