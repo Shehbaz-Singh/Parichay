@@ -3,7 +3,7 @@ import { ThemeExplorer } from './ThemeExplorer';
 const THEMES = [
   ['Editorial', 'A quiet magazine page: serif headings, a drop cap, plenty of space.'],
   ['Bento', 'A grid of rounded tiles that adapt to your content, tinted by your accent.'],
-  ['Soft', 'Friendly pastels, rounded shapes and speech-bubble quotes.'],
+  ['Soft', 'Warm and calm: a centered introduction, a quiet timeline, one tint.'],
   ['Executive', 'A professional two-column resume that prints cleanly.'],
   ['Creative', 'Bold type and a header in your accent color.'],
 ];
