@@ -71,25 +71,25 @@ const chip = 'rounded-full bg-accent-soft px-3.5 py-1 text-sm font-semibold';
 function Header({ header }: { header: HeaderModel }) {
   const pill = `inline-flex max-w-full items-center gap-2 rounded-full border border-line bg-surface px-4 py-2 text-sm font-semibold transition-colors duration-200 hover:bg-accent-soft ${focusRing}`;
   return (
-    <header className="rise-in flex flex-col items-center gap-6 text-center">
+    <header className="rise-in flex flex-col items-center gap-5 text-center sm:flex-row sm:gap-10 sm:text-start">
       <Avatar
         avatar={header.avatar}
-        className="size-36 shrink-0 rounded-full ring-4 ring-surface sm:size-44"
+        className="size-32 shrink-0 rounded-full ring-4 ring-surface sm:size-44"
         placeholderClassName={`${display} bg-accent-soft text-5xl font-medium text-ink sm:text-6xl`}
       />
       <div className="min-w-0">
         <h1
-          className={`${display} text-[clamp(2.25rem,7vw,3.75rem)] leading-[1.1] font-medium text-balance`}
+          className={`${display} text-[clamp(2rem,6vw,3.25rem)] leading-[1.1] font-medium text-balance`}
         >
           {header.name}
         </h1>
         {header.tagline && (
-          <p className="mx-auto mt-3 max-w-xl text-xl leading-snug text-pretty text-muted">
+          <p className="mt-2 max-w-xl text-lg leading-snug text-pretty text-muted sm:text-xl">
             {header.tagline}
           </p>
         )}
         {header.location && (
-          <p className="mt-4 inline-flex items-center gap-1.5 text-sm text-muted">
+          <p className="mt-3 inline-flex items-center gap-1.5 text-sm text-muted">
             <MapPin aria-hidden="true" className="size-4 shrink-0" />
             <span>{header.location}</span>
           </p>
@@ -97,19 +97,19 @@ function Header({ header }: { header: HeaderModel }) {
         <AvailabilityBadge
           availability={header.availability}
           ui={header.ui}
-          className="mx-auto mt-5 max-w-xl justify-center rounded-3xl bg-accent-soft px-4 py-2.5 text-start text-sm text-ink"
+          className="mt-4 max-w-xl justify-center rounded-3xl bg-accent-soft px-4 py-2 text-start text-sm text-ink sm:justify-start"
           dotClassName="bg-accent-fg"
           linkClassName={`font-bold text-accent-fg underline underline-offset-2 hover:no-underline ${focusRing}`}
         />
         {header.work && (
           <WorkCard
             work={header.work}
-            className="mx-auto mt-4 max-w-xl rounded-3xl bg-accent-soft px-4 py-3 text-start text-ink"
+            className="mt-3 max-w-xl rounded-3xl bg-accent-soft px-4 py-2.5 text-start text-ink"
             linkClassName={`font-bold text-accent-fg underline underline-offset-2 hover:no-underline ${focusRing}`}
             buttonClassName={`rounded-full bg-ink px-3 py-1 text-xs font-bold text-page hover:opacity-90 ${focusRing}`}
           />
         )}
-        <ul className="mt-6 flex flex-wrap justify-center gap-2.5">
+        <ul className="mt-5 flex flex-wrap justify-center gap-2.5 sm:justify-start">
           {header.links.map((item) => (
             <li key={item.id} className="max-w-full">
               <HeaderLink link={item} className={pill} />
@@ -136,8 +136,8 @@ function Header({ header }: { header: HeaderModel }) {
 
 function Section({ block, children }: { block: Block; children: ReactNode }) {
   return (
-    <section aria-labelledby={block.id} className="mt-16 sm:mt-20">
-      <h2 id={block.id} className={`${display} mb-6 text-3xl font-medium text-balance`}>
+    <section aria-labelledby={block.id} className="mt-10 sm:mt-14">
+      <h2 id={block.id} className={`${display} mb-5 text-2xl font-medium text-balance sm:text-3xl`}>
         {block.title}
       </h2>
       {children}
@@ -194,9 +194,9 @@ function BlockBody({ block }: { block: Block }) {
     }
     case 'projects': {
       const listProjects = (items: typeof block.projects) => (
-        <ul className="grid gap-5 md:grid-cols-2">
+        <ul className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {items.map((project) => (
-            <li key={project.id} className={`${card} group relative flex min-w-0 flex-col p-6`}>
+            <li key={project.id} className={`${card} group relative flex min-w-0 flex-col p-5`}>
               <h3 className={`${display} text-xl leading-snug font-medium`}>
                 {project.href ? (
                   <NewTabLink
@@ -313,7 +313,7 @@ function BlockBody({ block }: { block: Block }) {
       );
     case 'entries': {
       const listEntries = (items: typeof block.entries) => (
-        <ol className="space-y-8 border-s-2 border-line ps-6">
+        <ol className="space-y-6 border-s-2 border-line ps-6">
           {items.map((entry) => (
             <li key={entry.id} className="relative min-w-0">
               <span
@@ -413,7 +413,7 @@ export default function SoftTheme({
   const blocks = buildBlocks(profile, idPrefix, view, projectId);
   return (
     <ThemeWrapper theme="soft" profile={profile} nav={nav} className={fontClass}>
-      <main id={`${idPrefix}main`} className="mx-auto max-w-3xl px-5 py-12 sm:px-8 sm:py-20">
+      <main id={`${idPrefix}main`} className="mx-auto max-w-5xl px-5 py-8 sm:px-8 sm:py-12">
         {heading ? <PageHeading heading={heading} /> : <Header header={buildHeader(profile)} />}
         {blocks.map((block) => (
           <Section key={block.id} block={block}>
