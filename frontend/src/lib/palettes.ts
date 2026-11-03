@@ -15,4 +15,5 @@ export const PALETTES: Record<ThemeKey, Palette> = {
   creative: { scheme: 'light', background: '#ffffff', text: '#09090b' },
   executive: { scheme: 'light', background: '#eceef2', text: '#171a21' },
   soft: { scheme: 'light', background: '#faf6f3', text: '#2a2431' },
+  sidebar: { scheme: 'light', background: '#fbfaf8', text: '#1c1b19' },
 };

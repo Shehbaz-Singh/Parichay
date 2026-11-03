@@ -248,5 +248,30 @@
     "latestWriting": "Latest writing",
     "kindWords": "Kind words",
     "downloadResume": "Download resume"
+  },
+  "sidebar": {
+    "hi": "Hi, I'm",
+    "welcome": "Nice to meet you",
+    "contactLead": "Reach out",
+    "talk": "Let's talk",
+    "facts": "Details",
+    "factLanguages": "Languages",
+    "factEmail": "Email",
+    "factPhone": "Phone",
+    "statYears": "{count, plural, one {Year of experience} other {Years of experience}}",
+    "statMonths": "{count, plural, one {Month of experience} other {Months of experience}}",
+    "statProjects": "{count, plural, one {Project} other {Projects}}",
+    "statsLabel": "At a glance",
+    "quotes": "Testimonials",
+    "prev": "Previous testimonial",
+    "next": "Next testimonial",
+    "position": "Testimonial {n} of {total}",
+    "social": "Social links",
+    "menu": "Menu",
+    "closeMenu": "Close menu",
+    "skip": "Skip to content",
+    "home": "Home",
+    "viewAllWork": "View all work",
+    "specialties": "Details"
   }
 }

@@ -5,6 +5,7 @@ import type { Ui } from '@/lib/i18n';
 import type { NavItem } from '@/lib/pages';
 import { LanguageSwitcher, type LanguageLink } from '../LanguageSwitcher';
 import { ReadingPreferences } from '../ReadingPreferences';
+import { Rail } from '../../themes/sidebar/Rail';
 import { MobileBar, type MobileStyles } from './MobileBar';
 
 // The navigation of a multi-page portfolio, once for each theme: the same pages in the same order, drawn
@@ -310,12 +311,21 @@ function CreativeNav({ profile, items, current, languages, ui }: NavProps) {
   );
 }
 
+// ---- Sidebar: the navigation is the dark rail itself (components/themes/sidebar/Rail.tsx), on every
+// screen size; the theme draws the rail, so this only hands it the pages.
+function SidebarNav({ profile, items, current, languages }: NavProps) {
+  return (
+    <Rail profile={profile} items={items} mode="pages" current={current} languages={languages} />
+  );
+}
+
 export const THEME_NAVS: Record<ThemeKey, ComponentType<NavProps>> = {
   editorial: EditorialNav,
   bento: BentoNav,
   soft: SoftNav,
   executive: ExecutiveNav,
   creative: CreativeNav,
+  sidebar: SidebarNav,
 };
 
 // How much of the top of the screen the navigation takes while the page scrolls, for the sticky things
@@ -326,4 +336,5 @@ export const NAV_STICKY_HEIGHT: Record<ThemeKey, string> = {
   soft: '0px',
   executive: '3rem',
   creative: '3.5rem',
+  sidebar: '0px', // the navigation is a side rail, or a bar that scrolls away on a phone
 };

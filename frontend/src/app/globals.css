@@ -247,6 +247,104 @@ button,
   --muted: #5f5868;
   --border: color-mix(in srgb, var(--accent) 20%, #e9e2e6);
 }
+/* Sidebar: a white-ish page beside a dark rail. --rail, --rail-mark, --band-a and --band-b are set
+   by the theme from the accent (lib/sidebar-colors.ts), which also checks their contrast. */
+.theme-sidebar {
+  --bg: #fbfaf8;
+  --surface: #ffffff;
+  --text: #1c1b19;
+  --muted: #55524c;
+  --border: #dedad2;
+  --rail: #14151a;
+  --rail-mark: #ffffff;
+  --band-a: #3b3f9e;
+  --band-b: #5a3f9e;
+}
+/* The rail is always dark: it re-scopes the color variables, so text-ink, text-muted and the focus ring
+   work inside it in every accent color. */
+.sb-rail {
+  --bg: var(--rail);
+  --text: #f4f3f0;
+  --muted: #c9c6bf;
+  --border: rgb(255 255 255 / 0.22);
+  --surface: rgb(255 255 255 / 0.1);
+  --accent-fg: var(--rail-mark);
+  background-color: var(--rail);
+  color: var(--text);
+}
+/* The two gradient surfaces (the experience band and the contact panel). White text on both ends was
+   checked when the colors were made; a gray accent gets two equal ends, a solid color. */
+.sb-band {
+  --text: #ffffff;
+  --muted: #ffffff;
+  --border: rgb(255 255 255 / 0.55);
+  --surface: rgb(255 255 255 / 0.14);
+  --accent-fg: #ffffff;
+  --band-ink: #ffffff;
+  background-color: var(--band-a);
+  background-image: linear-gradient(125deg, var(--band-a), var(--band-b));
+  color: var(--band-ink);
+}
+/* The form's fields stay light on the band, so what is typed in them is dark. */
+.sb-band :is(input, textarea, select),
+.sb-accent :is(input, textarea, select) {
+  color: #1c1b19;
+}
+.sb-band :is(input, textarea)::placeholder,
+.sb-accent :is(input, textarea)::placeholder {
+  color: #5f5b54;
+}
+/* A script that has no italic (Devanagari, Arabic, ...) gets a heavier upright in place of a slanted one. */
+:where([data-script]:not([data-script='latin'])) .sb-it {
+  font-style: normal;
+  font-weight: 600;
+}
+:where([data-script]:not([data-script='latin'])) .sb-tight {
+  line-height: 1.35;
+}
+/* The accordion's marker is drawn by the page, not the browser. */
+.sb-acc > summary {
+  list-style: none;
+}
+.sb-acc > summary::-webkit-details-marker {
+  display: none;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .sb-arrow {
+    transition: transform 0.2s ease;
+  }
+  .sb-link:hover .sb-arrow,
+  .sb-link:focus-visible .sb-arrow {
+    transform: translateX(4px);
+  }
+  :is([dir='rtl']) .sb-link:hover .sb-arrow,
+  :is([dir='rtl']) .sb-link:focus-visible .sb-arrow {
+    transform: translateX(-4px);
+  }
+}
+@media print {
+  .sb-rail {
+    display: none;
+  }
+  .sb-band {
+    --text: #111111;
+    --muted: #333333;
+    --border: #999999;
+    --surface: #f3f3f3;
+    --accent-fg: #111111;
+    --band-ink: #111111;
+    background: none;
+    border-block: 1px solid #999999;
+  }
+  .sb-acc::details-content {
+    content-visibility: visible;
+  }
+  .sb-quote-dark {
+    background: none !important;
+    color: #111111 !important;
+    border: 1px solid #999999;
+  }
+}
 .theme-editorial {
   --bg: #faf8f4;
   --surface: #f0ece4;

@@ -197,5 +197,30 @@
     "moreAbout": "मेरे बारे में और",
     "pages": "पृष्ठ",
     "home": "होम"
+  },
+  "sidebar": {
+    "hi": "नमस्ते, मैं",
+    "welcome": "आपसे मिलकर अच्छा लगा",
+    "contactLead": "संपर्क करें",
+    "talk": "बात करें",
+    "facts": "विवरण",
+    "factLanguages": "भाषाएँ",
+    "factEmail": "ईमेल",
+    "factPhone": "फ़ोन",
+    "statYears": "{count, plural, one {वर्ष का अनुभव} other {वर्षों का अनुभव}}",
+    "statMonths": "{count, plural, one {महीने का अनुभव} other {महीनों का अनुभव}}",
+    "statProjects": "{count, plural, one {प्रोजेक्ट} other {प्रोजेक्ट}}",
+    "statsLabel": "एक नज़र में",
+    "quotes": "प्रशंसापत्र",
+    "prev": "पिछला प्रशंसापत्र",
+    "next": "अगला प्रशंसापत्र",
+    "position": "प्रशंसापत्र {n} / {total}",
+    "social": "सोशल लिंक",
+    "menu": "मेन्यू",
+    "closeMenu": "मेन्यू बंद करें",
+    "skip": "सामग्री पर जाएँ",
+    "home": "होम",
+    "viewAllWork": "सारा काम देखें",
+    "specialties": "विवरण"
   }
 }

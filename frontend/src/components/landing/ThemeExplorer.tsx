@@ -15,6 +15,7 @@ const THEMES: { key: ThemeKey; name: string }[] = [
   { key: 'soft', name: 'Soft' },
   { key: 'executive', name: 'Executive' },
   { key: 'creative', name: 'Creative' },
+  { key: 'sidebar', name: 'Sidebar' },
 ];
 
 // "Original" is the sample's own accent; the rest are offered on top of it.

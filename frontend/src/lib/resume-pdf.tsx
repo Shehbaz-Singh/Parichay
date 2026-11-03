@@ -571,6 +571,7 @@ const LAYOUTS: Record<ThemeKey, (props: { c: Ctx }) => ReactNode> = {
   soft: Soft,
   bento: Bento,
   creative: Creative,
+  sidebar: Executive, // a dark sidebar beside the main column, like the page
 };
 
 // `photo` is the profile photo as JPEG bytes, or null (initials are drawn instead).

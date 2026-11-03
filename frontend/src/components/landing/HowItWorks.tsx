@@ -9,7 +9,7 @@ const STEPS = [
   {
     Icon: Palette,
     title: 'Choose a look and make it yours',
-    text: 'Pick one of five themes and an accent color. A live preview changes as you type.',
+    text: 'Pick one of six themes and an accent color. A live preview changes as you type.',
   },
   {
     Icon: Share2,

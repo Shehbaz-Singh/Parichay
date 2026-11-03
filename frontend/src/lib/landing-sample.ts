@@ -122,9 +122,12 @@ function toPublic(sample: SampleProfile): PublicProfile {
 export const SAMPLES: PublicProfile[] = SAMPLE_PROFILES.map(toPublic);
 
 // The sample that shows each theme, one to one.
-export const SAMPLE_BY_THEME = Object.fromEntries(
-  SAMPLES.map((profile) => [profile.theme, profile]),
-) as Record<ThemeKey, PublicProfile>;
+// Sidebar has no sample of its own (the stored samples are the five above): its preview draws the
+// featured sample in it.
+export const SAMPLE_BY_THEME = {
+  ...Object.fromEntries(SAMPLES.map((profile) => [profile.theme, profile])),
+  sidebar: { ...SAMPLES[0], theme: 'sidebar' },
+} as Record<ThemeKey, PublicProfile>;
 
 // "See an example" goes here: the most complete page.
 export const FEATURED_SAMPLE_SLUG = SAMPLE_PROFILES[0].slug;

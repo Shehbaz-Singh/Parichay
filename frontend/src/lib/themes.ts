@@ -34,6 +34,11 @@ const entries: Record<ThemeKey, Omit<ThemeEntry, 'key' | 'scheme' | 'background'
     description:
       'Warm and calm: a centered introduction, a narrow column, a quiet timeline and one tint of your accent.',
   },
+  sidebar: {
+    name: 'Sidebar',
+    description:
+      'A dark side rail with your name and navigation beside a wide, airy page: a big mixed-weight introduction and two bands in your accent.',
+  },
   executive: {
     name: 'Executive',
     description:

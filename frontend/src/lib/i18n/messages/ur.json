@@ -197,5 +197,30 @@
     "moreAbout": "میرے بارے میں مزید",
     "pages": "صفحات",
     "home": "ہوم"
+  },
+  "sidebar": {
+    "hi": "آداب، میں",
+    "welcome": "آپ سے مل کر خوشی ہوئی",
+    "contactLead": "رابطہ کریں",
+    "talk": "بات کریں",
+    "facts": "تفصیلات",
+    "factLanguages": "زبانیں",
+    "factEmail": "ای میل",
+    "factPhone": "فون",
+    "statYears": "{count, plural, one {سال کا تجربہ} other {سال کا تجربہ}}",
+    "statMonths": "{count, plural, one {مہینے کا تجربہ} other {مہینوں کا تجربہ}}",
+    "statProjects": "{count, plural, one {پروجیکٹ} other {پروجیکٹس}}",
+    "statsLabel": "ایک نظر میں",
+    "quotes": "تعریفی کلمات",
+    "prev": "پچھلی رائے",
+    "next": "اگلی رائے",
+    "position": "رائے {n} از {total}",
+    "social": "سوشل لنکس",
+    "menu": "مینو",
+    "closeMenu": "مینو بند کریں",
+    "skip": "مواد پر جائیں",
+    "home": "ہوم",
+    "viewAllWork": "سارا کام دیکھیں",
+    "specialties": "تفصیلات"
   }
 }

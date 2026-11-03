@@ -3,6 +3,7 @@ import CreativeTheme from '@/components/themes/CreativeTheme';
 import BentoTheme from '@/components/themes/BentoTheme';
 import EditorialTheme from '@/components/themes/EditorialTheme';
 import ExecutiveTheme from '@/components/themes/ExecutiveTheme';
+import SidebarTheme from '@/components/themes/SidebarTheme';
 import SoftTheme from '@/components/themes/SoftTheme';
 import type { ThemeComponent } from '@/components/themes/types';
 
@@ -14,4 +15,5 @@ export const THEME_COMPONENTS: Record<ThemeKey, ThemeComponent> = {
   creative: CreativeTheme,
   soft: SoftTheme,
   executive: ExecutiveTheme,
+  sidebar: SidebarTheme,
 };

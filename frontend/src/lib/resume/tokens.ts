@@ -63,6 +63,7 @@ export function tokensFor(theme: ThemeKey, accentColor: string): Tokens {
         muted: '#5f5868',
         line: mix(accent, '#e9e2e6', 0.2),
       };
+    case 'sidebar':
     case 'executive':
       return {
         ...base,

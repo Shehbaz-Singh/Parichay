@@ -94,7 +94,14 @@ export const slugSchema = slugFormatSchema.refine(
 // The themes a profile may choose. The frontend's theme registry has an entry for each key (its
 // type is a Record over this list), so adding a theme means adding the key here and the entry
 // there. Only these keys are accepted when saving.
-export const THEME_KEYS = ['editorial', 'bento', 'soft', 'executive', 'creative'] as const;
+export const THEME_KEYS = [
+  'editorial',
+  'bento',
+  'soft',
+  'executive',
+  'creative',
+  'sidebar',
+] as const;
 export const themeSchema = z.enum(THEME_KEYS);
 export type ThemeKey = z.infer<typeof themeSchema>;
 export const DEFAULT_THEME: ThemeKey = 'editorial';
