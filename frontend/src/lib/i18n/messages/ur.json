@@ -192,6 +192,10 @@
     "moreProjects": "مزید پروجیکٹس ({count})",
     "moreSkills": "{count} مزید مہارتیں",
     "moreTestimonials": "مزید تعریفی کلمات ({count})",
-    "showLess": "کم دکھائیں"
+    "showLess": "کم دکھائیں",
+    "viewAllProjects": "تمام پروجیکٹس دیکھیں",
+    "moreAbout": "میرے بارے میں مزید",
+    "pages": "صفحات",
+    "home": "ہوم"
   }
 }

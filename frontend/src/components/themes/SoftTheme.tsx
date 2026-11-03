@@ -30,6 +30,7 @@ import {
   RoleList,
   TotalExperience,
   FooterLines,
+  MoreLinkView,
 } from './parts';
 import { Reveal } from './Reveal';
 import { ThemeWrapper } from './ThemeWrapper';
@@ -189,7 +190,17 @@ function Section({
   );
 }
 
+// The block, and the way on to the rest when this is the short home page of a heavy profile.
 function BlockView({ block }: { block: Block }) {
+  return (
+    <>
+      <BlockBody block={block} />
+      {block.moreLink && <MoreLinkView more={block.moreLink} />}
+    </>
+  );
+}
+
+function BlockBody({ block }: { block: Block }) {
   switch (block.kind) {
     case 'about':
       return (
@@ -473,10 +484,10 @@ function Footer({ footer }: { footer: FooterModel }) {
   );
 }
 
-export default function SoftTheme({ profile, idPrefix = '' }: ThemeProps) {
-  const blocks = buildBlocks(profile, idPrefix);
+export default function SoftTheme({ profile, idPrefix = '', view, nav }: ThemeProps) {
+  const blocks = buildBlocks(profile, idPrefix, view);
   return (
-    <ThemeWrapper theme="soft" profile={profile} className={fontClass}>
+    <ThemeWrapper theme="soft" profile={profile} nav={nav} className={fontClass}>
       <main id={`${idPrefix}main`} className="mx-auto max-w-4xl px-5 py-12 sm:px-8 sm:py-20">
         <Header header={buildHeader(profile)} />
         {blocks.map((block) => (

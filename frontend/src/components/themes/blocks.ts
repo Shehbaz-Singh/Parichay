@@ -21,7 +21,6 @@ import { fill, pagePath, translatorFor, uiFor, type Ui } from '@/lib/i18n';
 
 // One entry of a dated list: a job, a degree, or an item of a custom section.
 // One position within a company the person stayed at (see groupJobs).
-// How a date is written: the language, and the word for an open end date.
 export interface DateFmt {
   locale: string;
   present: string;
@@ -53,6 +52,7 @@ export interface Entry {
 
 interface ProjectEntry {
   id: string;
+  slug: string; // the project's own page (/work/<slug>)
   name: string;
   href: string | null;
   description: string;
@@ -91,7 +91,14 @@ export interface ContactFormModel {
   privacyHref: string;
 }
 
+// Where a block leads on: "View all projects" on the short home page of a heavy profile.
+export interface MoreLink {
+  href: string;
+  label: string;
+}
+
 interface BlockBase {
+  moreLink?: MoreLink; // a way on to the rest, drawn under the block
   locale: string; // the language of the page
   ui: Ui; // the interface text in that language
   id: string; // unique on the page, for aria-labelledby and anchors
@@ -143,6 +150,76 @@ export const SHOW = { projects: 4, jobs: 4, skills: 12, testimonials: 6 } as con
 function curate<T>(items: T[], count: number): { shown: T[]; rest: T[] } {
   if (items.length <= count + 1) return { shown: items, rest: [] };
   return { shown: items.slice(0, count), rest: items.slice(count) };
+}
+
+// ---- one page, or several
+// A profile with a lot on it is split: a short home page, and a page for the work and one for the rest
+// of the story. A light one stays a single page, with nothing to click through. "A lot" is any of
+// these, counted among the sections the owner shows.
+export const SPLIT_AT = { projects: 6, jobs: 5, skills: 12 } as const;
+
+// What a page of the portfolio shows. 'all' is the single page; the other three exist only when the
+// profile is split.
+export type ThemeView = 'all' | 'home' | 'work' | 'about';
+
+export interface PageSplit {
+  split: boolean;
+  work: boolean; // there is a work page
+  about: boolean; // there is an about page
+  writing: boolean; // the Writing section is shown and has posts (it has had its own page all along)
+}
+
+export function pageSplit(profile: PublicProfile): PageSplit {
+  const shows = (key: string) => profile.sections.some((section) => section.key === key);
+  const split =
+    (shows('projects') && profile.projects.length > SPLIT_AT.projects) ||
+    (shows('experience') && profile.experience.length > SPLIT_AT.jobs) ||
+    (shows('skills') && profile.skills.length > SPLIT_AT.skills);
+  const hasAbout =
+    (shows('about') && !!profile.about) ||
+    (shows('experience') && profile.experience.length > 0) ||
+    (shows('education') && profile.education.length > 0) ||
+    (shows('skills') && profile.skills.length > 0) ||
+    (shows('testimonials') && (profile.testimonials.length > 0 || profile.acceptTestimonials)) ||
+    profile.sections.some(
+      ({ key }) =>
+        isCustomKey(key) &&
+        profile.customSections.some(
+          (custom) => custom.id === customIdOf(key) && custom.items.length > 0,
+        ),
+    );
+  return {
+    split,
+    work: split && shows('projects') && profile.projects.length > 0,
+    about: split && hasAbout,
+    writing: shows('writing') && profile.writing.length > 0,
+  };
+}
+
+// The short version of an About text for the home page: whole paragraphs up to about this long (a
+// single long paragraph is cut at a sentence, or failing that a word).
+const BRIEF = 480;
+function brief(text: string): { text: string; cut: boolean } {
+  if (text.length <= BRIEF) return { text, cut: false };
+  const paragraphs = text.split(/\n\s*\n/);
+  let out = paragraphs[0];
+  for (const next of paragraphs.slice(1)) {
+    if (out.length + next.length > BRIEF) break;
+    out += `\n\n${next}`;
+  }
+  if (out.length > BRIEF) {
+    const window = out.slice(0, BRIEF);
+    const sentence = Math.max(
+      window.lastIndexOf('. '),
+      window.lastIndexOf('! '),
+      window.lastIndexOf('? '),
+    );
+    out =
+      sentence > BRIEF / 2
+        ? window.slice(0, sentence + 1)
+        : `${window.slice(0, window.lastIndexOf(' '))}…`;
+  }
+  return { text: out, cut: out.length < text.length };
 }
 
 // Whole months from start to end (or to now, for an open job), counting both months, the way
@@ -272,7 +349,8 @@ export function writingEntries(
 // The projects at the top of the page. The owner's featured ones lead (their order kept); with none
 // featured, a long list leads with its first few (projects have no date, so the owner's order is
 // the "most recent" they chose). A list that is short anyway is shown whole.
-function leadProjects(items: { featured: boolean; entry: ProjectEntry }[]) {
+function leadProjects(items: { featured: boolean; entry: ProjectEntry }[], all: boolean) {
+  if (all) return { projects: items.map((item) => item.entry), rest: [] };
   const featured = items.filter((item) => item.featured).slice(0, FEATURED_PROJECTS_MAX);
   if (featured.length > 0) {
     const rest = items.filter((item) => !featured.includes(item)).map((item) => item.entry);
@@ -283,6 +361,18 @@ function leadProjects(items: { featured: boolean; entry: ProjectEntry }[]) {
     SHOW.projects,
   );
   return { projects: shown, rest };
+}
+
+// Which sections a page of a split profile draws. The single page draws them all.
+const ON_PAGE: Record<Exclude<ThemeView, 'all'>, readonly string[]> = {
+  home: ['about', 'projects', 'writing', 'contact'],
+  work: ['projects'],
+  about: ['about', 'experience', 'education', 'skills', 'testimonials'],
+};
+function onPage(view: ThemeView | 'complete', key: string): boolean {
+  if (view === 'all' || view === 'complete') return true;
+  if (isCustomKey(key)) return view === 'about';
+  return ON_PAGE[view].includes(key);
 }
 
 const isBuiltIn = (key: string): key is SectionKey => Object.hasOwn(SECTION_LABELS, key);
@@ -312,14 +402,27 @@ export function buildContactForm(
 // know (a section added later) is skipped, so an older page never breaks.
 // `idPrefix` keeps ids unique when a page draws the same profile more than once (the editor's
 // theme picker shows each theme in a small card next to the live preview).
-export function buildBlocks(profile: PublicProfile, idPrefix = ''): Block[] {
+export function buildBlocks(
+  profile: PublicProfile,
+  idPrefix = '',
+  requested: ThemeView | 'complete' = 'all', // 'complete': everything, uncut (the resume PDF)
+): Block[] {
   const blocks: Block[] = [];
   const { locale } = profile;
+  const pages = pageSplit(profile);
+  // Only a split profile has more than one page.
+  const view: ThemeView | 'complete' =
+    requested === 'complete' ? 'complete' : pages.split ? requested : 'all';
+  // The work and about pages show everything, uncut; the home page and the single page are curated.
+  const full = view === 'work' || view === 'about' || view === 'complete';
+  const cut: typeof curate = full ? (items) => ({ shown: items, rest: [] }) : curate;
+  const root = pagePath(profile.slug, locale, profile.defaultLocale);
   const ui = uiFor(locale);
   const t = translatorFor(locale);
   const fmt: DateFmt = { locale, present: ui.present };
 
   for (const { key, title } of profile.sections) {
+    if (!onPage(view, key)) continue;
     if (isCustomKey(key)) {
       const section = profile.customSections.find((s) => s.id === customIdOf(key));
       if (!section || section.items.length === 0) continue;
@@ -349,7 +452,16 @@ export function buildBlocks(profile: PublicProfile, idPrefix = ''): Block[] {
     const base = { id: idPrefix + key, locale, ui, title: title ?? ui.sections[key] };
     switch (key) {
       case 'about':
-        if (profile.about) blocks.push({ kind: 'about', ...base, text: profile.about });
+        if (profile.about) {
+          if (view === 'home' && pages.about) {
+            blocks.push({
+              kind: 'about',
+              ...base,
+              text: brief(profile.about).text,
+              moreLink: { href: `${root}/about`, label: ui.density.moreAbout },
+            });
+          } else blocks.push({ kind: 'about', ...base, text: profile.about });
+        }
         break;
       case 'skills':
         if (profile.skills.length > 0) {
@@ -357,7 +469,7 @@ export function buildBlocks(profile: PublicProfile, idPrefix = ''): Block[] {
             kind: 'skills',
             ...base,
             ...(() => {
-              const { shown, rest } = curate(
+              const { shown, rest } = cut(
                 profile.skills.map(({ id, name }) => ({ id, name })),
                 SHOW.skills,
               );
@@ -373,7 +485,7 @@ export function buildBlocks(profile: PublicProfile, idPrefix = ''): Block[] {
             variant: 'experience',
             ...base,
             ...(() => {
-              const { shown, rest } = curate(groupJobs(profile.experience, fmt, t), SHOW.jobs);
+              const { shown, rest } = cut(groupJobs(profile.experience, fmt, t), SHOW.jobs);
               return { entries: shown, rest };
             })(),
             total:
@@ -391,13 +503,19 @@ export function buildBlocks(profile: PublicProfile, idPrefix = ''): Block[] {
                 featured: project.featured,
                 entry: {
                   id: project.id,
+                  slug: project.slug,
                   name: project.name,
                   href: safeHttpUrl(project.url),
                   description: project.description,
                   tags: project.techTags,
                 },
               })),
+              full,
             ),
+            ...(view === 'home' && pages.work ? { rest: [] } : {}),
+            ...(view === 'home' && pages.work && profile.projects.length > SHOW.projects
+              ? { moreLink: { href: `${root}/work`, label: ui.density.viewAllProjects } }
+              : {}),
           });
         }
         break;
@@ -408,7 +526,7 @@ export function buildBlocks(profile: PublicProfile, idPrefix = ''): Block[] {
             kind: 'testimonials',
             ...base,
             ...(() => {
-              const { shown, rest } = curate(
+              const { shown, rest } = cut(
                 profile.testimonials.map((item) => ({
                   id: item.id,
                   name: item.authorName,

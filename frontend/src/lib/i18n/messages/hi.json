@@ -192,6 +192,10 @@
     "moreProjects": "और प्रोजेक्ट ({count})",
     "moreSkills": "{count} और कौशल",
     "moreTestimonials": "और प्रशंसापत्र ({count})",
-    "showLess": "कम दिखाएँ"
+    "showLess": "कम दिखाएँ",
+    "viewAllProjects": "सभी प्रोजेक्ट देखें",
+    "moreAbout": "मेरे बारे में और",
+    "pages": "पृष्ठ",
+    "home": "होम"
   }
 }

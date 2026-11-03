@@ -697,3 +697,8 @@ html:has(.dashboard-root)::-webkit-scrollbar-button,
     display: block !important;
   }
 }
+
+/* A split portfolio has a sticky navigation (SiteNav): links to #anchors and focus land below it. */
+html:has([data-sitenav]) {
+  scroll-padding-top: 4rem;
+}

@@ -9,6 +9,7 @@ import {
   type SampleProfile,
 } from '@parichay/shared';
 import { prisma } from '../src/lib/prisma';
+import { slugifyTitle } from '../src/lib/slug';
 
 // Seeds the five sample profiles (shared/src/samples.ts): made-up people, published, flagged
 // isSample. Safe to run again: each run replaces the samples' own rows and touches nothing else.
@@ -93,7 +94,11 @@ async function seedOne(sample: SampleProfile) {
         })),
       },
       projects: {
-        create: sample.projects.map((project, order) => ({ ...project, order })),
+        create: sample.projects.map((project, order) => ({
+          ...project,
+          slug: `${slugifyTitle(project.name)}-${order + 1}`,
+          order,
+        })),
       },
       education: {
         create: sample.education.map((item, order) => ({

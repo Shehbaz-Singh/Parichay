@@ -586,7 +586,7 @@ export function ResumeDocument({
   const Layout = LAYOUTS[theme];
   const ctx: Ctx = {
     header: buildHeader(profile),
-    blocks: buildBlocks(profile, ''),
+    blocks: buildBlocks(profile, '', 'complete'),
     contacts: contactItems(profile.links),
     photo,
     t: tokensFor(theme, profile.accentColor),

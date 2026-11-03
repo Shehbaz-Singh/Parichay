@@ -192,6 +192,10 @@
     "moreProjects": "المزيد من المشاريع ({count})",
     "moreSkills": "{count} مهارات أخرى",
     "moreTestimonials": "المزيد من الشهادات ({count})",
-    "showLess": "عرض أقل"
+    "showLess": "عرض أقل",
+    "viewAllProjects": "عرض كل المشاريع",
+    "moreAbout": "المزيد عني",
+    "pages": "الصفحات",
+    "home": "الرئيسية"
   }
 }

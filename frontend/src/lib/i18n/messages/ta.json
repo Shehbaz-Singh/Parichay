@@ -192,6 +192,10 @@
     "moreProjects": "மேலும் திட்டங்கள் ({count})",
     "moreSkills": "மேலும் {count} திறன்கள்",
     "moreTestimonials": "மேலும் பரிந்துரைகள் ({count})",
-    "showLess": "குறைவாகக் காட்டு"
+    "showLess": "குறைவாகக் காட்டு",
+    "viewAllProjects": "எல்லா திட்டங்களையும் பார்க்க",
+    "moreAbout": "என்னைப் பற்றி மேலும்",
+    "pages": "பக்கங்கள்",
+    "home": "முகப்பு"
   }
 }

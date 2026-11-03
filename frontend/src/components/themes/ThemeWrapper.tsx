@@ -3,6 +3,8 @@ import type { PublicProfile, ThemeKey } from '@parichay/shared';
 import { accentVars } from '@/lib/color';
 import { PALETTES } from '@/lib/palettes';
 
+export const NAV_HEIGHT = '3rem';
+
 const NO_JS =
   '.readmore[data-clamp]{display:block;-webkit-line-clamp:unset;overflow:visible}.collapse-body{display:block!important}.readmore-btn,.collapse-btn{display:none!important}';
 
@@ -16,24 +18,34 @@ export function ThemeWrapper({
   profile,
   className = '',
   vars,
+  nav,
   children,
 }: {
   theme: ThemeKey;
   profile: Pick<PublicProfile, 'accentColor'>;
   className?: string; // the theme's font classes
   vars?: Record<string, string>; // extra CSS variables of the theme
+  nav?: ReactNode; // the sticky navigation of a split profile, in front of the page
   children: ReactNode;
 }) {
   return (
     <div
       data-portfolio=""
       className={`theme-root min-h-screen overflow-x-clip theme-${theme} ${className}`}
-      style={{ ...accentVars(profile.accentColor, PALETTES[theme]), ...vars } as CSSProperties}
+      style={
+        {
+          ...accentVars(profile.accentColor, PALETTES[theme]),
+          // How much of the top of the screen the sticky navigation takes, for sticky things below it.
+          ...(nav ? { '--nav-h': NAV_HEIGHT } : {}),
+          ...vars,
+        } as CSSProperties
+      }
     >
       {/* Without JavaScript nothing can be opened, so nothing is folded. */}
       <noscript>
         <style>{NO_JS}</style>
       </noscript>
+      {nav}
       {children}
     </div>
   );

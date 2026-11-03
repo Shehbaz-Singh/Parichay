@@ -189,6 +189,9 @@ model Project {
   id          String   @id @default(cuid())
   profileId   String
   name        String
+  // The project's address on the public page (/<slug>/work/<slug>). Made from the name when it is
+  // created and never changed after, so a shared link keeps working when the project is renamed.
+  slug        String
   url         String?
   description String
   techTags    String[]
@@ -198,6 +201,7 @@ model Project {
 
   profile Profile @relation(fields: [profileId], references: [id], onDelete: Cascade)
 
+  @@unique([profileId, slug])
   @@index([profileId])
 }
 

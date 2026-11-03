@@ -59,7 +59,7 @@ export async function WritingListView({ username, locale }: { username: string; 
       links={languageLinks(profile, '/writing')}
       label={ui.switcher.label}
     >
-      <WritingShell profile={profile}>
+      <WritingShell profile={profile} current="writing">
         <h1 className="wr-display type-page">{ui.writing.title}</h1>
         <p className="mt-1 text-muted">{fill(ui.writing.intro, { name: profile.fullName })}</p>
         <div className="mt-10">
@@ -176,7 +176,7 @@ export async function PostView({
       links={languageLinks(profile, `/writing/${post.slug}`)}
       label={ui.switcher.label}
     >
-      <WritingShell profile={profile}>
+      <WritingShell profile={profile} current="writing">
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: structuredData }} />
         <Link
           href={`${base}/writing`}

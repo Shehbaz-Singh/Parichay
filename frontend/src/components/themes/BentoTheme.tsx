@@ -32,6 +32,7 @@ import {
   RoleList,
   TotalExperience,
   FooterLines,
+  MoreLinkView,
 } from './parts';
 import { ThemeWrapper } from './ThemeWrapper';
 import type { ThemeProps } from './types';
@@ -336,6 +337,7 @@ function blockTiles(block: Block): Tile[] {
                 lines={9}
                 className="text-lg leading-relaxed"
               />
+              {block.moreLink && <MoreLinkView more={block.moreLink} />}
             </TileBody>
           ),
         },
@@ -443,6 +445,14 @@ function blockTiles(block: Block): Tile[] {
           </section>
         ),
       }));
+      if (block.moreLink) {
+        tiles.push({
+          key: `${block.id}-all`,
+          span: 6,
+          tone: 'plain',
+          node: <MoreLinkView more={block.moreLink} className="text-center" />,
+        });
+      }
       if (block.rest.length > 0) {
         tiles.push({
           key: `${block.id}-rest`,
@@ -616,13 +626,15 @@ function Footer({ footer }: { footer: FooterModel }) {
 export default function BentoTheme({
   profile,
   idPrefix = '',
+  view,
+  nav,
   tiles = 'light',
 }: ThemeProps & { tiles?: 'light' | 'dark' }) {
   const header = buildHeader(profile);
   const all: Tile[] = [
     identityTile(header),
     linksTile(header, idPrefix),
-    ...buildBlocks(profile, idPrefix).flatMap(blockTiles),
+    ...buildBlocks(profile, idPrefix, view).flatMap(blockTiles),
   ];
   // Every third tile after the first two is a little stronger, so the grid has a rhythm.
   all.forEach((tile, i) => {
@@ -637,12 +649,13 @@ export default function BentoTheme({
     2,
   );
   const animate = !idPrefix;
-  const empty = all.length === 2 && buildBlocks(profile, idPrefix).length === 0;
+  const empty = all.length === 2 && buildBlocks(profile, idPrefix, view).length === 0;
 
   return (
     <ThemeWrapper
       theme="bento"
       profile={profile}
+      nav={nav}
       className={fontClass}
       vars={{ '--accent-fg-dark': accentVars(profile.accentColor, DARK_TILE)['--accent-fg'] }}
     >

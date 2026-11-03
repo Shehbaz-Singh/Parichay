@@ -28,6 +28,7 @@ import {
   NewTabLink,
   RoleList,
   TotalExperience,
+  MoreLinkView,
 } from './parts';
 import { Reveal } from './Reveal';
 import { ThemeWrapper } from './ThemeWrapper';
@@ -134,7 +135,17 @@ function Header({ header }: { header: HeaderModel }) {
   );
 }
 
+// The block, and the way on to the rest when this is the short home page of a heavy profile.
 function BlockView({ block }: { block: Block }) {
+  return (
+    <>
+      <BlockBody block={block} />
+      {block.moreLink && <MoreLinkView more={block.moreLink} />}
+    </>
+  );
+}
+
+function BlockBody({ block }: { block: Block }) {
   switch (block.kind) {
     case 'about':
       return (
@@ -417,11 +428,11 @@ function Footer({ footer }: { footer: FooterModel }) {
   );
 }
 
-export default function CreativeTheme({ profile, idPrefix = '' }: ThemeProps) {
-  const blocks = buildBlocks(profile, idPrefix);
+export default function CreativeTheme({ profile, idPrefix = '', view, nav }: ThemeProps) {
+  const blocks = buildBlocks(profile, idPrefix, view);
   const animate = !idPrefix;
   return (
-    <ThemeWrapper theme="creative" profile={profile} className={fontClass}>
+    <ThemeWrapper theme="creative" profile={profile} nav={nav} className={fontClass}>
       <Header header={buildHeader(profile)} />
       <main id={`${idPrefix}main`} className="mx-auto max-w-5xl px-5 pb-20 sm:px-8">
         {blocks.map((block, index) => (
@@ -447,7 +458,7 @@ function ThemeSection({ block, index }: { block: Block; index: number }): ReactN
       aria-labelledby={block.id}
       className="grid gap-6 border-t-4 border-ink py-12 first:border-t-0 md:grid-cols-[14rem_minmax(0,1fr)] md:gap-10"
     >
-      <div className="min-w-0 md:sticky md:top-8 md:self-start">
+      <div className="min-w-0 md:sticky md:top-[calc(2rem+var(--nav-h,0px))] md:self-start">
         <span
           aria-hidden="true"
           className="block text-7xl leading-none font-black text-transparent [-webkit-text-stroke:2px_var(--text)] sm:text-8xl"

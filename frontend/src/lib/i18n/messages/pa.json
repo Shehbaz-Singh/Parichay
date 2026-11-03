@@ -192,6 +192,10 @@
     "moreProjects": "ਹੋਰ ਪ੍ਰੋਜੈਕਟ ({count})",
     "moreSkills": "{count} ਹੋਰ ਹੁਨਰ",
     "moreTestimonials": "ਹੋਰ ਪ੍ਰਸ਼ੰਸਾ-ਪੱਤਰ ({count})",
-    "showLess": "ਘੱਟ ਦਿਖਾਓ"
+    "showLess": "ਘੱਟ ਦਿਖਾਓ",
+    "viewAllProjects": "ਸਾਰੇ ਪ੍ਰੋਜੈਕਟ ਵੇਖੋ",
+    "moreAbout": "ਮੇਰੇ ਬਾਰੇ ਹੋਰ",
+    "pages": "ਪੰਨੇ",
+    "home": "ਹੋਮ"
   }
 }

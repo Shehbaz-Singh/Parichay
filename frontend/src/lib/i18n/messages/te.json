@@ -192,6 +192,10 @@
     "moreProjects": "మరిన్ని ప్రాజెక్టులు ({count})",
     "moreSkills": "మరో {count} నైపుణ్యాలు",
     "moreTestimonials": "మరిన్ని టెస్టిమోనియల్స్ ({count})",
-    "showLess": "తక్కువ చూపించు"
+    "showLess": "తక్కువ చూపించు",
+    "viewAllProjects": "అన్ని ప్రాజెక్టులు చూడండి",
+    "moreAbout": "నా గురించి మరింత",
+    "pages": "పేజీలు",
+    "home": "హోమ్"
   }
 }

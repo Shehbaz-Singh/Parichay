@@ -192,6 +192,10 @@
     "moreProjects": "आणखी प्रकल्प ({count})",
     "moreSkills": "आणखी {count} कौशल्ये",
     "moreTestimonials": "आणखी प्रशंसापत्रे ({count})",
-    "showLess": "कमी दाखवा"
+    "showLess": "कमी दाखवा",
+    "viewAllProjects": "सर्व प्रकल्प पहा",
+    "moreAbout": "माझ्याबद्दल अधिक",
+    "pages": "पृष्ठे",
+    "home": "मुख्यपृष्ठ"
   }
 }

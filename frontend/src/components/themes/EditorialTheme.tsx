@@ -29,6 +29,7 @@ import {
   RoleList,
   TotalExperience,
   FooterLines,
+  MoreLinkView,
 } from './parts';
 import { Reveal } from './Reveal';
 import { ThemeWrapper } from './ThemeWrapper';
@@ -86,7 +87,7 @@ function Section({
       >
         <h2
           id={block.id}
-          className={`${caps} mb-8 flex items-center gap-4 lg:sticky lg:top-8 lg:mb-0 lg:flex-col lg:items-start lg:gap-3 lg:self-start`}
+          className={`${caps} mb-8 flex items-center gap-4 lg:sticky lg:top-[calc(2rem+var(--nav-h,0px))] lg:mb-0 lg:flex-col lg:items-start lg:gap-3 lg:self-start`}
         >
           <span aria-hidden="true" className="h-px w-8 shrink-0 bg-accent" />
           <span className="min-w-0">{block.title}</span>
@@ -183,7 +184,17 @@ function Masthead({ header }: { header: HeaderModel }) {
   );
 }
 
+// The block, and the way on to the rest when this is the short home page of a heavy profile.
 function BlockView({ block }: { block: Block }) {
+  return (
+    <>
+      <BlockBody block={block} />
+      {block.moreLink && <MoreLinkView more={block.moreLink} />}
+    </>
+  );
+}
+
+function BlockBody({ block }: { block: Block }) {
   switch (block.kind) {
     case 'about':
       return (
@@ -431,10 +442,10 @@ function Footer({ footer }: { footer: FooterModel }) {
   );
 }
 
-export default function EditorialTheme({ profile, idPrefix = '' }: ThemeProps) {
-  const blocks = buildBlocks(profile, idPrefix);
+export default function EditorialTheme({ profile, idPrefix = '', view, nav }: ThemeProps) {
+  const blocks = buildBlocks(profile, idPrefix, view);
   return (
-    <ThemeWrapper theme="editorial" profile={profile} className={fontClass}>
+    <ThemeWrapper theme="editorial" profile={profile} nav={nav} className={fontClass}>
       <main
         id={`${idPrefix}main`}
         className="mx-auto max-w-[110rem] px-5 sm:px-8 lg:px-[clamp(3rem,6vw,8rem)] py-10 sm:py-16"

@@ -9,6 +9,8 @@ import { alternateLanguages, languageLinks } from '@/lib/portfolio-links';
 import { loadTheme } from '@/lib/theme-loader';
 import { getTheme } from '@/lib/themes';
 import { LocaleScope } from './LocaleScope';
+import { SiteNav } from './SiteNav';
+import { pageSplit } from '@/components/themes/blocks';
 
 // The portfolio page, in the profile's default language (/<slug>) or another one (/<slug>/<locale>).
 // The route files only pass the language; everything else is here, so the two cannot drift apart.
@@ -96,7 +98,11 @@ export async function ProfileView({ username, locale }: { username: string; loca
     >
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: structuredData }} />
       {profile.isSample && <SampleBanner ui={uiFor(profile.locale).sample} />}
-      <Theme profile={profile} />
+      <Theme
+        profile={profile}
+        view={pageSplit(profile).split ? 'home' : 'all'}
+        nav={<SiteNav profile={profile} current="home" />}
+      />
     </LocaleScope>
   );
 }

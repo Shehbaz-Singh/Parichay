@@ -29,6 +29,7 @@ import {
   RoleList,
   TotalExperience,
   FooterLines,
+  MoreLinkView,
 } from './parts';
 import { ThemeWrapper } from './ThemeWrapper';
 import type { ThemeProps } from './types';
@@ -88,7 +89,7 @@ function Sidebar({
     </ul>
   );
   return (
-    <aside className="exec-side p-7 sm:p-9 lg:sticky lg:top-0 lg:h-screen lg:overflow-y-auto lg:[scrollbar-width:none] lg:[&::-webkit-scrollbar]:hidden xl:p-10 print:static print:h-auto print:overflow-visible print:border-e print:border-line print:p-5">
+    <aside className="exec-side p-7 sm:p-9 lg:sticky lg:top-[var(--nav-h,0px)] lg:h-[calc(100vh-var(--nav-h,0px))] lg:overflow-y-auto lg:[scrollbar-width:none] lg:[&::-webkit-scrollbar]:hidden xl:p-10 print:static print:h-auto print:overflow-visible print:border-e print:border-line print:p-5">
       <Avatar
         avatar={header.avatar}
         className="size-28 rounded-full ring-4 ring-white/20 print:ring-0"
@@ -191,7 +192,17 @@ function Section({ block, children }: { block: Block; children: ReactNode }) {
   );
 }
 
+// The block, and the way on to the rest when this is the short home page of a heavy profile.
 function BlockView({ block }: { block: Block }) {
+  return (
+    <>
+      <BlockBody block={block} />
+      {block.moreLink && <MoreLinkView more={block.moreLink} />}
+    </>
+  );
+}
+
+function BlockBody({ block }: { block: Block }) {
   switch (block.kind) {
     case 'skills':
       return null; // in the sidebar
@@ -408,12 +419,12 @@ function Footer({ footer }: { footer: FooterModel }) {
   );
 }
 
-export default function ExecutiveTheme({ profile, idPrefix = '' }: ThemeProps) {
-  const blocks = buildBlocks(profile, idPrefix);
+export default function ExecutiveTheme({ profile, idPrefix = '', view, nav }: ThemeProps) {
+  const blocks = buildBlocks(profile, idPrefix, view);
   const skills = blocks.find((block) => block.kind === 'skills');
   const main = blocks.filter((block) => block.kind !== 'skills');
   return (
-    <ThemeWrapper theme="executive" profile={profile} className={fontClass}>
+    <ThemeWrapper theme="executive" profile={profile} nav={nav} className={fontClass}>
       <div className="print:max-w-none print:p-0">
         <div className="exec-sheet bg-surface lg:grid lg:min-h-screen lg:grid-cols-[20rem_minmax(0,1fr)] xl:grid-cols-[24rem_minmax(0,1fr)] print:grid print:grid-cols-[13rem_minmax(0,1fr)]">
           <Sidebar header={buildHeader(profile)} skills={skills} idPrefix={idPrefix} />

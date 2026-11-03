@@ -3,6 +3,7 @@ import type { Prisma } from '../generated/prisma/client';
 import { AppError } from '../lib/errors';
 import { prisma } from '../lib/prisma';
 import { assertExactIds } from '../lib/reorder';
+import { slugifyTitle } from '../lib/slug';
 import { orNotFound } from '../lib/prisma-errors';
 import { deleteTranslationsFor } from './translation.service';
 import { ERRORS } from '../lib/messages';
@@ -61,6 +62,22 @@ async function assertFeaturedRoom(section: Section, profileId: string, input: Ro
   }
 }
 
+// A project's address: made from its name, with a counter when the profile has one like it.
+async function projectSlug(profileId: string, name: string) {
+  const base = slugifyTitle(name) === 'post' ? 'project' : slugifyTitle(name);
+  const taken = new Set(
+    (
+      (await delegates.projects.findMany({
+        where: { profileId, slug: { startsWith: base } },
+        select: { slug: true },
+      })) as { slug: string }[]
+    ).map((row) => row.slug),
+  );
+  let slug = base;
+  for (let n = 2; taken.has(slug); n++) slug = `${base}-${n}`;
+  return slug;
+}
+
 export async function createItem(section: Section, profileId: string, input: Row) {
   const delegate = delegates[section];
   await assertFeaturedRoom(section, profileId, input);
@@ -81,7 +98,12 @@ export async function createItem(section: Section, profileId: string, input: Row
   }
 
   return delegate.create({
-    data: { ...input, ...(order !== undefined && { order }), profileId },
+    data: {
+      ...input,
+      ...(order !== undefined && { order }),
+      ...(section === 'projects' && { slug: await projectSlug(profileId, String(input.name)) }),
+      profileId,
+    },
     omit,
   });
 }

@@ -1,11 +1,11 @@
 import type { ComponentType, ReactNode } from 'react';
 import Link from 'next/link';
-import { FileDown, Globe, Link2, Mail, Phone, UserPlus } from 'lucide-react';
+import { ArrowRight, FileDown, Globe, Link2, Mail, Phone, UserPlus } from 'lucide-react';
 import type { PublicLink } from '@parichay/shared';
 import { formatDate, formatMonthYear, initials } from '@/lib/format';
 import { fill } from '@/lib/i18n';
 import { ReadMore } from './ReadMore';
-import type { Block, DateFmt, Entry, FooterModel, HeaderModel, Role } from './blocks';
+import type { Block, DateFmt, MoreLink, Entry, FooterModel, HeaderModel, Role } from './blocks';
 
 // Small pieces every theme uses, so the markup that matters (dates as <time>, links that open in a
 // new tab, the photo or the initials, the icon on a link) is the same everywhere. Layout and
@@ -77,6 +77,21 @@ export function RoleList({
         </li>
       ))}
     </ol>
+  );
+}
+
+// A way on to the rest of a heavy profile ("View all projects"), under the block it belongs to.
+export function MoreLinkView({ more, className }: { more: MoreLink; className?: string }) {
+  return (
+    <p className={className ?? 'mt-6'}>
+      <Link
+        href={more.href}
+        className="inline-flex min-h-6 items-center gap-1.5 text-sm font-semibold text-accent-fg underline underline-offset-2 hover:no-underline print:hidden"
+      >
+        {more.label}
+        <ArrowRight aria-hidden="true" className="size-4 rtl:-scale-x-100" />
+      </Link>
+    </p>
   );
 }
 

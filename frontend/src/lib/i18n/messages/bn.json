@@ -192,6 +192,10 @@
     "moreProjects": "আরও প্রজেক্ট ({count})",
     "moreSkills": "আরও {count}টি দক্ষতা",
     "moreTestimonials": "আরও প্রশংসাপত্র ({count})",
-    "showLess": "কম দেখান"
+    "showLess": "কম দেখান",
+    "viewAllProjects": "সব প্রজেক্ট দেখুন",
+    "moreAbout": "আমার সম্পর্কে আরও",
+    "pages": "পৃষ্ঠা",
+    "home": "হোম"
   }
 }

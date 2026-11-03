@@ -192,6 +192,10 @@
     "moreProjects": "Plus de projets ({count})",
     "moreSkills": "{count} compétences de plus",
     "moreTestimonials": "Plus de témoignages ({count})",
-    "showLess": "Afficher moins"
+    "showLess": "Afficher moins",
+    "viewAllProjects": "Voir tous les projets",
+    "moreAbout": "En savoir plus sur moi",
+    "pages": "Pages",
+    "home": "Accueil"
   }
 }

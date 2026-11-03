@@ -47,6 +47,7 @@ export const publicExperienceSchema = z.object({
 
 export const publicProjectSchema = z.object({
   id: z.string(),
+  slug: z.string(),
   name: z.string(),
   url: z.string().nullable(),
   description: z.string(),
