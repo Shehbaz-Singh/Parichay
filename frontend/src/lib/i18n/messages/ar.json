@@ -1,5 +1,4 @@
 {
-  "skipLink": "انتقل إلى المحتوى الرئيسي",
   "sections": {
     "about": "نبذة",
     "skills": "المهارات",
@@ -178,14 +177,12 @@
     "showMine": "اعرض بمنطقتي الزمنية",
     "showTheirs": "اعرض بالمنطقة الزمنية لـ {name}",
     "closed": "مغلق",
-    "closedAllWeek": "لم تُحدَّد ساعات عمل",
     "replyLabel": "وقت الرد المعتاد",
     "reply": {
       "same_day": "في اليوم نفسه",
       "within_2_days": "خلال يومين",
       "within_a_week": "خلال أسبوع"
     },
-    "reachLabel": "أفضل طريقة للتواصل مع {name}",
-    "reachVia": "{link}"
+    "reachLabel": "أفضل طريقة للتواصل مع {name}"
   }
 }

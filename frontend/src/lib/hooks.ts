@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useState, useSyncExternalStore } from 'react';
+import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from 'react';
 
 // Whether a CSS media query matches right now, and keeps matching as the window changes.
 export function useMediaQuery(query: string): boolean {
@@ -56,4 +56,31 @@ export function useLoad<T>(load: (signal: AbortSignal) => Promise<T>) {
   }, []);
 
   return { state, retry };
+}
+
+export async function copyToClipboard(text: string): Promise<boolean> {
+  try {
+    await navigator.clipboard.writeText(text);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+// Copies to the clipboard; `copied` stays true for two seconds after a success, for a "Copied" label.
+// copy() says whether it worked, so the caller decides what to tell the user.
+export function useCopy() {
+  const [copied, setCopied] = useState(false);
+  const timer = useRef<ReturnType<typeof setTimeout>>(undefined);
+  useEffect(() => () => clearTimeout(timer.current), []);
+  const copy = useCallback(async (text: string) => {
+    const ok = await copyToClipboard(text);
+    if (ok) {
+      setCopied(true);
+      clearTimeout(timer.current);
+      timer.current = setTimeout(() => setCopied(false), 2000);
+    }
+    return ok;
+  }, []);
+  return { copied, copy };
 }

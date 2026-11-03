@@ -1,5 +1,4 @@
 {
-  "skipLink": "مرکزی مواد پر جائیں",
   "sections": {
     "about": "تعارف",
     "skills": "مہارتیں",
@@ -178,14 +177,12 @@
     "showMine": "میرے ٹائم زون میں دکھائیں",
     "showTheirs": "{name} کے ٹائم زون میں دکھائیں",
     "closed": "بند",
-    "closedAllWeek": "کام کے اوقات مقرر نہیں ہیں",
     "replyLabel": "جواب کا عمومی وقت",
     "reply": {
       "same_day": "اسی دن کے اندر",
       "within_2_days": "2 دن کے اندر",
       "within_a_week": "ایک ہفتے کے اندر"
     },
-    "reachLabel": "{name} سے رابطے کا بہترین طریقہ",
-    "reachVia": "{link}"
+    "reachLabel": "{name} سے رابطے کا بہترین طریقہ"
   }
 }

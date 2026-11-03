@@ -3,6 +3,7 @@
 import { Share2 } from 'lucide-react';
 import { useEffect, useId, useLayoutEffect, useRef, useState, useSyncExternalStore } from 'react';
 import { composeShare } from '@parichay/shared';
+import { copyToClipboard } from '@/lib/hooks';
 import { uiFor, type Ui } from '@/lib/i18n';
 
 interface Props {
@@ -115,12 +116,7 @@ export function ShareButton({
   }
 
   async function copy(value: string, done: string) {
-    try {
-      await navigator.clipboard.writeText(value);
-      announce(done);
-    } catch {
-      announce(ui.copyFailed);
-    }
+    announce((await copyToClipboard(value)) ? done : ui.copyFailed);
     setOpen(false);
     trigger.current?.focus();
   }

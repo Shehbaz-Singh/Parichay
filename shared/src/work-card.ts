@@ -56,7 +56,6 @@ export const timeRangeSchema = z
     message: VALIDATION.rangeEndAfterStart,
     path: ['end'],
   });
-export type TimeRange = z.infer<typeof timeRangeSchema>;
 
 // A day is closed (no ranges) or has one or two ranges, in order and not overlapping. A range does
 // not cross midnight: a late shift is written as two days.
@@ -99,7 +98,6 @@ export const readWorkingHours = (value: unknown): WorkingHours => {
 
 export const REPLY_TIMES = ['same_day', 'within_2_days', 'within_a_week'] as const;
 export const replyTimeSchema = z.enum(REPLY_TIMES);
-export type ReplyTime = z.infer<typeof replyTimeSchema>;
 
 export const PREFERRED_CONTACTS = ['email', 'linkedin', 'phone', 'any_visible_link'] as const;
 export const preferredContactSchema = z.enum(PREFERRED_CONTACTS);

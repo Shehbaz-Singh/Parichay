@@ -97,8 +97,6 @@ export const THEME_KEYS = ['editorial', 'bento', 'soft', 'executive', 'creative'
 export const themeSchema = z.enum(THEME_KEYS);
 export type ThemeKey = z.infer<typeof themeSchema>;
 export const DEFAULT_THEME: ThemeKey = 'editorial';
-export const isThemeKey = (value: string): value is ThemeKey =>
-  (THEME_KEYS as readonly string[]).includes(value);
 
 export const DEFAULT_ACCENT = '#2563eb';
 
@@ -163,7 +161,6 @@ export const profileInputSchema = z.object({
   linkBioShowShare: z.boolean().default(true),
   linkBioShowWork: z.boolean().default(true),
 });
-export type ProfileInput = z.infer<typeof profileInputSchema>;
 
 // A stored profile: the same fields as the input, plus its id. Deriving it here means adding
 // a profile field is a one-place change (the backend's Prisma select reads these keys too).
@@ -328,4 +325,3 @@ export const fullProfileInputSchema = profileInputSchema.extend({
   projects: z.array(projectInputSchema).default([]),
   education: z.array(educationInputSchema).default([]),
 });
-export type FullProfileInput = z.infer<typeof fullProfileInputSchema>;

@@ -9,7 +9,7 @@ import { readFlag, writeFlag } from '@/lib/storage';
 import { SITE_URL } from '@/lib/config';
 import { ShareButton } from '../ShareButton';
 import { Button, Modal, Switch, buttonStyles } from '../ui';
-import { errorText, useEditor, type SaveStatus } from './editor-context';
+import { useEditor, type SaveStatus } from './editor-context';
 import { useGo } from './navigation';
 import { MobileMenu } from './Nav';
 import { PublishCelebration } from './PublishCelebration';
@@ -17,6 +17,7 @@ import { useRegisterDashboardActions } from './palette/actions';
 import { PaletteButton } from './palette/PaletteHost';
 import { QrCodeDialog } from './QrCodeDialog';
 import { ShareMessageButton } from './ShareMessage';
+import { useCopy } from '@/lib/hooks';
 import { NOTICES, PROBLEMS } from '@/lib/messages';
 
 // The fields a portfolio is not much use without, and the Profile tab that fills each in.
@@ -74,11 +75,11 @@ function SaveIndicator() {
 }
 
 function PublishControls() {
-  const { profile, update, notify } = useEditor();
+  const { profile, update, notify, attempt } = useEditor();
   const go = useGo();
   const [pending, setPending] = useState(false);
   const [asking, setAsking] = useState(false);
-  const [copied, setCopied] = useState(false);
+  const { copied, copy: copyText } = useCopy();
   const [celebrating, setCelebrating] = useState(false);
   const [showQr, setShowQr] = useState(false);
 
@@ -91,7 +92,7 @@ function PublishControls() {
   async function setPublished(published: boolean) {
     setAsking(false);
     setPending(true);
-    try {
+    await attempt(async () => {
       const res = await api<{ published: boolean }>('/profile/me/publish', {
         method: 'POST',
         body: { published },
@@ -105,11 +106,8 @@ function PublishControls() {
       } else {
         notify('success', res.published ? NOTICES.portfolioLive : NOTICES.portfolioHidden);
       }
-    } catch (err) {
-      notify('error', errorText(err));
-    } finally {
-      setPending(false);
-    }
+    });
+    setPending(false);
   }
 
   function onToggle() {
@@ -120,13 +118,7 @@ function PublishControls() {
   }
 
   async function copy() {
-    try {
-      await navigator.clipboard.writeText(url);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    } catch {
-      notify('error', PROBLEMS.copyLink);
-    }
+    if (!(await copyText(url))) notify('error', PROBLEMS.copyLink);
   }
 
   // The command palette does these through the same code as the buttons here.

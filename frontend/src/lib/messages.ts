@@ -46,7 +46,6 @@ export const NOTICES = {
   emailCopied: (email: string) => `Copied ${email}.`,
   linkBioOn: 'The link-in-bio card is on. Anyone with the link can see it.',
   linkBioOff: 'The link-in-bio card is off. Its link now shows a “not found” page.',
-  linkBioSaved: 'Saved.',
   linkBioButtonAdded: 'Button added to your card.',
   linkBioButtonSaved: 'Button saved.',
   linkBioCopied: 'Copied the link to your card.',

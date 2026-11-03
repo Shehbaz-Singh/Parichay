@@ -1,5 +1,4 @@
 {
-  "skipLink": "Aller au contenu principal",
   "sections": {
     "about": "À propos",
     "skills": "Compétences",
@@ -178,14 +177,12 @@
     "showMine": "Afficher dans mon fuseau horaire",
     "showTheirs": "Afficher dans le fuseau horaire de {name}",
     "closed": "Fermé",
-    "closedAllWeek": "Aucune heure de travail définie",
     "replyLabel": "Délai de réponse habituel",
     "reply": {
       "same_day": "Dans la journée",
       "within_2_days": "Sous 2 jours",
       "within_a_week": "Sous une semaine"
     },
-    "reachLabel": "Meilleur moyen de contacter {name}",
-    "reachVia": "{link}"
+    "reachLabel": "Meilleur moyen de contacter {name}"
   }
 }

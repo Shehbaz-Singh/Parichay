@@ -68,7 +68,6 @@ export const authUserSchema = z.object({
   email: z.string(),
   createdAt: z.string(),
 });
-export type AuthUser = z.infer<typeof authUserSchema>;
 
 export const sessionResponseSchema = z.object({
   user: authUserSchema,

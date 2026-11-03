@@ -9,11 +9,12 @@ import {
   type ContactStatus,
 } from '@parichay/shared';
 import { ApiError, api } from '@/lib/client-api';
+import { useCopy } from '@/lib/hooks';
 import { fullDate, relativeTime } from '@/lib/relative-time';
 import { CONFIRMS, NOTICES, PROBLEMS } from '@/lib/messages';
 import { Badge, Button, Card, EmptyState, Tabs, buttonStyles, useConfirm } from '../../ui';
 import { ContentSkeleton, LoadFailed } from '../screens';
-import { errorText, useEditor } from '../editor-context';
+import { useEditor } from '../editor-context';
 import { Collapsible } from '../layout';
 import { useMessages } from '../messages-context';
 import { ContactFormCard } from './ContactFormCard';
@@ -45,14 +46,14 @@ function MessageDetail({
   onBack: () => void;
   onChanged: () => void; // something about the list changed (status, deleted)
 }) {
-  const { notify } = useEditor();
+  const { notify, attempt: run } = useEditor();
   const { refresh } = useMessages();
   const confirm = useConfirm();
   const [message, setMessage] = useState<ContactMessage | null>(null);
   const [failed, setFailed] = useState<unknown>(null);
   const [attempt, setAttempt] = useState(0);
   const [busy, setBusy] = useState(false);
-  const [copied, setCopied] = useState(false);
+  const { copied, copy } = useCopy();
   const heading = useRef<HTMLHeadingElement>(null);
   const loadedId = message?.id;
 
@@ -90,21 +91,19 @@ function MessageDetail({
 
   async function setStatus(status: ContactStatus, success: string) {
     setBusy(true);
-    try {
+    const ok = await run(async () => {
       setMessage(
         await api<ContactMessage>(`/profile/me/messages/${id}`, {
           method: 'PATCH',
           body: { status },
         }),
       );
-      notify('success', success);
+    }, success);
+    if (ok) {
       onChanged();
       void refresh();
-    } catch (err) {
-      notify('error', errorText(err));
-    } finally {
-      setBusy(false);
     }
+    setBusy(false);
   }
 
   async function remove(spam: boolean) {
@@ -119,28 +118,26 @@ function MessageDetail({
     });
     if (!sure) return;
     setBusy(true);
-    try {
-      await api(`/profile/me/messages/${id}`, { method: 'DELETE' });
-      notify('success', spam ? NOTICES.messageSpam : NOTICES.messageDeleted);
+    const ok = await run(
+      () => api(`/profile/me/messages/${id}`, { method: 'DELETE' }),
+      spam ? NOTICES.messageSpam : NOTICES.messageDeleted,
+    );
+    if (ok) {
       onChanged();
       void refresh();
       onBack();
-    } catch (err) {
-      notify('error', errorText(err));
+    } else {
       setBusy(false);
     }
   }
 
   async function copyEmail() {
     if (!message) return;
-    try {
-      await navigator.clipboard.writeText(message.senderEmail);
-      setCopied(true);
-      notify('success', NOTICES.emailCopied(message.senderEmail));
-      setTimeout(() => setCopied(false), 2000);
-    } catch {
-      notify('error', PROBLEMS.copyEmail);
-    }
+    const ok = await copy(message.senderEmail);
+    notify(
+      ok ? 'success' : 'error',
+      ok ? NOTICES.emailCopied(message.senderEmail) : PROBLEMS.copyEmail,
+    );
   }
 
   const back = (

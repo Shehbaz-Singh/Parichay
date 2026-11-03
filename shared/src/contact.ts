@@ -88,7 +88,6 @@ export const publicContactFormSchema = z.object({
   intro: z.string().nullable(),
   retentionDays: z.number(),
 });
-export type PublicContactForm = z.infer<typeof publicContactFormSchema>;
 
 // PUT /profile/me/messages/settings
 export const contactSettingsSchema = z.object({
@@ -122,7 +121,6 @@ export const contactMessageSummarySchema = z.object({
   ...messageBase,
   snippet: z.string(),
 });
-export type ContactMessageSummary = z.infer<typeof contactMessageSummarySchema>;
 
 // One message in full.
 export const contactMessageSchema = z.object({

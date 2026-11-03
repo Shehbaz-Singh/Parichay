@@ -1,5 +1,4 @@
 {
-  "skipLink": "मुख्य सामग्री पर जाएँ",
   "sections": {
     "about": "परिचय",
     "skills": "कौशल",
@@ -178,14 +177,12 @@
     "showMine": "मेरे समय क्षेत्र में दिखाएँ",
     "showTheirs": "{name} के समय क्षेत्र में दिखाएँ",
     "closed": "बंद",
-    "closedAllWeek": "कार्य समय निर्धारित नहीं है",
     "replyLabel": "सामान्य उत्तर समय",
     "reply": {
       "same_day": "उसी दिन के भीतर",
       "within_2_days": "2 दिन के भीतर",
       "within_a_week": "एक सप्ताह के भीतर"
     },
-    "reachLabel": "{name} से संपर्क का सबसे अच्छा तरीका",
-    "reachVia": "{link}"
+    "reachLabel": "{name} से संपर्क का सबसे अच्छा तरीका"
   }
 }

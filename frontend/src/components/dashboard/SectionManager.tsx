@@ -7,7 +7,6 @@ import type { LucideIcon } from 'lucide-react';
 import { Button, Card, EmptyState } from '../ui';
 import { cx } from '../ui/cx';
 import {
-  errorText,
   useEditor,
   useSection,
   useSuggestions,
@@ -83,7 +82,7 @@ export function ListManager<T extends { id: string }, D = never>({
 }: ListProps<T, D>) {
   const { items, create, remove, reorder } = list;
   const { suggestions, dismiss, dismissAll } = suggestionApi;
-  const { notify, jump, clearJump } = useEditor();
+  const { attempt, jump, clearJump } = useEditor();
   const canLeave = useLeaveGuard();
   const panelBase = useId();
   // An item id, "new", "s:<suggestion key>", or nothing. One form at a time keeps unsaved
@@ -119,11 +118,7 @@ export function ListManager<T extends { id: string }, D = never>({
 
   async function commitDelete(id: string) {
     timers.current.delete(id);
-    try {
-      await removeRef.current(id);
-    } catch (err) {
-      notify('error', errorText(err));
-    }
+    await attempt(() => removeRef.current(id));
     setDeleted((ids) => ids.filter((x) => x !== id));
   }
 
@@ -165,16 +160,13 @@ export function ListManager<T extends { id: string }, D = never>({
   // first failure; whatever was added is already gone from the list.
   async function addSuggestions(chosen: typeof suggestions) {
     setAdding(true);
-    try {
+    await attempt(async () => {
       for (const suggestion of chosen) {
         await create(suggestion.data);
         dismiss(suggestion.key);
       }
-    } catch (err) {
-      notify('error', errorText(err));
-    } finally {
-      setAdding(false);
-    }
+    });
+    setAdding(false);
   }
 
   function row(item: T, handle?: ReactNode) {

@@ -6,6 +6,7 @@ import { languageOf, type MyProfile, type StoredTranslation } from '@parichay/sh
 import { api } from '@/lib/client-api';
 import { ACCENT_PRESETS, normalizeHex } from '@/lib/color';
 import { SITE_URL } from '@/lib/config';
+import { copyToClipboard } from '@/lib/hooks';
 import { NOTICES, PROBLEMS } from '@/lib/messages';
 import {
   CUSTOM_LINE_MAX,
@@ -282,12 +283,7 @@ export function SignatureGenerator() {
   }
 
   async function copyText(value: string, ok: string) {
-    try {
-      await navigator.clipboard.writeText(value);
-      say(ok);
-    } catch {
-      say(PROBLEMS.signatureCopy);
-    }
+    say((await copyToClipboard(value)) ? ok : PROBLEMS.signatureCopy);
   }
 
   function download() {

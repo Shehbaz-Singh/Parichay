@@ -6,7 +6,7 @@ import { MAX_POSTS, type MyPostSummary } from '@parichay/shared';
 import { api } from '@/lib/client-api';
 import { formatDate } from '@/lib/format';
 import { Badge, Button, Card, EmptyState, useConfirm } from '../../ui';
-import { errorText, useEditor } from '../editor-context';
+import { useEditor } from '../editor-context';
 import { useGo } from '../navigation';
 import { PostEditor } from './PostEditor';
 import { NOTICES, CONFIRMS } from '@/lib/messages';
@@ -60,7 +60,7 @@ function PostRow({
 
 // The Writing tab: your posts and links to articles, newest first, and the editor for one.
 export function WritingStep() {
-  const { profile, update, notify, jump, clearJump } = useEditor();
+  const { profile, update, attempt, jump, clearJump } = useEditor();
   const confirm = useConfirm();
   const go = useGo();
   // A post id, "new", or nothing (the list).
@@ -96,15 +96,11 @@ export function WritingStep() {
     });
     if (!ok) return;
     setDeleting(post.id);
-    try {
+    await attempt(async () => {
       await api(`/profile/me/posts/${post.id}`, { method: 'DELETE' });
       update((p) => ({ ...p, posts: p.posts.filter((item) => item.id !== post.id) }));
-      notify('success', NOTICES.deleted);
-    } catch (err) {
-      notify('error', errorText(err));
-    } finally {
-      setDeleting(null);
-    }
+    }, NOTICES.deleted);
+    setDeleting(null);
   }
 
   if (editing !== null) {

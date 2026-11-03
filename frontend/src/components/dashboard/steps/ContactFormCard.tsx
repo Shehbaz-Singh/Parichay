@@ -5,7 +5,7 @@ import { CONTACT_INTRO_MAX, type ContactSettings, type SectionConfig } from '@pa
 import { api } from '@/lib/client-api';
 import { NOTICES } from '@/lib/messages';
 import { Button, Card, Input, Switch } from '../../ui';
-import { errorText, useEditor } from '../editor-context';
+import { useEditor } from '../editor-context';
 
 type Saved = Pick<ContactSettings, 'contactFormEnabled'> & { contactFormIntro: string | null };
 
@@ -13,7 +13,7 @@ type Saved = Pick<ContactSettings, 'contactFormEnabled'> & { contactFormIntro: s
 // the messages. Turning it on also shows the Contact section on the page (the same as the switch in
 // the Sections step), so the owner is not left wondering why nothing appears.
 export function ContactFormCard({ retentionDays }: { retentionDays: number }) {
-  const { profile, update, notify } = useEditor();
+  const { profile, update, attempt } = useEditor();
   const inputId = useId();
   const [intro, setIntro] = useState(profile.contactFormIntro ?? '');
   const [busy, setBusy] = useState<'switch' | 'intro' | 'section' | null>(null);
@@ -47,43 +47,25 @@ export function ContactFormCard({ retentionDays }: { retentionDays: number }) {
 
   async function toggle() {
     setBusy('switch');
-    try {
-      // The intro that is typed but not saved yet is kept as it is: only the switch changes.
-      await save(!on, profile.contactFormIntro ?? '');
-      notify('success', on ? NOTICES.contactFormOff : NOTICES.contactFormOn);
-      if (!on && !sectionShown) {
-        await showSection();
-        notify('success', NOTICES.contactFormShown);
-      }
-    } catch (err) {
-      notify('error', errorText(err));
-    } finally {
-      setBusy(null);
-    }
+    // The intro that is typed but not saved yet is kept as it is: only the switch changes.
+    const ok = await attempt(
+      () => save(!on, profile.contactFormIntro ?? ''),
+      on ? NOTICES.contactFormOff : NOTICES.contactFormOn,
+    );
+    if (ok && !on && !sectionShown) await attempt(showSection, NOTICES.contactFormShown);
+    setBusy(null);
   }
 
   async function saveIntro() {
     setBusy('intro');
-    try {
-      await save(on, intro);
-      notify('success', NOTICES.contactIntroSaved);
-    } catch (err) {
-      notify('error', errorText(err));
-    } finally {
-      setBusy(null);
-    }
+    await attempt(() => save(on, intro), NOTICES.contactIntroSaved);
+    setBusy(null);
   }
 
   async function show() {
     setBusy('section');
-    try {
-      await showSection();
-      notify('success', NOTICES.contactFormShown);
-    } catch (err) {
-      notify('error', errorText(err));
-    } finally {
-      setBusy(null);
-    }
+    await attempt(showSection, NOTICES.contactFormShown);
+    setBusy(null);
   }
 
   return (

@@ -6,19 +6,13 @@ import { useForm } from 'react-hook-form';
 import { skillInputSchema, type SkillInput } from '@parichay/shared';
 import { schemaResolver, showApiError } from '@/lib/form';
 import { Button, Card, EmptyState, ErrorText, Input, SlowNotice } from '../../ui';
-import {
-  errorText,
-  useEditor,
-  useSection,
-  useSuggestions,
-  type Suggestion,
-} from '../editor-context';
+import { useEditor, useSection, useSuggestions, type Suggestion } from '../editor-context';
 import { SortableList } from '../SortableList';
 import { NOTICES } from '@/lib/messages';
 
 export function SkillsStep() {
   const { items, create, remove, reorder } = useSection('skills');
-  const { notify } = useEditor();
+  const { notify, attempt } = useEditor();
   const { suggestions, dismiss, dismissAll } = useSuggestions('skills');
   const [adding, setAdding] = useState(false);
   const form = useForm<{ name: string }, unknown, SkillInput>({
@@ -42,16 +36,13 @@ export function SkillsStep() {
   // Adds suggested skills one after another so their order is kept; each leaves the list once added.
   async function addSuggested(list: Suggestion<'skills'>[]) {
     setAdding(true);
-    try {
+    await attempt(async () => {
       for (const suggestion of list) {
         await create({ name: suggestion.data });
         dismiss(suggestion.key);
       }
-    } catch (err) {
-      notify('error', errorText(err));
-    } finally {
-      setAdding(false);
-    }
+    });
+    setAdding(false);
   }
 
   return (
@@ -153,10 +144,7 @@ export function SkillsStep() {
                 aria-label={`Remove ${skill.name}`}
                 className="min-h-6 min-w-6 rounded-full px-2 text-muted hover:bg-line hover:text-danger"
                 onClick={() =>
-                  remove(skill.id).then(
-                    () => notify('success', NOTICES.skillRemoved(skill.name)),
-                    (err) => notify('error', errorText(err)),
-                  )
+                  void attempt(() => remove(skill.id), NOTICES.skillRemoved(skill.name))
                 }
               >
                 ×

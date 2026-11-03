@@ -21,7 +21,7 @@ import { TextArea, TextField } from '../../form-fields';
 import { Badge, Button, Card, EmptyState, Switch, useConfirm } from '../../ui';
 import { EditorForm } from '../EditorForm';
 import { ListManager, type FormProps } from '../SectionManager';
-import { errorText, useEditor, useTestimonials } from '../editor-context';
+import { useEditor, useTestimonials } from '../editor-context';
 import { NOTICES, CONFIRMS } from '@/lib/messages';
 
 type Fields = {
@@ -168,7 +168,7 @@ function ReviewList({
 export function TestimonialsStep() {
   const t = useTestimonials();
   const confirm = useConfirm();
-  const { profile, update, notify } = useEditor();
+  const { profile, update, attempt } = useEditor();
   const [busy, setBusy] = useState<string | null>(null);
   const sectionShown =
     profile.sectionConfig.find((section) => section.key === 'testimonials')?.visible ?? false;
@@ -181,15 +181,8 @@ export function TestimonialsStep() {
     after?: () => void,
   ) {
     setBusy(key);
-    try {
-      await action();
-      notify('success', success);
-      after?.();
-    } catch (err) {
-      notify('error', errorText(err));
-    } finally {
-      setBusy(null);
-    }
+    if (await attempt(action, success)) after?.();
+    setBusy(null);
   }
 
   const toggleAccepting = () =>

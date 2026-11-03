@@ -167,14 +167,8 @@ export const myProfileSchema = profileSchema.extend({
   ...sectionLists,
 });
 
-export type PublicCustomItem = z.infer<typeof publicCustomItemSchema>;
-export type PublicCustomSection = z.infer<typeof publicCustomSectionSchema>;
 export type MyCustomSection = z.infer<typeof myCustomSectionSchema>;
 export type PublicLink = z.infer<typeof publicLinkSchema>;
-export type PublicSkill = z.infer<typeof publicSkillSchema>;
-export type PublicExperience = z.infer<typeof publicExperienceSchema>;
-export type PublicProject = z.infer<typeof publicProjectSchema>;
-export type PublicEducation = z.infer<typeof publicEducationSchema>;
 export type PublicProfile = z.infer<typeof publicProfileSchema>;
 export type MyProfile = z.infer<typeof myProfileSchema>;
 export type MyLink = MyProfile['links'][number];

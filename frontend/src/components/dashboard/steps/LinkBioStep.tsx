@@ -18,6 +18,7 @@ import { SITE_URL } from '@/lib/config';
 import { schemaResolver } from '@/lib/form';
 import { buildLinkCard, linkCardFromEditor } from '@/lib/link-card';
 import { NOTICES, PROBLEMS } from '@/lib/messages';
+import { useCopy } from '@/lib/hooks';
 import { TextField } from '../../form-fields';
 import { LinkCard } from '../../linkbio/LinkCard';
 import { Button, Card, Switch, buttonStyles } from '../../ui';
@@ -25,7 +26,7 @@ import { EditorForm } from '../EditorForm';
 import { InfoToggle } from '../layout';
 import { QrCodeDialog } from '../QrCodeDialog';
 import { ListManager, type FormProps } from '../SectionManager';
-import { errorText, useEditor, useLinkBio } from '../editor-context';
+import { useEditor, useLinkBio } from '../editor-context';
 
 type Fields = { label: string; url: string };
 
@@ -132,9 +133,9 @@ function PhonePreview({ children }: { children: ReactNode }) {
 
 export function LinkBioStep() {
   const link = useLinkBio();
-  const { profile, preview, notify } = useEditor();
+  const { profile, preview, notify, attempt } = useEditor();
   const [busy, setBusy] = useState<string | null>(null);
-  const [copied, setCopied] = useState(false);
+  const { copied, copy: copyText } = useCopy();
   const [showQr, setShowQr] = useState(false);
 
   const on = profile.linkBioEnabled;
@@ -155,25 +156,13 @@ export function LinkBioStep() {
 
   async function change(key: string, changes: Partial<LinkBioSettings>, success?: string) {
     setBusy(key);
-    try {
-      await link.saveSettings(changes);
-      if (success) notify('success', success);
-    } catch (err) {
-      notify('error', errorText(err));
-    } finally {
-      setBusy(null);
-    }
+    await attempt(() => link.saveSettings(changes), success);
+    setBusy(null);
   }
 
   async function copy() {
-    try {
-      await navigator.clipboard.writeText(url);
-      setCopied(true);
-      notify('success', NOTICES.linkBioCopied);
-      setTimeout(() => setCopied(false), 2000);
-    } catch {
-      notify('error', PROBLEMS.linkBioCopy);
-    }
+    const ok = await copyText(url);
+    notify(ok ? 'success' : 'error', ok ? NOTICES.linkBioCopied : PROBLEMS.linkBioCopy);
   }
 
   const optional: {

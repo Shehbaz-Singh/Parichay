@@ -67,7 +67,6 @@ export const publicTestimonialSchema = z.object({
   message: z.string(),
   order: z.number(),
 });
-export type PublicTestimonial = z.infer<typeof publicTestimonialSchema>;
 
 // What the owner sees of any testimonial.
 export const myTestimonialSchema = publicTestimonialSchema.extend({

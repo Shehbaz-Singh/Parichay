@@ -1,5 +1,4 @@
 {
-  "skipLink": "মূল বিষয়বস্তুতে যান",
   "sections": {
     "about": "পরিচিতি",
     "skills": "দক্ষতা",
@@ -178,14 +177,12 @@
     "showMine": "আমার সময় অঞ্চলে দেখান",
     "showTheirs": "{name}-এর সময় অঞ্চলে দেখান",
     "closed": "বন্ধ",
-    "closedAllWeek": "কর্মসময় নির্ধারণ করা নেই",
     "replyLabel": "সাধারণ উত্তরের সময়",
     "reply": {
       "same_day": "একই দিনের মধ্যে",
       "within_2_days": "২ দিনের মধ্যে",
       "within_a_week": "এক সপ্তাহের মধ্যে"
     },
-    "reachLabel": "{name}-এর সঙ্গে যোগাযোগের সেরা উপায়",
-    "reachVia": "{link}"
+    "reachLabel": "{name}-এর সঙ্গে যোগাযোগের সেরা উপায়"
   }
 }

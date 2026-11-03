@@ -1,5 +1,4 @@
 {
-  "skipLink": "Skip to main content",
   "sections": {
     "about": "About",
     "skills": "Skills",
@@ -178,14 +177,12 @@
     "showMine": "Show in my time zone",
     "showTheirs": "Show in {name}'s time zone",
     "closed": "Closed",
-    "closedAllWeek": "No working hours set",
     "replyLabel": "Typical reply time",
     "reply": {
       "same_day": "Within the same day",
       "within_2_days": "Within 2 days",
       "within_a_week": "Within a week"
     },
-    "reachLabel": "Best way to reach {name}",
-    "reachVia": "{link}"
+    "reachLabel": "Best way to reach {name}"
   }
 }

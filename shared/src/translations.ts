@@ -160,9 +160,6 @@ export const suggestRequestSchema = z.object({
 });
 export const SUGGESTIONS_PER_DAY = 40;
 
-export const isTranslatable = (entity: TranslatableEntity, field: string) =>
-  fieldRule(entity, field) !== undefined;
-
 // Key of a translation inside a lookup map.
 export const translationKey = (entity: string, id: string, field: string) =>
   `${entity}:${id}:${field}`;

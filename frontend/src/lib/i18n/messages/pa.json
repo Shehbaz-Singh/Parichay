@@ -1,5 +1,4 @@
 {
-  "skipLink": "ਮੁੱਖ ਸਮੱਗਰੀ ਤੇ ਜਾਓ",
   "sections": {
     "about": "ਜਾਣ-ਪਛਾਣ",
     "skills": "ਹੁਨਰ",
@@ -178,14 +177,12 @@
     "showMine": "ਮੇਰੇ ਸਮਾਂ ਖੇਤਰ ਵਿੱਚ ਦਿਖਾਓ",
     "showTheirs": "{name} ਦੇ ਸਮਾਂ ਖੇਤਰ ਵਿੱਚ ਦਿਖਾਓ",
     "closed": "ਬੰਦ",
-    "closedAllWeek": "ਕੰਮ ਦੇ ਘੰਟੇ ਤੈਅ ਨਹੀਂ ਕੀਤੇ ਗਏ",
     "replyLabel": "ਆਮ ਜਵਾਬ ਸਮਾਂ",
     "reply": {
       "same_day": "ਉਸੇ ਦਿਨ ਦੇ ਅੰਦਰ",
       "within_2_days": "2 ਦਿਨਾਂ ਦੇ ਅੰਦਰ",
       "within_a_week": "ਇੱਕ ਹਫ਼ਤੇ ਦੇ ਅੰਦਰ"
     },
-    "reachLabel": "{name} ਨਾਲ ਸੰਪਰਕ ਕਰਨ ਦਾ ਸਭ ਤੋਂ ਵਧੀਆ ਤਰੀਕਾ",
-    "reachVia": "{link}"
+    "reachLabel": "{name} ਨਾਲ ਸੰਪਰਕ ਕਰਨ ਦਾ ਸਭ ਤੋਂ ਵਧੀਆ ਤਰੀਕਾ"
   }
 }

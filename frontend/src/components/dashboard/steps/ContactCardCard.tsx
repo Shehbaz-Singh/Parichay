@@ -5,9 +5,10 @@ import { Check, Copy, Download } from 'lucide-react';
 import { contactCardInput, hiddenContactLinks } from '@parichay/shared';
 import { SITE_URL } from '@/lib/config';
 import { fill, uiFor } from '@/lib/i18n';
+import { useCopy } from '@/lib/hooks';
 import { PROBLEMS } from '@/lib/messages';
 import { Switch, buttonStyles } from '../../ui';
-import { errorText, useEditor } from '../editor-context';
+import { useEditor } from '../editor-context';
 
 const PHOTO_FIELD = 'Photo (a small square copy, about 200 px)';
 
@@ -15,9 +16,9 @@ const PHOTO_FIELD = 'Photo (a small square copy, about 200 px)';
 // preview below is worked out by the same function as the file (shared/src/contact-card.ts), so it
 // lists exactly what is in it, and says what is left out and why.
 export function ContactCardCard() {
-  const { profile, saveFields, notify } = useEditor();
+  const { profile, saveFields, notify, attempt } = useEditor();
   const [saving, setSaving] = useState<'enabled' | 'photo' | null>(null);
-  const [copied, setCopied] = useState(false);
+  const { copied, copy: copyText } = useCopy();
   const on = profile.contactCardEnabled;
   const photoOn = profile.contactCardPhoto;
   const hasPhoto = Boolean(profile.avatarUrl);
@@ -30,23 +31,12 @@ export function ContactCardCard() {
     changes: { contactCardEnabled?: boolean; contactCardPhoto?: boolean },
   ) {
     setSaving(field);
-    try {
-      await saveFields(changes);
-    } catch (err) {
-      notify('error', errorText(err));
-    } finally {
-      setSaving(null);
-    }
+    await attempt(() => saveFields(changes));
+    setSaving(null);
   }
 
   async function copy() {
-    try {
-      await navigator.clipboard.writeText(fileUrl);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    } catch {
-      notify('error', PROBLEMS.copyLink);
-    }
+    if (!(await copyText(fileUrl))) notify('error', PROBLEMS.copyLink);
   }
 
   // What the file holds, from the same mapping the file uses (a stand-in marks where the photo goes).

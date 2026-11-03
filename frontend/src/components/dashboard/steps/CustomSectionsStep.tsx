@@ -163,7 +163,7 @@ function RenameForm({ section, onDone }: { section: MyCustomSection; onDone: () 
 
 function CustomSectionCard({ section }: { section: MyCustomSection }) {
   const { remove } = useCustomSections();
-  const { notify } = useEditor();
+  const { attempt } = useEditor();
   const confirm = useConfirm();
   const list = useCustomItems(section.id);
   const [renaming, setRenaming] = useState(false);
@@ -180,13 +180,7 @@ function CustomSectionCard({ section }: { section: MyCustomSection }) {
     });
     if (!sure) return;
     setDeleting(true);
-    try {
-      await remove(section.id);
-      notify('success', NOTICES.sectionDeleted);
-    } catch (err) {
-      notify('error', errorText(err));
-      setDeleting(false);
-    }
+    if (!(await attempt(() => remove(section.id), NOTICES.sectionDeleted))) setDeleting(false);
   }
 
   return (

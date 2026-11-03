@@ -7,14 +7,14 @@ import { uiFor } from '@/lib/i18n';
 import { NOTICES } from '@/lib/messages';
 import { Button, Modal, Textarea } from '../ui';
 import { cx } from '../ui/cx';
-import { errorText, useEditor } from './editor-context';
+import { useEditor } from './editor-context';
 
 const DEFAULT_MESSAGE = uiFor('en').share.defaultMessage;
 
 // The suggested message that comes with a share. It sits next to the Share button: the owner edits
 // it here, and sees what people will be sent.
 export function ShareMessageButton({ url }: { url: string }) {
-  const { profile, saveFields, notify } = useEditor();
+  const { profile, saveFields, attempt } = useEditor();
   const [open, setOpen] = useState(false);
   const [draft, setDraft] = useState('');
   const [saving, setSaving] = useState(false);
@@ -34,17 +34,14 @@ export function ShareMessageButton({ url }: { url: string }) {
 
   async function save() {
     setSaving(true);
-    try {
-      // The default is stored as nothing, so each language keeps using its own default wording.
-      const text = draft.trim();
-      await saveFields({ shareMessage: !text || text === DEFAULT_MESSAGE ? null : text });
-      notify('success', NOTICES.shareMessageSaved);
-      setOpen(false);
-    } catch (err) {
-      notify('error', errorText(err));
-    } finally {
-      setSaving(false);
-    }
+    // The default is stored as nothing, so each language keeps using its own default wording.
+    const text = draft.trim();
+    const ok = await attempt(
+      () => saveFields({ shareMessage: !text || text === DEFAULT_MESSAGE ? null : text }),
+      NOTICES.shareMessageSaved,
+    );
+    if (ok) setOpen(false);
+    setSaving(false);
   }
 
   return (

@@ -1,7 +1,7 @@
 import { useRef, useState } from 'react';
 import { api } from '@/lib/client-api';
 import { PROBLEMS } from '@/lib/messages';
-import { errorText, useEditor } from './editor-context';
+import { useEditor } from './editor-context';
 
 interface Options {
   // The API path that takes the image (POST) and removes it (DELETE). With none, nothing happens.
@@ -22,7 +22,7 @@ interface Options {
 export function useImageUpload(options: Options) {
   const { endpoint, field, resultKey, types, maxBytes, tooLarge, uploaded, removed, onChange } =
     options;
-  const { notify } = useEditor();
+  const { notify, attempt } = useEditor();
   const input = useRef<HTMLInputElement>(null);
   const [busy, setBusy] = useState(false);
 
@@ -34,29 +34,21 @@ export function useImageUpload(options: Options) {
     const form = new FormData();
     form.append(field, file);
     setBusy(true);
-    try {
+    await attempt(async () => {
       const result = await api<Record<string, string>>(endpoint, { method: 'POST', form });
       onChange(result[resultKey]);
-      notify('success', uploaded);
-    } catch (err) {
-      notify('error', errorText(err));
-    } finally {
-      setBusy(false);
-    }
+    }, uploaded);
+    setBusy(false);
   }
 
   async function remove() {
     if (!endpoint) return;
     setBusy(true);
-    try {
+    await attempt(async () => {
       await api(endpoint, { method: 'DELETE' });
       onChange(null);
-      notify('success', removed);
-    } catch (err) {
-      notify('error', errorText(err));
-    } finally {
-      setBusy(false);
-    }
+    }, removed);
+    setBusy(false);
   }
 
   return { input, busy, upload, remove };

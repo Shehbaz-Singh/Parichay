@@ -54,5 +54,3 @@ export const isLocaleCode = (value: string): value is LocaleCode =>
 
 export const languageOf = (code: string): Language =>
   LANGUAGES.find((language) => language.code === code) ?? LANGUAGES[0];
-
-export const dirOf = (code: string) => languageOf(code).dir;

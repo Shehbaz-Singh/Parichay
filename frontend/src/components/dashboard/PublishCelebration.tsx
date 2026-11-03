@@ -1,8 +1,9 @@
 'use client';
 
-import { useState, type CSSProperties } from 'react';
+import type { CSSProperties } from 'react';
 import { Check, Copy, ExternalLink } from 'lucide-react';
 import { ShareButton } from '../ShareButton';
+import { useCopy } from '@/lib/hooks';
 import { Button, Modal, buttonStyles } from '../ui';
 
 // Small pieces falling once. Their spread is fixed (not random) so it renders the same everywhere.
@@ -33,18 +34,8 @@ export function PublishCelebration({
   message: string | null;
   subject: string;
 }) {
-  const [copied, setCopied] = useState(false);
+  const { copied, copy } = useCopy();
   const shown = url.replace(/^https?:\/\//, '');
-
-  async function copy() {
-    try {
-      await navigator.clipboard.writeText(url);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    } catch {
-      // The link is on screen to select by hand.
-    }
-  }
 
   return (
     <Modal
@@ -86,7 +77,7 @@ export function PublishCelebration({
           {shown}
         </p>
         <div className="flex flex-wrap gap-2">
-          <Button onClick={copy}>
+          <Button onClick={() => void copy(url)}>
             {copied ? (
               <Check aria-hidden="true" className="size-4" />
             ) : (

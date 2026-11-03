@@ -119,6 +119,9 @@ interface EditorContextValue {
   // Availability) do not wipe each other's. null clears that source's draft.
   setDraft: (draft: Draft | null, source?: string) => void;
   notify: (kind: ToastData['kind'], text: string) => void;
+  // Runs `action`, shows `success` if it worked and the error as a toast if it did not. Never
+  // throws; says whether it worked.
+  attempt: (action: () => Promise<unknown>, success?: string) => Promise<boolean>;
   markDirty: () => () => void;
   hasUnsaved: () => boolean; // edits that would be lost by leaving (not an autosave still waiting)
   saveStatus: SaveStatus;
@@ -225,6 +228,20 @@ export function EditorProvider({ initial, children }: { initial: MyProfile; chil
       setTimeout(() => dismissToast(id), kind === 'error' ? 8000 : 5000);
     },
     [dismissToast],
+  );
+
+  const attempt = useCallback(
+    async (action: () => Promise<unknown>, success?: string) => {
+      try {
+        await action();
+        if (success) notify('success', success);
+        return true;
+      } catch (err) {
+        notify('error', errorText(err));
+        return false;
+      }
+    },
+    [notify],
   );
 
   // Forms that hold unsaved edits (the add/edit forms, which save with a button) register here;
@@ -462,6 +479,7 @@ export function EditorProvider({ initial, children }: { initial: MyProfile; chil
       saveFields,
       setDraft,
       notify,
+      attempt,
       markDirty,
       hasUnsaved,
       saveStatus,
@@ -490,6 +508,7 @@ export function EditorProvider({ initial, children }: { initial: MyProfile; chil
       update,
       saveFields,
       notify,
+      attempt,
       markDirty,
       hasUnsaved,
       saveStatus,

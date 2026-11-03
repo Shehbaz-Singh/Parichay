@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { Check, Copy, Download, Printer } from 'lucide-react';
+import { useCopy } from '@/lib/hooks';
 import { Button, Modal } from '../ui';
 
 // Black on white only, with the highest error correction and a four-module quiet zone: the plainest
@@ -65,7 +66,7 @@ export function QrCodeDialog({
   const payload = card ?? url;
   const [code, setCode] = useState<Code | null>(null);
   const [failed, setFailed] = useState(false);
-  const [copied, setCopied] = useState(false);
+  const { copied, copy } = useCopy();
   const shown = url.replace(/^https?:\/\//, '');
   const alt = card ? `QR code holding the contact card of ${name}` : `QR code linking to ${url}`;
   const ready = open && published;
@@ -85,16 +86,6 @@ export function QrCodeDialog({
     };
   }, [ready, payload, card]);
 
-  async function copy() {
-    try {
-      await navigator.clipboard.writeText(card ?? url);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    } catch {
-      // The link is on screen to select by hand.
-    }
-  }
-
   return (
     <>
       <Modal
@@ -113,7 +104,7 @@ export function QrCodeDialog({
             </Button>
             {published && (
               <>
-                <Button onClick={copy}>
+                <Button onClick={() => void copy(card ?? url)}>
                   {copied ? (
                     <Check aria-hidden="true" className="size-4" />
                   ) : (

@@ -91,4 +91,3 @@ export const publicPostSchema = publicPostSummarySchema.extend({
   updatedAt: iso,
 });
 export type PublicPostSummary = z.infer<typeof publicPostSummarySchema>;
-export type PublicPost = z.infer<typeof publicPostSchema>;

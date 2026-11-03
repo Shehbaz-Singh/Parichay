@@ -1,5 +1,4 @@
 {
-  "skipLink": "Zum Hauptinhalt springen",
   "sections": {
     "about": "Über mich",
     "skills": "Fähigkeiten",
@@ -178,14 +177,12 @@
     "showMine": "In meiner Zeitzone anzeigen",
     "showTheirs": "In der Zeitzone von {name} anzeigen",
     "closed": "Geschlossen",
-    "closedAllWeek": "Keine Arbeitszeiten festgelegt",
     "replyLabel": "Übliche Antwortzeit",
     "reply": {
       "same_day": "Am selben Tag",
       "within_2_days": "Innerhalb von 2 Tagen",
       "within_a_week": "Innerhalb einer Woche"
     },
-    "reachLabel": "So erreichen Sie {name} am besten",
-    "reachVia": "{link}"
+    "reachLabel": "So erreichen Sie {name} am besten"
   }
 }
