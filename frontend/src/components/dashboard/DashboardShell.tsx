@@ -98,16 +98,18 @@ const NO_PREVIEW = [
   '/dashboard/link-bio',
 ];
 
-function Frame({ children }: { children: ReactNode }) {
+function Frame({ children, footer }: { children: ReactNode; footer: ReactNode }) {
   const pathname = usePathname();
   const withPreview = !NO_PREVIEW.includes(pathname);
+  // The footer stays in the page column: the sidebar is full height and sticky, and a footer
+  // below it would push its top items out of view at the end of a page.
   return (
     <div className="dashboard-root min-h-screen lg:flex">
       <Sidebar />
-      <div className="min-w-0 flex-1">
+      <div className="flex min-w-0 flex-1 flex-col">
         <TopBar />
         <Onboarding />
-        <main id="main">
+        <main id="main" className="flex-1">
           <ImportBanner />
           {withPreview ? (
             <Workspace>{children}</Workspace>
@@ -115,6 +117,7 @@ function Frame({ children }: { children: ReactNode }) {
             <div className="mx-auto w-full max-w-4xl p-4">{children}</div>
           )}
         </main>
+        {footer}
       </div>
     </div>
   );
@@ -123,13 +126,33 @@ function Frame({ children }: { children: ReactNode }) {
 // Loads the profile in the browser, through the /api proxy, so a sleeping free-tier API shows a
 // waiting screen with a retry instead of a blank page that is still loading on the server. The
 // route guard (src/proxy.ts) keeps signed-out users out.
-export function DashboardShell({ children }: { children: ReactNode }) {
+export function DashboardShell({ children, footer }: { children: ReactNode; footer: ReactNode }) {
   const { state, retry } = useLoad(loadProfile);
 
-  if (state.status === 'loading') return <Loading label="Getting your page ready…" />;
+  // The waiting and failed screens have the footer too, at the foot of a screen-high column.
+  if (state.status === 'loading') {
+    return (
+      <div className="flex min-h-screen flex-col">
+        <div className="flex flex-1 flex-col">
+          <Loading label="Getting your page ready…" />
+        </div>
+        {footer}
+      </div>
+    );
+  }
   if (state.status === 'error') {
     return (
-      <LoadFailed page title="We couldn’t open your dashboard" error={state.error} retry={retry} />
+      <div className="flex min-h-screen flex-col">
+        <div className="flex flex-1 flex-col">
+          <LoadFailed
+            page
+            title="We couldn’t open your dashboard"
+            error={state.error}
+            retry={retry}
+          />
+        </div>
+        {footer}
+      </div>
     );
   }
   return (
@@ -138,7 +161,7 @@ export function DashboardShell({ children }: { children: ReactNode }) {
         <DashboardActionsProvider>
           <MessagesProvider>
             <PaletteProvider>
-              <Frame>{children}</Frame>
+              <Frame footer={footer}>{children}</Frame>
             </PaletteProvider>
           </MessagesProvider>
         </DashboardActionsProvider>

@@ -44,7 +44,7 @@ export function ContentSkeleton({ label }: { label: string }) {
 // The whole dashboard (sidebar, top bar, form, preview) as placeholders, before the profile is here.
 export function Loading({ label }: { label: string }) {
   return (
-    <div className="min-h-screen lg:flex">
+    <div className="flex-1 lg:flex">
       <div
         aria-hidden="true"
         className="hidden w-60 shrink-0 space-y-3 border-e border-line p-4 lg:block"
@@ -99,5 +99,11 @@ export function LoadFailed({
       </Button>
     </Centered>
   );
-  return page ? <main id="main">{body}</main> : body;
+  return page ? (
+    <main id="main" className="flex flex-1 flex-col justify-center">
+      {body}
+    </main>
+  ) : (
+    body
+  );
 }
