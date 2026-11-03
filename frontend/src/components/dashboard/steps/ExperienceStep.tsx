@@ -70,7 +70,8 @@ export function ExperienceStep() {
           Experience
         </h2>
         <p className="text-sm text-muted">
-          Shown in this order on your page. Drag the grip to reorder.
+          Shown in this order on your page. Drag the grip to reorder. Your page shows the first few,
+          and the rest sit under “Earlier roles”.
         </p>
       </div>
       <SectionManager

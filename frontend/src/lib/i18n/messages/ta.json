@@ -184,5 +184,14 @@
       "within_a_week": "ஒரு வாரத்திற்குள்"
     },
     "reachLabel": "{name} ஐத் தொடர்பு கொள்ள சிறந்த வழி"
+  },
+  "density": {
+    "readMore": "மேலும் படிக்க",
+    "readLess": "குறைவாகப் படிக்க",
+    "earlierRoles": "முந்தைய பணிகள் ({count})",
+    "moreProjects": "மேலும் திட்டங்கள் ({count})",
+    "moreSkills": "மேலும் {count} திறன்கள்",
+    "moreTestimonials": "மேலும் பரிந்துரைகள் ({count})",
+    "showLess": "குறைவாகக் காட்டு"
   }
 }

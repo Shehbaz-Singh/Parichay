@@ -51,6 +51,7 @@ export const publicProjectSchema = z.object({
   url: z.string().nullable(),
   description: z.string(),
   techTags: z.array(z.string()),
+  featured: z.boolean(),
   order: z.number(),
 });
 

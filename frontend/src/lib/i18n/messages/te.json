@@ -184,5 +184,14 @@
       "within_a_week": "ఒక వారంలో"
     },
     "reachLabel": "{name}ని సంప్రదించడానికి ఉత్తమ మార్గం"
+  },
+  "density": {
+    "readMore": "ఇంకా చదవండి",
+    "readLess": "తక్కువ చదవండి",
+    "earlierRoles": "ముందటి పాత్రలు ({count})",
+    "moreProjects": "మరిన్ని ప్రాజెక్టులు ({count})",
+    "moreSkills": "మరో {count} నైపుణ్యాలు",
+    "moreTestimonials": "మరిన్ని టెస్టిమోనియల్స్ ({count})",
+    "showLess": "తక్కువ చూపించు"
   }
 }

@@ -184,5 +184,14 @@
       "within_a_week": "خلال أسبوع"
     },
     "reachLabel": "أفضل طريقة للتواصل مع {name}"
+  },
+  "density": {
+    "readMore": "اقرأ المزيد",
+    "readLess": "اقرأ أقل",
+    "earlierRoles": "الأدوار السابقة ({count})",
+    "moreProjects": "المزيد من المشاريع ({count})",
+    "moreSkills": "{count} مهارات أخرى",
+    "moreTestimonials": "المزيد من الشهادات ({count})",
+    "showLess": "عرض أقل"
   }
 }

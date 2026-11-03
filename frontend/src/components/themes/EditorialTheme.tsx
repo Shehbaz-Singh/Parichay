@@ -10,7 +10,9 @@ import {
   type FooterModel,
   type HeaderModel,
 } from './blocks';
-import { uiFor } from '@/lib/i18n';
+import { fill, uiFor } from '@/lib/i18n';
+import { Collapse } from './Collapse';
+import { ReadMore } from './ReadMore';
 import { ContactForm } from './ContactForm';
 import { LeaveTestimonial } from './LeaveTestimonial';
 import { WorkCard } from './WorkCard';
@@ -191,21 +193,36 @@ function BlockView({ block }: { block: Block }) {
           {block.text}
         </p>
       );
-    case 'skills':
+    case 'skills': {
       // Reads as one sentence: the items are inline.
-      return (
+      const listSkills = (items: typeof block.skills) => (
         <ul className={`${display} max-w-5xl text-xl leading-9`}>
-          {block.skills.map((skill) => (
+          {items.map((skill) => (
             <li key={skill.id} className="inline after:content-[',_'] last:after:content-['.']">
               {skill.name}
             </li>
           ))}
         </ul>
       );
-    case 'projects':
       return (
+        <>
+          {listSkills(block.skills)}
+          {block.rest.length > 0 && (
+            <Collapse
+              className="mt-6"
+              label={fill(block.ui.density.moreSkills, { count: block.rest.length })}
+              closeLabel={block.ui.density.showLess}
+            >
+              {listSkills(block.rest)}
+            </Collapse>
+          )}
+        </>
+      );
+    }
+    case 'projects': {
+      const listProjects = (items: typeof block.projects) => (
         <ul className="grid gap-y-12 xl:grid-cols-2 xl:gap-x-14 2xl:grid-cols-3">
-          {block.projects.map((project) => (
+          {items.map((project) => (
             <li key={project.id} className="ed-hover group relative min-w-0">
               <h3 className={`${display} text-2xl leading-tight font-medium sm:text-3xl`}>
                 {project.href ? (
@@ -220,7 +237,11 @@ function BlockView({ block }: { block: Block }) {
                 )}
               </h3>
               {project.description && (
-                <p className="mt-3 leading-relaxed whitespace-pre-line">{project.description}</p>
+                <ReadMore
+                  text={project.description}
+                  locale={block.locale}
+                  className="mt-3 leading-relaxed"
+                />
               )}
               {project.tags.length > 0 && (
                 <p className={`${display} mt-3 text-muted italic`}>{project.tags.join(' · ')}</p>
@@ -229,6 +250,21 @@ function BlockView({ block }: { block: Block }) {
           ))}
         </ul>
       );
+      return (
+        <>
+          {listProjects(block.projects)}
+          {block.rest.length > 0 && (
+            <Collapse
+              className="mt-6"
+              label={fill(block.ui.density.moreProjects, { count: block.rest.length })}
+              closeLabel={block.ui.density.showLess}
+            >
+              {listProjects(block.rest)}
+            </Collapse>
+          )}
+        </>
+      );
+    }
     case 'writing':
       return (
         <WritingList
@@ -243,33 +279,47 @@ function BlockView({ block }: { block: Block }) {
           moreClassName={`mt-10 inline-block text-accent-fg underline underline-offset-2 hover:no-underline ${focusRing}`}
         />
       );
-    case 'testimonials':
+    case 'testimonials': {
+      const listTestimonials = (items: typeof block.testimonials) => (
+        <ul className="grid gap-16 xl:grid-cols-2 xl:gap-x-20">
+          {items.map((item) => (
+            <li key={item.id} className="min-w-0">
+              <figure>
+                <span
+                  aria-hidden="true"
+                  className={`${display} block h-12 text-8xl leading-[0.9] text-accent-fg`}
+                >
+                  “
+                </span>
+                <blockquote
+                  className={`${display} text-2xl leading-snug whitespace-pre-line italic sm:text-[1.7rem]`}
+                >
+                  {item.message}
+                </blockquote>
+                <figcaption className={`${caps} mt-6 text-muted`}>
+                  <span className="text-ink">{item.name}</span>
+                  {item.detail && <span>, {item.detail}</span>}
+                </figcaption>
+              </figure>
+            </li>
+          ))}
+        </ul>
+      );
       return (
         <>
           {block.testimonials.length > 0 ? (
-            <ul className="grid gap-16 xl:grid-cols-2 xl:gap-x-20">
-              {block.testimonials.map((item) => (
-                <li key={item.id} className="min-w-0">
-                  <figure>
-                    <span
-                      aria-hidden="true"
-                      className={`${display} block h-12 text-8xl leading-[0.9] text-accent-fg`}
-                    >
-                      “
-                    </span>
-                    <blockquote
-                      className={`${display} text-2xl leading-snug whitespace-pre-line italic sm:text-[1.7rem]`}
-                    >
-                      {item.message}
-                    </blockquote>
-                    <figcaption className={`${caps} mt-6 text-muted`}>
-                      <span className="text-ink">{item.name}</span>
-                      {item.detail && <span>, {item.detail}</span>}
-                    </figcaption>
-                  </figure>
-                </li>
-              ))}
-            </ul>
+            <>
+              {listTestimonials(block.testimonials)}
+              {block.rest.length > 0 && (
+                <Collapse
+                  className="mt-6"
+                  label={fill(block.ui.density.moreTestimonials, { count: block.rest.length })}
+                  closeLabel={block.ui.density.showLess}
+                >
+                  {listTestimonials(block.rest)}
+                </Collapse>
+              )}
+            </>
           ) : (
             <p className="text-muted">{block.ui.noTestimonials}</p>
           )}
@@ -282,6 +332,7 @@ function BlockView({ block }: { block: Block }) {
           )}
         </>
       );
+    }
     case 'contact':
       return (
         <div className="max-w-xl print:hidden">
@@ -291,7 +342,60 @@ function BlockView({ block }: { block: Block }) {
           />
         </div>
       );
-    case 'entries':
+    case 'entries': {
+      const listEntries = (items: typeof block.entries) => (
+        <ol className="divide-y divide-line border-y border-line 2xl:grid 2xl:grid-cols-2 2xl:gap-x-16 2xl:divide-y-0 2xl:border-y-0">
+          {items.map((entry) => (
+            <li
+              key={entry.id}
+              className={`min-w-0 py-7 2xl:border-t 2xl:border-line ${entry.start ? 'md:grid md:grid-cols-[8.5rem_minmax(0,1fr)] md:gap-8' : ''}`}
+            >
+              {entry.start && (
+                <p className="mb-2 text-sm text-muted tabular-nums md:mt-1.5 md:mb-0">
+                  <DateRange
+                    start={entry.start}
+                    end={entry.end}
+                    openEnded={block.variant !== 'custom'}
+                    duration={entry.duration}
+                    fmt={entry.fmt}
+                  />
+                </p>
+              )}
+              <div className="min-w-0">
+                <h3 className={`${display} text-xl leading-snug font-medium sm:text-2xl`}>
+                  {entry.title}
+                </h3>
+                {entry.subtitle && (
+                  <p className={`${display} text-lg text-muted italic`}>{entry.subtitle}</p>
+                )}
+                {entry.roles && (
+                  <RoleList
+                    roles={entry.roles}
+                    className="mt-4 space-y-6 border-s border-line ps-5"
+                    titleClassName={`${display} text-lg font-medium`}
+                    datesClassName="text-sm text-muted tabular-nums"
+                    descriptionClassName="mt-2 leading-relaxed"
+                  />
+                )}
+                {entry.description && (
+                  <ReadMore
+                    text={entry.description}
+                    locale={entry.fmt.locale}
+                    className="mt-3 leading-relaxed"
+                  />
+                )}
+                {entry.href && (
+                  <p className="mt-3 text-sm">
+                    <NewTabLink href={entry.href} context={entry.title} className={link}>
+                      View
+                    </NewTabLink>
+                  </p>
+                )}
+              </div>
+            </li>
+          ))}
+        </ol>
+      );
       return (
         <>
           <TotalExperience
@@ -299,55 +403,19 @@ function BlockView({ block }: { block: Block }) {
             label={block.ui.totalExperience}
             className="mb-5 text-sm text-muted"
           />
-          <ol className="divide-y divide-line border-y border-line 2xl:grid 2xl:grid-cols-2 2xl:gap-x-16 2xl:divide-y-0 2xl:border-y-0">
-            {block.entries.map((entry) => (
-              <li
-                key={entry.id}
-                className={`min-w-0 py-7 2xl:border-t 2xl:border-line ${entry.start ? 'md:grid md:grid-cols-[8.5rem_minmax(0,1fr)] md:gap-8' : ''}`}
-              >
-                {entry.start && (
-                  <p className="mb-2 text-sm text-muted tabular-nums md:mt-1.5 md:mb-0">
-                    <DateRange
-                      start={entry.start}
-                      end={entry.end}
-                      openEnded={block.variant !== 'custom'}
-                      duration={entry.duration}
-                      fmt={entry.fmt}
-                    />
-                  </p>
-                )}
-                <div className="min-w-0">
-                  <h3 className={`${display} text-xl leading-snug font-medium sm:text-2xl`}>
-                    {entry.title}
-                  </h3>
-                  {entry.subtitle && (
-                    <p className={`${display} text-lg text-muted italic`}>{entry.subtitle}</p>
-                  )}
-                  {entry.roles && (
-                    <RoleList
-                      roles={entry.roles}
-                      className="mt-4 space-y-6 border-s border-line ps-5"
-                      titleClassName={`${display} text-lg font-medium`}
-                      datesClassName="text-sm text-muted tabular-nums"
-                      descriptionClassName="mt-2 leading-relaxed"
-                    />
-                  )}
-                  {entry.description && (
-                    <p className="mt-3 leading-relaxed whitespace-pre-line">{entry.description}</p>
-                  )}
-                  {entry.href && (
-                    <p className="mt-3 text-sm">
-                      <NewTabLink href={entry.href} context={entry.title} className={link}>
-                        View
-                      </NewTabLink>
-                    </p>
-                  )}
-                </div>
-              </li>
-            ))}
-          </ol>
+          {listEntries(block.entries)}
+          {block.variant === 'experience' && block.rest.length > 0 && (
+            <Collapse
+              className="mt-6"
+              label={fill(block.ui.density.earlierRoles, { count: block.rest.length })}
+              closeLabel={block.ui.density.showLess}
+            >
+              {listEntries(block.rest)}
+            </Collapse>
+          )}
         </>
       );
+    }
   }
 }
 

@@ -41,6 +41,7 @@ export const ERRORS = {
   maxCustomItems: (max: number) => `You can have at most ${max} items in a section`,
   maxSectionItems: (max: number, section: string) =>
     `You can have at most ${max} items in ${section}`,
+  maxFeatured: (max: number) => `You can feature at most ${max} projects`,
   linkBioLimit: (max: number) => `You can have at most ${max} buttons on your link-in-bio card`,
   linkBioNeedsPublish: 'Publish your page before you switch on the link-in-bio card',
   testimonialLimit: 'No more testimonials can be added right now',

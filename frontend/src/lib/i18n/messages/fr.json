@@ -184,5 +184,14 @@
       "within_a_week": "Sous une semaine"
     },
     "reachLabel": "Meilleur moyen de contacter {name}"
+  },
+  "density": {
+    "readMore": "Lire la suite",
+    "readLess": "Lire moins",
+    "earlierRoles": "Postes précédents ({count})",
+    "moreProjects": "Plus de projets ({count})",
+    "moreSkills": "{count} compétences de plus",
+    "moreTestimonials": "Plus de témoignages ({count})",
+    "showLess": "Afficher moins"
   }
 }

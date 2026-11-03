@@ -1,4 +1,5 @@
 import {
+  FEATURED_PROJECTS_MAX,
   SECTION_LABELS,
   closedWeek,
   customIdOf,
@@ -99,18 +100,27 @@ interface BlockBase {
 
 export type Block =
   | (BlockBase & { kind: 'about'; text: string })
-  | (BlockBase & { kind: 'skills'; skills: { id: string; name: string }[] })
+  | (BlockBase & {
+      kind: 'skills';
+      skills: { id: string; name: string }[];
+      rest: { id: string; name: string }[]; // behind "more"
+    })
   | (BlockBase & {
       kind: 'writing';
       posts: WritingEntry[]; // the latest few
       more: boolean; // there are more than these, so link to all of them
       allHref: string; // the page with every post
     })
-  | (BlockBase & { kind: 'projects'; projects: ProjectEntry[] })
+  | (BlockBase & {
+      kind: 'projects';
+      projects: ProjectEntry[]; // the lead: the featured ones, or the first few of a long list
+      rest: ProjectEntry[]; // behind "more projects"
+    })
   | (BlockBase & { kind: 'contact'; form: ContactFormModel })
   | (BlockBase & {
       kind: 'testimonials';
       testimonials: TestimonialEntry[];
+      rest: TestimonialEntry[]; // behind "more"
       // Set when visitors may leave one: the slug the form posts to.
       submitTo: string | null;
     })
@@ -119,9 +129,21 @@ export type Block =
       // experience and education show "Present" for an open end date; custom items show nothing
       variant: 'experience' | 'education' | 'custom';
       entries: Entry[];
+      rest: Entry[]; // experience only: the earlier entries, behind "Earlier roles"
       // experience only: all the jobs together, "6 years 2 months" (set from two jobs on)
       total?: string;
     });
+
+// How much of a long list a visitor is shown before the rest goes behind a button. Short lists are
+// shown whole. The rest is still in the page (see Collapse.tsx), so nothing is lost.
+export const SHOW = { projects: 4, jobs: 4, skills: 12, testimonials: 6 } as const;
+
+// The first `count` items, and the others. A list only a little longer than `count` is not split:
+// a button for one or two items is worse than showing them.
+function curate<T>(items: T[], count: number): { shown: T[]; rest: T[] } {
+  if (items.length <= count + 1) return { shown: items, rest: [] };
+  return { shown: items.slice(0, count), rest: items.slice(count) };
+}
 
 // Whole months from start to end (or to now, for an open job), counting both months, the way
 // LinkedIn does: Jan 2020 to Dec 2020 is 12 months.
@@ -247,6 +269,22 @@ export function writingEntries(
   });
 }
 
+// The projects at the top of the page. The owner's featured ones lead (their order kept); with none
+// featured, a long list leads with its first few (projects have no date, so the owner's order is
+// the "most recent" they chose). A list that is short anyway is shown whole.
+function leadProjects(items: { featured: boolean; entry: ProjectEntry }[]) {
+  const featured = items.filter((item) => item.featured).slice(0, FEATURED_PROJECTS_MAX);
+  if (featured.length > 0) {
+    const rest = items.filter((item) => !featured.includes(item)).map((item) => item.entry);
+    return { projects: featured.map((item) => item.entry), rest };
+  }
+  const { shown, rest } = curate(
+    items.map((item) => item.entry),
+    SHOW.projects,
+  );
+  return { projects: shown, rest };
+}
+
 const isBuiltIn = (key: string): key is SectionKey => Object.hasOwn(SECTION_LABELS, key);
 
 export function buildContactForm(
@@ -292,6 +330,7 @@ export function buildBlocks(profile: PublicProfile, idPrefix = ''): Block[] {
         locale,
         ui,
         title: section.title,
+        rest: [],
         entries: section.items.map((item) => ({
           id: item.id,
           fmt,
@@ -317,7 +356,13 @@ export function buildBlocks(profile: PublicProfile, idPrefix = ''): Block[] {
           blocks.push({
             kind: 'skills',
             ...base,
-            skills: profile.skills.map(({ id, name }) => ({ id, name })),
+            ...(() => {
+              const { shown, rest } = curate(
+                profile.skills.map(({ id, name }) => ({ id, name })),
+                SHOW.skills,
+              );
+              return { skills: shown, rest };
+            })(),
           });
         }
         break;
@@ -327,7 +372,10 @@ export function buildBlocks(profile: PublicProfile, idPrefix = ''): Block[] {
             kind: 'entries',
             variant: 'experience',
             ...base,
-            entries: groupJobs(profile.experience, fmt, t),
+            ...(() => {
+              const { shown, rest } = curate(groupJobs(profile.experience, fmt, t), SHOW.jobs);
+              return { entries: shown, rest };
+            })(),
             total:
               profile.experience.length > 1 ? totalExperience(profile.experience, t) : undefined,
           });
@@ -338,13 +386,18 @@ export function buildBlocks(profile: PublicProfile, idPrefix = ''): Block[] {
           blocks.push({
             kind: 'projects',
             ...base,
-            projects: profile.projects.map((project) => ({
-              id: project.id,
-              name: project.name,
-              href: safeHttpUrl(project.url),
-              description: project.description,
-              tags: project.techTags,
-            })),
+            ...leadProjects(
+              profile.projects.map((project) => ({
+                featured: project.featured,
+                entry: {
+                  id: project.id,
+                  name: project.name,
+                  href: safeHttpUrl(project.url),
+                  description: project.description,
+                  tags: project.techTags,
+                },
+              })),
+            ),
           });
         }
         break;
@@ -354,12 +407,18 @@ export function buildBlocks(profile: PublicProfile, idPrefix = ''): Block[] {
           blocks.push({
             kind: 'testimonials',
             ...base,
-            testimonials: profile.testimonials.map((item) => ({
-              id: item.id,
-              name: item.authorName,
-              detail: [item.authorRole, item.authorCompany].filter(Boolean).join(', ') || null,
-              message: item.message,
-            })),
+            ...(() => {
+              const { shown, rest } = curate(
+                profile.testimonials.map((item) => ({
+                  id: item.id,
+                  name: item.authorName,
+                  detail: [item.authorRole, item.authorCompany].filter(Boolean).join(', ') || null,
+                  message: item.message,
+                })),
+                SHOW.testimonials,
+              );
+              return { testimonials: shown, rest };
+            })(),
             submitTo: profile.acceptTestimonials ? profile.slug : null,
           });
         }
@@ -397,6 +456,7 @@ export function buildBlocks(profile: PublicProfile, idPrefix = ''): Block[] {
             kind: 'entries',
             variant: 'education',
             ...base,
+            rest: [],
             entries: profile.education.map((item) => ({
               id: item.id,
               fmt,

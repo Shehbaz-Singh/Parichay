@@ -4,6 +4,7 @@ import { FileDown, Globe, Link2, Mail, Phone, UserPlus } from 'lucide-react';
 import type { PublicLink } from '@parichay/shared';
 import { formatDate, formatMonthYear, initials } from '@/lib/format';
 import { fill } from '@/lib/i18n';
+import { ReadMore } from './ReadMore';
 import type { Block, DateFmt, Entry, FooterModel, HeaderModel, Role } from './blocks';
 
 // Small pieces every theme uses, so the markup that matters (dates as <time>, links that open in a
@@ -67,9 +68,11 @@ export function RoleList({
             </p>
           )}
           {role.description && (
-            <p className={`whitespace-pre-line ${descriptionClassName ?? ''}`}>
-              {role.description}
-            </p>
+            <ReadMore
+              text={role.description}
+              locale={role.fmt.locale}
+              className={descriptionClassName}
+            />
           )}
         </li>
       ))}

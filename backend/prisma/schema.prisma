@@ -192,6 +192,8 @@ model Project {
   url         String?
   description String
   techTags    String[]
+  // Chosen by the owner to lead the public page (at most FEATURED_PROJECTS_MAX).
+  featured    Boolean  @default(false)
   order       Int      @default(0)
 
   profile Profile @relation(fields: [profileId], references: [id], onDelete: Cascade)

@@ -184,5 +184,14 @@
       "within_a_week": "एक सप्ताह के भीतर"
     },
     "reachLabel": "{name} से संपर्क का सबसे अच्छा तरीका"
+  },
+  "density": {
+    "readMore": "और पढ़ें",
+    "readLess": "कम पढ़ें",
+    "earlierRoles": "पहले की भूमिकाएँ ({count})",
+    "moreProjects": "और प्रोजेक्ट ({count})",
+    "moreSkills": "{count} और कौशल",
+    "moreTestimonials": "और प्रशंसापत्र ({count})",
+    "showLess": "कम दिखाएँ"
   }
 }

@@ -260,11 +260,16 @@ export const experienceInputSchema = z
   .refine(dateRange, dateRangeIssue);
 export type ExperienceInput = z.infer<typeof experienceInputSchema>;
 
+// Projects the owner can feature to lead the public page, and how many a page shows before the rest
+// go behind "more" (a few projects are all shown).
+export const FEATURED_PROJECTS_MAX = 6;
+
 export const projectInputSchema = z.object({
   name: trimmed(100),
   url: httpUrl.nullish().transform((v) => v ?? null),
   description: z.string().trim().max(DESCRIPTION_MAX).default(''),
   techTags: z.array(trimmed(30)).max(20).default([]),
+  featured: z.boolean().default(false),
   order: orderField,
 });
 export type ProjectInput = z.infer<typeof projectInputSchema>;

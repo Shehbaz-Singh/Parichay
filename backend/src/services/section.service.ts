@@ -1,4 +1,4 @@
-import { SECTION_LIMITS, type Section } from '@parichay/shared';
+import { FEATURED_PROJECTS_MAX, SECTION_LIMITS, type Section } from '@parichay/shared';
 import type { Prisma } from '../generated/prisma/client';
 import { AppError } from '../lib/errors';
 import { prisma } from '../lib/prisma';
@@ -50,8 +50,20 @@ export async function getItem(section: Section, profileId: string, id: string) {
   return item;
 }
 
+// At most FEATURED_PROJECTS_MAX projects lead the page; `except` is the project being saved.
+async function assertFeaturedRoom(section: Section, profileId: string, input: Row, except?: string) {
+  if (section !== 'projects' || input.featured !== true) return;
+  const others = await delegates.projects.count({
+    where: { profileId, featured: true, ...(except && { id: { not: except } }) },
+  });
+  if (others >= FEATURED_PROJECTS_MAX) {
+    throw AppError.conflict('LIMIT_REACHED', ERRORS.maxFeatured(FEATURED_PROJECTS_MAX));
+  }
+}
+
 export async function createItem(section: Section, profileId: string, input: Row) {
   const delegate = delegates[section];
+  await assertFeaturedRoom(section, profileId, input);
 
   const count = await delegate.count({ where: { profileId } });
   if (count >= SECTION_LIMITS[section]) {
@@ -74,7 +86,8 @@ export async function createItem(section: Section, profileId: string, input: Row
   });
 }
 
-export function updateItem(section: Section, profileId: string, id: string, input: Row) {
+export async function updateItem(section: Section, profileId: string, id: string, input: Row) {
+  await assertFeaturedRoom(section, profileId, input, id);
   return orNotFound(
     delegates[section].update({ where: { id, profileId }, data: input, omit }),
     notFound,

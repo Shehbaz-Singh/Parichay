@@ -184,5 +184,14 @@
       "within_a_week": "ایک ہفتے کے اندر"
     },
     "reachLabel": "{name} سے رابطے کا بہترین طریقہ"
+  },
+  "density": {
+    "readMore": "مزید پڑھیں",
+    "readLess": "کم پڑھیں",
+    "earlierRoles": "پچھلے کردار ({count})",
+    "moreProjects": "مزید پروجیکٹس ({count})",
+    "moreSkills": "{count} مزید مہارتیں",
+    "moreTestimonials": "مزید تعریفی کلمات ({count})",
+    "showLess": "کم دکھائیں"
   }
 }

@@ -670,3 +670,30 @@ html:has(.dashboard-root)::-webkit-scrollbar-button,
   line-height: inherit !important;
   color: inherit !important;
 }
+
+/* Folded content on public pages (components/themes/Collapse.tsx). It stays in the HTML; printing
+   shows all of it, and so does a browser with JavaScript off (the <noscript> in ThemeWrapper repeats
+   these two rules). */
+.readmore[data-clamp='on'] {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: var(--lines, 4);
+  overflow: hidden;
+}
+.collapse-body[data-open='false'] {
+  display: none;
+}
+@media print {
+  .readmore[data-clamp] {
+    display: block;
+    -webkit-line-clamp: unset;
+    overflow: visible;
+  }
+  .readmore-btn,
+  .collapse-btn {
+    display: none !important;
+  }
+  .collapse-body {
+    display: block !important;
+  }
+}

@@ -184,5 +184,14 @@
       "within_a_week": "એક અઠવાડિયામાં"
     },
     "reachLabel": "{name}નો સંપર્ક કરવાની શ્રેષ્ઠ રીત"
+  },
+  "density": {
+    "readMore": "વધુ વાંચો",
+    "readLess": "ઓછું વાંચો",
+    "earlierRoles": "અગાઉની ભૂમિકાઓ ({count})",
+    "moreProjects": "વધુ પ્રોજેક્ટ ({count})",
+    "moreSkills": "વધુ {count} કૌશલ્ય",
+    "moreTestimonials": "વધુ પ્રશંસાપત્રો ({count})",
+    "showLess": "ઓછું બતાવો"
   }
 }

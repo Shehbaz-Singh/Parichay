@@ -12,7 +12,9 @@ import {
   type FooterModel,
   type HeaderModel,
 } from './blocks';
-import { uiFor } from '@/lib/i18n';
+import { fill, uiFor } from '@/lib/i18n';
+import { Collapse } from './Collapse';
+import { ReadMore } from './ReadMore';
 import { ContactForm } from './ContactForm';
 import { LeaveTestimonial } from './LeaveTestimonial';
 import { WorkCard } from './WorkCard';
@@ -144,6 +146,34 @@ function EntriesTile({ block }: { block: Extract<Block, { kind: 'entries' }> }) 
         fmt={entry.fmt}
       />
     );
+  const earlierList = (list: typeof block.entries, spacing: string) => (
+    <ol className={`${spacing} divide-y divide-line border-line`}>
+      {list.map((entry) => (
+        <li key={entry.id} className="min-w-0 py-3 text-sm">
+          <p className="font-semibold">
+            {entry.title}
+            {entry.subtitle && <span className="font-normal text-muted"> · {entry.subtitle}</span>}
+          </p>
+          {entry.start && <p className="text-muted tabular-nums">{dates(entry)}</p>}
+          {entry.roles && (
+            <RoleList
+              roles={entry.roles}
+              className="mt-2 space-y-2 border-s border-line ps-3"
+              titleClassName="font-medium"
+              datesClassName="text-muted tabular-nums"
+            />
+          )}
+          {entry.description && (
+            <ReadMore
+              text={entry.description}
+              locale={entry.fmt.locale}
+              className="mt-1 text-muted"
+            />
+          )}
+        </li>
+      ))}
+    </ol>
+  );
   return (
     <TileBody id={block.id} title={block.title}>
       <TotalExperience
@@ -169,7 +199,11 @@ function EntriesTile({ block }: { block: Extract<Block, { kind: 'entries' }> }) 
           />
         )}
         {latest.description && (
-          <p className="mt-3 leading-relaxed whitespace-pre-line">{latest.description}</p>
+          <ReadMore
+            text={latest.description}
+            locale={latest.fmt.locale}
+            className="mt-3 leading-relaxed"
+          />
         )}
         {latest.href && (
           <p className="mt-3 text-sm">
@@ -184,31 +218,15 @@ function EntriesTile({ block }: { block: Extract<Block, { kind: 'entries' }> }) 
           </p>
         )}
       </div>
-      {earlier.length > 0 && (
-        <ol className="mt-5 divide-y divide-line border-t border-line">
-          {earlier.map((entry) => (
-            <li key={entry.id} className="min-w-0 py-3 text-sm">
-              <p className="font-semibold">
-                {entry.title}
-                {entry.subtitle && (
-                  <span className="font-normal text-muted"> · {entry.subtitle}</span>
-                )}
-              </p>
-              {entry.start && <p className="text-muted tabular-nums">{dates(entry)}</p>}
-              {entry.roles && (
-                <RoleList
-                  roles={entry.roles}
-                  className="mt-2 space-y-2 border-s border-line ps-3"
-                  titleClassName="font-medium"
-                  datesClassName="text-muted tabular-nums"
-                />
-              )}
-              {entry.description && (
-                <p className="mt-1 whitespace-pre-line text-muted">{entry.description}</p>
-              )}
-            </li>
-          ))}
-        </ol>
+      {earlier.length > 0 && earlierList(earlier, 'mt-5 border-t')}
+      {block.variant === 'experience' && block.rest.length > 0 && (
+        <Collapse
+          className="mt-4"
+          label={fill(block.ui.density.earlierRoles, { count: block.rest.length })}
+          closeLabel={block.ui.density.showLess}
+        >
+          {earlierList(block.rest, 'mt-3 border-t')}
+        </Collapse>
       )}
     </TileBody>
   );
@@ -311,7 +329,13 @@ function blockTiles(block: Block): Tile[] {
           tone: 'plain',
           node: (
             <TileBody id={block.id} title={block.title}>
-              <p className="text-lg leading-relaxed whitespace-pre-line">{block.text}</p>
+              <ReadMore
+                text={block.text}
+                locale={block.locale}
+                from={900}
+                lines={9}
+                className="text-lg leading-relaxed"
+              />
             </TileBody>
           ),
         },
@@ -335,6 +359,21 @@ function blockTiles(block: Block): Tile[] {
                   </li>
                 ))}
               </ul>
+              {block.rest.length > 0 && (
+                <Collapse
+                  className="mt-3"
+                  label={fill(block.ui.density.moreSkills, { count: block.rest.length })}
+                  closeLabel={block.ui.density.showLess}
+                >
+                  <ul className="mt-3 flex flex-wrap gap-2">
+                    {block.rest.map((skill) => (
+                      <li key={skill.id} className={chip}>
+                        {skill.name}
+                      </li>
+                    ))}
+                  </ul>
+                </Collapse>
+              )}
             </TileBody>
           ),
         },
@@ -351,8 +390,8 @@ function blockTiles(block: Block): Tile[] {
         },
       ];
     }
-    case 'projects':
-      return block.projects.map((project) => ({
+    case 'projects': {
+      const tiles: Tile[] = block.projects.map((project) => ({
         key: `${block.id}-${project.id}`,
         span: spanFor(len(project.name, project.description) + project.tags.length * 8, 2, 3),
         tone: 'plain',
@@ -386,9 +425,11 @@ function blockTiles(block: Block): Tile[] {
               )}
             </h2>
             {project.description && (
-              <p className="mt-3 flex-1 leading-relaxed whitespace-pre-line text-muted">
-                {project.description}
-              </p>
+              <ReadMore
+                text={project.description}
+                locale={block.locale}
+                className="mt-3 flex-1 leading-relaxed text-muted"
+              />
             )}
             {project.tags.length > 0 && (
               <ul className="mt-5 flex flex-wrap gap-1.5">
@@ -402,6 +443,47 @@ function blockTiles(block: Block): Tile[] {
           </section>
         ),
       }));
+      if (block.rest.length > 0) {
+        tiles.push({
+          key: `${block.id}-rest`,
+          span: 6,
+          tone: 'plain',
+          node: (
+            <Collapse
+              label={fill(block.ui.density.moreProjects, { count: block.rest.length })}
+              closeLabel={block.ui.density.showLess}
+            >
+              <ul className="mt-5 grid gap-x-8 gap-y-6 md:grid-cols-2">
+                {block.rest.map((project) => (
+                  <li key={project.id} className="min-w-0">
+                    <h3 className={`${display} text-lg leading-snug font-bold`}>
+                      {project.href ? (
+                        <NewTabLink href={project.href} className={`underline ${focusRing}`}>
+                          {project.name}
+                        </NewTabLink>
+                      ) : (
+                        project.name
+                      )}
+                    </h3>
+                    {project.description && (
+                      <ReadMore
+                        text={project.description}
+                        locale={block.locale}
+                        className="mt-1 text-muted"
+                      />
+                    )}
+                    {project.tags.length > 0 && (
+                      <p className="mt-2 text-sm text-muted">{project.tags.join(' · ')}</p>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            </Collapse>
+          ),
+        });
+      }
+      return tiles;
+    }
     case 'writing':
       return [
         {
@@ -469,6 +551,33 @@ function blockTiles(block: Block): Tile[] {
           </figure>
         ),
       }));
+      if (block.rest.length > 0) {
+        tiles.push({
+          key: `${block.id}-rest`,
+          span: 6,
+          tone: 'plain',
+          node: (
+            <Collapse
+              label={fill(block.ui.density.moreTestimonials, { count: block.rest.length })}
+              closeLabel={block.ui.density.showLess}
+            >
+              <ul className="mt-5 grid gap-6 md:grid-cols-2">
+                {block.rest.map((item) => (
+                  <li key={item.id} className="min-w-0">
+                    <blockquote className="leading-snug whitespace-pre-line">
+                      {item.message}
+                    </blockquote>
+                    <p className="mt-2 text-sm">
+                      <span className="font-semibold">{item.name}</span>
+                      {item.detail && <span className="text-muted">, {item.detail}</span>}
+                    </p>
+                  </li>
+                ))}
+              </ul>
+            </Collapse>
+          ),
+        });
+      }
       if (block.submitTo || tiles.length === 0) {
         tiles.push({
           key: `${block.id}-leave`,

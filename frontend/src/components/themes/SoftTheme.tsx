@@ -10,7 +10,9 @@ import {
   type FooterModel,
   type HeaderModel,
 } from './blocks';
-import { uiFor } from '@/lib/i18n';
+import { fill, uiFor } from '@/lib/i18n';
+import { Collapse } from './Collapse';
+import { ReadMore } from './ReadMore';
 import { ContactForm } from './ContactForm';
 import { LeaveTestimonial } from './LeaveTestimonial';
 import { WorkCard } from './WorkCard';
@@ -192,15 +194,19 @@ function BlockView({ block }: { block: Block }) {
     case 'about':
       return (
         <div className={`${card} p-7 sm:p-10`}>
-          <p className="text-lg leading-8 whitespace-pre-line sm:text-xl sm:leading-9">
-            {block.text}
-          </p>
+          <ReadMore
+            text={block.text}
+            locale={block.locale}
+            from={900}
+            lines={9}
+            className="text-lg leading-8 sm:text-xl sm:leading-9"
+          />
         </div>
       );
-    case 'skills':
-      return (
+    case 'skills': {
+      const listSkills = (items: typeof block.skills) => (
         <ul className="flex flex-wrap gap-3">
-          {block.skills.map((skill, i) => (
+          {items.map((skill, i) => (
             <li
               key={skill.id}
               className={`rounded-full px-5 py-2 font-bold ${TINTS[i % TINTS.length]}`}
@@ -210,10 +216,25 @@ function BlockView({ block }: { block: Block }) {
           ))}
         </ul>
       );
-    case 'projects':
       return (
+        <>
+          {listSkills(block.skills)}
+          {block.rest.length > 0 && (
+            <Collapse
+              className="mt-6"
+              label={fill(block.ui.density.moreSkills, { count: block.rest.length })}
+              closeLabel={block.ui.density.showLess}
+            >
+              {listSkills(block.rest)}
+            </Collapse>
+          )}
+        </>
+      );
+    }
+    case 'projects': {
+      const listProjects = (items: typeof block.projects) => (
         <ul className="grid gap-6 md:grid-cols-2">
-          {block.projects.map((project) => (
+          {items.map((project) => (
             <li
               key={project.id}
               className={`${card} ${project.href ? lift : ''} group relative flex min-w-0 flex-col p-7`}
@@ -239,9 +260,11 @@ function BlockView({ block }: { block: Block }) {
                 </span>
               )}
               {project.description && (
-                <p className="mt-3 flex-1 leading-relaxed whitespace-pre-line text-muted">
-                  {project.description}
-                </p>
+                <ReadMore
+                  text={project.description}
+                  locale={block.locale}
+                  className="mt-3 flex-1 leading-relaxed text-muted"
+                />
               )}
               {project.tags.length > 0 && (
                 <ul className="mt-5 flex flex-wrap gap-2">
@@ -259,6 +282,21 @@ function BlockView({ block }: { block: Block }) {
           ))}
         </ul>
       );
+      return (
+        <>
+          {listProjects(block.projects)}
+          {block.rest.length > 0 && (
+            <Collapse
+              className="mt-6"
+              label={fill(block.ui.density.moreProjects, { count: block.rest.length })}
+              closeLabel={block.ui.density.showLess}
+            >
+              {listProjects(block.rest)}
+            </Collapse>
+          )}
+        </>
+      );
+    }
     case 'writing':
       return (
         <WritingList
@@ -273,38 +311,52 @@ function BlockView({ block }: { block: Block }) {
           moreClassName={`mt-6 inline-block font-bold text-accent-fg underline underline-offset-2 hover:no-underline ${focusRing}`}
         />
       );
-    case 'testimonials':
+    case 'testimonials': {
+      const listTestimonials = (items: typeof block.testimonials) => (
+        <ul className="grid gap-x-6 gap-y-12 md:grid-cols-2">
+          {items.map((item) => (
+            <li key={item.id} className="min-w-0">
+              <figure className="flex h-full flex-col">
+                <div className="relative flex-1 rounded-[2rem] rounded-bl-lg border border-line bg-surface p-7">
+                  <blockquote className="text-lg leading-relaxed whitespace-pre-line">
+                    {item.message}
+                  </blockquote>
+                  {/* The bubble's tail. */}
+                  <span
+                    aria-hidden="true"
+                    className="absolute start-6 -bottom-2.5 size-5 rotate-45 border-e border-b border-line bg-surface"
+                  />
+                </div>
+                <figcaption className="mt-5 flex items-center gap-3 ps-4 text-sm">
+                  <InitialsBadge
+                    name={item.name}
+                    className={`${display} size-11 bg-[color-mix(in_srgb,var(--accent)_28%,white)] text-base text-ink`}
+                  />
+                  <span className="min-w-0">
+                    <span className="block font-bold">{item.name}</span>
+                    {item.detail && <span className="block text-muted">{item.detail}</span>}
+                  </span>
+                </figcaption>
+              </figure>
+            </li>
+          ))}
+        </ul>
+      );
       return (
         <>
           {block.testimonials.length > 0 ? (
-            <ul className="grid gap-x-6 gap-y-12 md:grid-cols-2">
-              {block.testimonials.map((item) => (
-                <li key={item.id} className="min-w-0">
-                  <figure className="flex h-full flex-col">
-                    <div className="relative flex-1 rounded-[2rem] rounded-bl-lg border border-line bg-surface p-7">
-                      <blockquote className="text-lg leading-relaxed whitespace-pre-line">
-                        {item.message}
-                      </blockquote>
-                      {/* The bubble's tail. */}
-                      <span
-                        aria-hidden="true"
-                        className="absolute start-6 -bottom-2.5 size-5 rotate-45 border-e border-b border-line bg-surface"
-                      />
-                    </div>
-                    <figcaption className="mt-5 flex items-center gap-3 ps-4 text-sm">
-                      <InitialsBadge
-                        name={item.name}
-                        className={`${display} size-11 bg-[color-mix(in_srgb,var(--accent)_28%,white)] text-base text-ink`}
-                      />
-                      <span className="min-w-0">
-                        <span className="block font-bold">{item.name}</span>
-                        {item.detail && <span className="block text-muted">{item.detail}</span>}
-                      </span>
-                    </figcaption>
-                  </figure>
-                </li>
-              ))}
-            </ul>
+            <>
+              {listTestimonials(block.testimonials)}
+              {block.rest.length > 0 && (
+                <Collapse
+                  className="mt-6"
+                  label={fill(block.ui.density.moreTestimonials, { count: block.rest.length })}
+                  closeLabel={block.ui.density.showLess}
+                >
+                  {listTestimonials(block.rest)}
+                </Collapse>
+              )}
+            </>
           ) : (
             <p className="text-muted">{block.ui.noTestimonials}</p>
           )}
@@ -317,6 +369,7 @@ function BlockView({ block }: { block: Block }) {
           )}
         </>
       );
+    }
     case 'contact':
       return (
         <div className="max-w-xl print:hidden">
@@ -326,7 +379,65 @@ function BlockView({ block }: { block: Block }) {
           />
         </div>
       );
-    case 'entries':
+    case 'entries': {
+      const listEntries = (items: typeof block.entries) => (
+        <ol className="space-y-5">
+          {items.map((entry, i) => (
+            <li
+              key={entry.id}
+              className={`${card} min-w-0 border-s-[0.625rem] p-6 sm:p-7 ${EDGES[i % EDGES.length]}`}
+            >
+              {entry.start && (
+                <p
+                  className={`mb-3 inline-block rounded-full px-3 py-0.5 text-sm font-bold tabular-nums ${TINTS[i % TINTS.length]}`}
+                >
+                  <DateRange
+                    start={entry.start}
+                    end={entry.end}
+                    openEnded={block.variant !== 'custom'}
+                    duration={entry.duration}
+                    fmt={entry.fmt}
+                  />
+                </p>
+              )}
+              <h3 className={`${display} text-xl leading-snug font-semibold sm:text-2xl`}>
+                {entry.title}
+              </h3>
+              {entry.subtitle && (
+                <p className="mt-0.5 font-semibold text-muted">{entry.subtitle}</p>
+              )}
+              {entry.roles && (
+                <RoleList
+                  roles={entry.roles}
+                  className="mt-4 space-y-4 border-s-2 border-line ps-4"
+                  titleClassName={`${display} text-lg font-semibold`}
+                  datesClassName="text-sm font-semibold text-muted tabular-nums"
+                  descriptionClassName="mt-1 leading-relaxed"
+                />
+              )}
+              {entry.description && (
+                <ReadMore
+                  text={entry.description}
+                  locale={entry.fmt.locale}
+                  className="mt-3 leading-relaxed"
+                />
+              )}
+              {entry.href && (
+                <p className="mt-4">
+                  <NewTabLink
+                    href={entry.href}
+                    context={entry.title}
+                    className={`inline-flex items-center gap-1 text-sm font-bold underline underline-offset-4 hover:no-underline ${focusRing}`}
+                  >
+                    View
+                    <ArrowUpRight aria-hidden="true" className="rtl:-scale-x-100 size-4" />
+                  </NewTabLink>
+                </p>
+              )}
+            </li>
+          ))}
+        </ol>
+      );
       return (
         <>
           <TotalExperience
@@ -334,60 +445,19 @@ function BlockView({ block }: { block: Block }) {
             label={block.ui.totalExperience}
             className="mb-5 inline-block rounded-full bg-accent-soft px-4 py-1 text-sm font-semibold"
           />
-          <ol className="space-y-5">
-            {block.entries.map((entry, i) => (
-              <li
-                key={entry.id}
-                className={`${card} min-w-0 border-s-[0.625rem] p-6 sm:p-7 ${EDGES[i % EDGES.length]}`}
-              >
-                {entry.start && (
-                  <p
-                    className={`mb-3 inline-block rounded-full px-3 py-0.5 text-sm font-bold tabular-nums ${TINTS[i % TINTS.length]}`}
-                  >
-                    <DateRange
-                      start={entry.start}
-                      end={entry.end}
-                      openEnded={block.variant !== 'custom'}
-                      duration={entry.duration}
-                      fmt={entry.fmt}
-                    />
-                  </p>
-                )}
-                <h3 className={`${display} text-xl leading-snug font-semibold sm:text-2xl`}>
-                  {entry.title}
-                </h3>
-                {entry.subtitle && (
-                  <p className="mt-0.5 font-semibold text-muted">{entry.subtitle}</p>
-                )}
-                {entry.roles && (
-                  <RoleList
-                    roles={entry.roles}
-                    className="mt-4 space-y-4 border-s-2 border-line ps-4"
-                    titleClassName={`${display} text-lg font-semibold`}
-                    datesClassName="text-sm font-semibold text-muted tabular-nums"
-                    descriptionClassName="mt-1 leading-relaxed"
-                  />
-                )}
-                {entry.description && (
-                  <p className="mt-3 leading-relaxed whitespace-pre-line">{entry.description}</p>
-                )}
-                {entry.href && (
-                  <p className="mt-4">
-                    <NewTabLink
-                      href={entry.href}
-                      context={entry.title}
-                      className={`inline-flex items-center gap-1 text-sm font-bold underline underline-offset-4 hover:no-underline ${focusRing}`}
-                    >
-                      View
-                      <ArrowUpRight aria-hidden="true" className="rtl:-scale-x-100 size-4" />
-                    </NewTabLink>
-                  </p>
-                )}
-              </li>
-            ))}
-          </ol>
+          {listEntries(block.entries)}
+          {block.variant === 'experience' && block.rest.length > 0 && (
+            <Collapse
+              className="mt-6"
+              label={fill(block.ui.density.earlierRoles, { count: block.rest.length })}
+              closeLabel={block.ui.density.showLess}
+            >
+              {listEntries(block.rest)}
+            </Collapse>
+          )}
         </>
       );
+    }
   }
 }
 

@@ -52,7 +52,8 @@ export function SkillsStep() {
           Skills
         </h2>
         <p className="text-sm text-muted">
-          Drag the grip to reorder, or focus it and use the arrow keys.
+          Drag the grip to reorder, or focus it and use the arrow keys. Your page shows the first
+          12; put the ones you want seen first at the top.
         </p>
       </div>
 

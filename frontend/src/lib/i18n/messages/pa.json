@@ -184,5 +184,14 @@
       "within_a_week": "ਇੱਕ ਹਫ਼ਤੇ ਦੇ ਅੰਦਰ"
     },
     "reachLabel": "{name} ਨਾਲ ਸੰਪਰਕ ਕਰਨ ਦਾ ਸਭ ਤੋਂ ਵਧੀਆ ਤਰੀਕਾ"
+  },
+  "density": {
+    "readMore": "ਹੋਰ ਪੜ੍ਹੋ",
+    "readLess": "ਘੱਟ ਪੜ੍ਹੋ",
+    "earlierRoles": "ਪਹਿਲਾਂ ਦੀਆਂ ਭੂਮਿਕਾਵਾਂ ({count})",
+    "moreProjects": "ਹੋਰ ਪ੍ਰੋਜੈਕਟ ({count})",
+    "moreSkills": "{count} ਹੋਰ ਹੁਨਰ",
+    "moreTestimonials": "ਹੋਰ ਪ੍ਰਸ਼ੰਸਾ-ਪੱਤਰ ({count})",
+    "showLess": "ਘੱਟ ਦਿਖਾਓ"
   }
 }

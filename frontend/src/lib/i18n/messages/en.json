@@ -184,5 +184,14 @@
       "within_a_week": "Within a week"
     },
     "reachLabel": "Best way to reach {name}"
+  },
+  "density": {
+    "readMore": "Read more",
+    "readLess": "Read less",
+    "earlierRoles": "Earlier roles ({count})",
+    "moreProjects": "More projects ({count})",
+    "moreSkills": "{count} more skills",
+    "moreTestimonials": "More testimonials ({count})",
+    "showLess": "Show less"
   }
 }

@@ -184,5 +184,14 @@
       "within_a_week": "एका आठवड्यात"
     },
     "reachLabel": "{name} यांच्याशी संपर्क साधण्याचा सर्वोत्तम मार्ग"
+  },
+  "density": {
+    "readMore": "अधिक वाचा",
+    "readLess": "कमी वाचा",
+    "earlierRoles": "आधीच्या भूमिका ({count})",
+    "moreProjects": "आणखी प्रकल्प ({count})",
+    "moreSkills": "आणखी {count} कौशल्ये",
+    "moreTestimonials": "आणखी प्रशंसापत्रे ({count})",
+    "showLess": "कमी दाखवा"
   }
 }

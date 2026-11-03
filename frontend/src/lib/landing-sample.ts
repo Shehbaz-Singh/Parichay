@@ -91,7 +91,7 @@ function toPublic(sample: SampleProfile): PublicProfile {
         }))
       : [],
     projects: shown('projects')
-      ? sample.projects.map((project, order) => ({ id: `p${order}`, order, ...project }))
+      ? sample.projects.map((project, order) => ({ id: `p${order}`, order, featured: false, ...project }))
       : [],
     education: shown('education')
       ? sample.education.map((item, order) => ({

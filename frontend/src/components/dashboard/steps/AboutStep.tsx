@@ -63,7 +63,7 @@ export function AboutStep() {
           rows={10}
           maxLength={ABOUT_MAX}
           placeholder="Hi, I'm Priya. I design apps people actually enjoy using. Lately I've been working on…"
-          hint="Write the way you'd introduce yourself to someone new: who you are, what you do, what you care about. Two or three short paragraphs is plenty. A blank line starts a new paragraph. Saved as you type."
+          hint="Write the way you'd introduce yourself to someone new: who you are, what you do, what you care about. Two or three short paragraphs (about 600 characters) is plenty; longer text is folded behind “Read more”. A blank line starts a new paragraph. Saved as you type."
         />
       </Form>
     </section>
