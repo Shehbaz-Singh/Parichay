@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import { Fredoka, Nunito_Sans } from 'next/font/google';
+import { Fraunces, Nunito_Sans } from 'next/font/google';
 import { ArrowUpRight, MapPin } from 'lucide-react';
 import { ShareButton } from '../ShareButton';
 import {
@@ -36,12 +36,12 @@ import {
 import { ThemeWrapper } from './ThemeWrapper';
 import type { ThemeProps } from './types';
 
-// Friendly and warm. The page is a pastel tinted from the accent (very little of it); the header
-// talks ("Hi, I'm ...") beside a big round photo on a soft blob; skills are tinted pills; jobs are
-// white cards with a thick colored left edge; projects are big rounded cards with a round arrow;
-// testimonials are speech bubbles. Text is always the dark ink on white or on the pastel, never the
-// accent, so contrast does not depend on the color the owner picked. Fredoka for headings,
-// Nunito Sans for text.
+// Warm and calm. A centered introduction (a big round photo, the name, one line), then one narrow
+// column of sections with room between them. Open panels with a hairline, not stacked shadows:
+// jobs hang on a quiet timeline, skills are small tinted chips, testimonials are quotes on a soft
+// tint. One tint of the accent and nothing that moves. Text is always the dark ink on white or on
+// the tint, never the accent, so contrast does not depend on the color the owner picked. Fraunces
+// for headings, Nunito Sans for text.
 
 // preload is off: every theme's fonts are known to the page bundle, and preloading would fetch all
 // of them. Only the faces a page draws are downloaded, when it draws them.
@@ -51,7 +51,7 @@ const sans = Nunito_Sans({
   fallback: ['var(--font-script, sans-serif)'],
   preload: false,
 });
-const fredoka = Fredoka({
+const fraunces = Fraunces({
   subsets: ['latin'],
   variable: '--font-theme-display',
   display: 'swap',
@@ -60,70 +60,56 @@ const fredoka = Fredoka({
 });
 
 // The class that sets this theme's fonts; the Writing pages use it too.
-export const fontClass = `${sans.className} ${fredoka.variable}`;
+export const fontClass = `${sans.className} ${fraunces.variable}`;
 
 const display = 'font-(family-name:--font-theme-display)';
 const focusRing =
   'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-fg';
-const card = 'rounded-[2rem] bg-surface shadow-[0_2px_0_0_var(--border)]';
-const lift = 'transition duration-300 hover:shadow-raised';
-
-// Tints of the accent, used in turn, so a row of pills or cards is colorful without a second hue.
-const TINTS = [
-  'bg-[color-mix(in_srgb,var(--accent)_10%,white)]',
-  'bg-[color-mix(in_srgb,var(--accent)_18%,white)]',
-  'bg-[color-mix(in_srgb,var(--accent)_28%,white)]',
-];
-const EDGES = [
-  'border-s-[color-mix(in_srgb,var(--accent)_100%,transparent)]',
-  'border-s-[color-mix(in_srgb,var(--accent)_60%,white)]',
-  'border-s-[color-mix(in_srgb,var(--accent)_35%,white)]',
-];
+const card = 'rounded-3xl border border-line bg-surface';
+const chip = 'rounded-full bg-accent-soft px-3.5 py-1 text-sm font-semibold';
 
 function Header({ header }: { header: HeaderModel }) {
-  const pill = `inline-flex max-w-full items-center gap-2 rounded-full border border-line bg-surface px-4 py-2 text-sm font-bold transition duration-200 hover:bg-page motion-safe:hover:-translate-y-0.5 ${focusRing}`;
+  const pill = `inline-flex max-w-full items-center gap-2 rounded-full border border-line bg-surface px-4 py-2 text-sm font-semibold transition-colors duration-200 hover:bg-accent-soft ${focusRing}`;
   return (
-    <header className="rise-in flex flex-col items-center gap-8 text-center sm:flex-row sm:gap-12 sm:text-start">
-      <div className="relative isolate shrink-0">
-        <Avatar
-          avatar={header.avatar}
-          className="size-40 rounded-full border-4 border-surface shadow-raised sm:size-52"
-          placeholderClassName={`${display} bg-[color-mix(in_srgb,var(--accent)_28%,white)] text-6xl font-semibold text-ink sm:text-7xl`}
-        />
-      </div>
+    <header className="rise-in flex flex-col items-center gap-6 text-center">
+      <Avatar
+        avatar={header.avatar}
+        className="size-36 shrink-0 rounded-full ring-4 ring-surface sm:size-44"
+        placeholderClassName={`${display} bg-accent-soft text-5xl font-medium text-ink sm:text-6xl`}
+      />
       <div className="min-w-0">
         <h1
-          className={`${display} text-[clamp(2.25rem,7vw,4rem)] leading-[1.08] font-semibold text-balance`}
+          className={`${display} text-[clamp(2.25rem,7vw,3.75rem)] leading-[1.1] font-medium text-balance`}
         >
           {header.name}
         </h1>
         {header.tagline && (
-          <p className="mt-4 text-xl leading-snug text-pretty text-muted sm:text-2xl">
+          <p className="mx-auto mt-3 max-w-xl text-xl leading-snug text-pretty text-muted">
             {header.tagline}
+          </p>
+        )}
+        {header.location && (
+          <p className="mt-4 inline-flex items-center gap-1.5 text-sm text-muted">
+            <MapPin aria-hidden="true" className="size-4 shrink-0" />
+            <span>{header.location}</span>
           </p>
         )}
         <AvailabilityBadge
           availability={header.availability}
           ui={header.ui}
-          className="mt-5 justify-center rounded-3xl border border-line bg-accent-soft px-4 py-2.5 text-start text-sm text-ink sm:justify-start"
+          className="mx-auto mt-5 max-w-xl justify-center rounded-3xl bg-accent-soft px-4 py-2.5 text-start text-sm text-ink"
           dotClassName="bg-accent-fg"
           linkClassName={`font-bold text-accent-fg underline underline-offset-2 hover:no-underline ${focusRing}`}
         />
         {header.work && (
           <WorkCard
             work={header.work}
-            className="mt-4 rounded-3xl border border-line bg-accent-soft px-4 py-3 text-start text-ink"
+            className="mx-auto mt-4 max-w-xl rounded-3xl bg-accent-soft px-4 py-3 text-start text-ink"
             linkClassName={`font-bold text-accent-fg underline underline-offset-2 hover:no-underline ${focusRing}`}
             buttonClassName={`rounded-full bg-ink px-3 py-1 text-xs font-bold text-page hover:opacity-90 ${focusRing}`}
           />
         )}
-        {header.location && (
-          <p className="mt-4 inline-flex items-center gap-1.5 rounded-full bg-[color-mix(in_srgb,var(--accent)_14%,white)] px-3 py-1 text-sm font-semibold">
-            <MapPin aria-hidden="true" className="size-4 shrink-0" />
-            <span>{header.location}</span>
-          </p>
-        )}
-        <ul className="mt-6 flex flex-wrap justify-center gap-2.5 sm:justify-start">
+        <ul className="mt-6 flex flex-wrap justify-center gap-2.5">
           {header.links.map((item) => (
             <li key={item.id} className="max-w-full">
               <HeaderLink link={item} className={pill} />
@@ -150,8 +136,8 @@ function Header({ header }: { header: HeaderModel }) {
 
 function Section({ block, children }: { block: Block; children: ReactNode }) {
   return (
-    <section aria-labelledby={block.id} className="mt-20 sm:mt-24">
-      <h2 id={block.id} className={`${display} mb-8 text-3xl font-semibold text-balance`}>
+    <section aria-labelledby={block.id} className="mt-16 sm:mt-20">
+      <h2 id={block.id} className={`${display} mb-6 text-3xl font-medium text-balance`}>
         {block.title}
       </h2>
       {children}
@@ -173,24 +159,19 @@ function BlockBody({ block }: { block: Block }) {
   switch (block.kind) {
     case 'about':
       return (
-        <div className={`${card} p-7 sm:p-10`}>
-          <ReadMore
-            text={block.text}
-            locale={block.locale}
-            from={900}
-            lines={9}
-            className="text-lg leading-8 sm:text-xl sm:leading-9"
-          />
-        </div>
+        <ReadMore
+          text={block.text}
+          locale={block.locale}
+          from={900}
+          lines={9}
+          className="text-lg leading-8 sm:text-xl sm:leading-9"
+        />
       );
     case 'skills': {
       const listSkills = (items: typeof block.skills) => (
-        <ul className="flex flex-wrap gap-3">
-          {items.map((skill, i) => (
-            <li
-              key={skill.id}
-              className={`rounded-full px-5 py-2 font-bold ${TINTS[i % TINTS.length]}`}
-            >
+        <ul className="flex flex-wrap gap-2.5">
+          {items.map((skill) => (
+            <li key={skill.id} className={chip}>
               {skill.name}
             </li>
           ))}
@@ -213,17 +194,14 @@ function BlockBody({ block }: { block: Block }) {
     }
     case 'projects': {
       const listProjects = (items: typeof block.projects) => (
-        <ul className="grid gap-6 md:grid-cols-2">
+        <ul className="grid gap-5 md:grid-cols-2">
           {items.map((project) => (
-            <li
-              key={project.id}
-              className={`${card} ${project.href ? lift : ''} group relative flex min-w-0 flex-col p-7`}
-            >
-              <h3 className={`${display} pe-14 text-2xl leading-snug font-semibold`}>
+            <li key={project.id} className={`${card} group relative flex min-w-0 flex-col p-6`}>
+              <h3 className={`${display} text-xl leading-snug font-medium`}>
                 {project.href ? (
                   <NewTabLink
                     href={project.href}
-                    className={`after:absolute after:inset-0 after:rounded-[2rem] ${focusRing}`}
+                    className={`underline decoration-line underline-offset-4 group-hover:decoration-current after:absolute after:inset-0 after:rounded-3xl ${focusRing}`}
                   >
                     {project.name}
                   </NewTabLink>
@@ -231,14 +209,6 @@ function BlockBody({ block }: { block: Block }) {
                   project.name
                 )}
               </h3>
-              {project.href && (
-                <span
-                  aria-hidden="true"
-                  className="absolute end-6 top-6 flex size-11 items-center justify-center rounded-full bg-accent text-on-accent transition-transform duration-300 motion-safe:group-hover:rotate-45"
-                >
-                  <ArrowUpRight className="rtl:-scale-x-100 size-5" />
-                </span>
-              )}
               {project.description && (
                 <ReadMore
                   text={project.description}
@@ -247,16 +217,7 @@ function BlockBody({ block }: { block: Block }) {
                 />
               )}
               {project.tags.length > 0 && (
-                <ul className="mt-5 flex flex-wrap gap-2">
-                  {project.tags.map((tag, i) => (
-                    <li
-                      key={tag}
-                      className={`rounded-full px-3 py-0.5 text-sm font-semibold ${TINTS[i % TINTS.length]}`}
-                    >
-                      {tag}
-                    </li>
-                  ))}
-                </ul>
+                <p className="mt-4 text-sm text-muted">{project.tags.join(' · ')}</p>
               )}
             </li>
           ))}
@@ -282,35 +243,28 @@ function BlockBody({ block }: { block: Block }) {
         <WritingList
           block={block}
           className="grid gap-6 md:grid-cols-2"
-          itemClassName={`${card} ${lift} group relative flex min-w-0 flex-col p-7`}
+          itemClassName={`${card} group relative flex min-w-0 flex-col p-6`}
           coverClassName="mb-5 aspect-[40/21] w-full rounded-2xl object-cover"
-          titleClassName={`${display} text-2xl leading-snug font-semibold`}
-          linkClassName={`after:absolute after:inset-0 after:rounded-[2rem] ${focusRing}`}
-          metaClassName="mt-1 text-sm font-semibold text-muted"
+          titleClassName={`${display} text-xl leading-snug font-medium`}
+          linkClassName={`after:absolute after:inset-0 after:rounded-3xl ${focusRing}`}
+          metaClassName="mt-1 text-sm text-muted"
           excerptClassName="mt-3 leading-relaxed text-muted"
           moreClassName={`mt-6 inline-block font-bold text-accent-fg underline underline-offset-2 hover:no-underline ${focusRing}`}
         />
       );
     case 'testimonials': {
       const listTestimonials = (items: typeof block.testimonials) => (
-        <ul className="grid gap-x-6 gap-y-12 md:grid-cols-2">
+        <ul className="grid gap-5 md:grid-cols-2">
           {items.map((item) => (
             <li key={item.id} className="min-w-0">
-              <figure className="flex h-full flex-col">
-                <div className="relative flex-1 rounded-[2rem] rounded-bl-lg border border-line bg-surface p-7">
-                  <blockquote className="text-lg leading-relaxed whitespace-pre-line">
-                    {item.message}
-                  </blockquote>
-                  {/* The bubble's tail. */}
-                  <span
-                    aria-hidden="true"
-                    className="absolute start-6 -bottom-2.5 size-5 rotate-45 border-e border-b border-line bg-surface"
-                  />
-                </div>
-                <figcaption className="mt-5 flex items-center gap-3 ps-4 text-sm">
+              <figure className="flex h-full flex-col rounded-3xl bg-accent-soft p-6">
+                <blockquote className="flex-1 text-lg leading-relaxed whitespace-pre-line">
+                  {item.message}
+                </blockquote>
+                <figcaption className="mt-5 flex items-center gap-3 text-sm">
                   <InitialsBadge
                     name={item.name}
-                    className={`${display} size-11 bg-[color-mix(in_srgb,var(--accent)_28%,white)] text-base text-ink`}
+                    className={`${display} size-10 bg-surface text-base text-ink`}
                   />
                   <span className="min-w-0">
                     <span className="block font-bold">{item.name}</span>
@@ -342,7 +296,7 @@ function BlockBody({ block }: { block: Block }) {
             <LeaveTestimonial
               slug={block.submitTo}
               ui={block.ui.leave}
-              buttonClassName={`mt-10 inline-flex items-center rounded-full bg-ink px-6 py-2.5 text-sm font-bold text-page transition duration-200 hover:opacity-90 motion-safe:hover:-translate-y-0.5 ${focusRing}`}
+              buttonClassName={`mt-10 inline-flex items-center rounded-full bg-ink px-6 py-2.5 text-sm font-bold text-page transition-opacity duration-200 hover:opacity-90 ${focusRing}`}
             />
           )}
         </>
@@ -353,22 +307,21 @@ function BlockBody({ block }: { block: Block }) {
         <div className="max-w-xl print:hidden">
           <ContactForm
             form={block.form}
-            buttonClassName={`inline-flex items-center rounded-full bg-ink px-6 py-2.5 text-sm font-bold text-page transition duration-200 hover:opacity-90 motion-safe:hover:-translate-y-0.5 ${focusRing}`}
+            buttonClassName={`inline-flex items-center rounded-full bg-ink px-6 py-2.5 text-sm font-bold text-page transition-opacity duration-200 hover:opacity-90 ${focusRing}`}
           />
         </div>
       );
     case 'entries': {
       const listEntries = (items: typeof block.entries) => (
-        <ol className="space-y-5">
-          {items.map((entry, i) => (
-            <li
-              key={entry.id}
-              className={`${card} min-w-0 border-s-[0.625rem] p-6 sm:p-7 ${EDGES[i % EDGES.length]}`}
-            >
+        <ol className="space-y-8 border-s-2 border-line ps-6">
+          {items.map((entry) => (
+            <li key={entry.id} className="relative min-w-0">
+              <span
+                aria-hidden="true"
+                className="absolute -start-[1.9rem] top-2 size-3 rounded-full bg-accent ring-4 ring-page"
+              />
               {entry.start && (
-                <p
-                  className={`mb-3 inline-block rounded-full px-3 py-0.5 text-sm font-bold tabular-nums ${TINTS[i % TINTS.length]}`}
-                >
+                <p className="mb-1 text-sm text-muted tabular-nums">
                   <DateRange
                     start={entry.start}
                     end={entry.end}
@@ -378,18 +331,16 @@ function BlockBody({ block }: { block: Block }) {
                   />
                 </p>
               )}
-              <h3 className={`${display} text-xl leading-snug font-semibold sm:text-2xl`}>
+              <h3 className={`${display} text-xl leading-snug font-medium sm:text-2xl`}>
                 {entry.title}
               </h3>
-              {entry.subtitle && (
-                <p className="mt-0.5 font-semibold text-muted">{entry.subtitle}</p>
-              )}
+              {entry.subtitle && <p className="mt-0.5 text-muted">{entry.subtitle}</p>}
               {entry.roles && (
                 <RoleList
                   roles={entry.roles}
-                  className="mt-4 space-y-4 border-s-2 border-line ps-4"
-                  titleClassName={`${display} text-lg font-semibold`}
-                  datesClassName="text-sm font-semibold text-muted tabular-nums"
+                  className="mt-4 space-y-4 border-s border-line ps-4"
+                  titleClassName={`${display} text-lg font-medium`}
+                  datesClassName="text-sm text-muted tabular-nums"
                   descriptionClassName="mt-1 leading-relaxed"
                 />
               )}
@@ -401,11 +352,11 @@ function BlockBody({ block }: { block: Block }) {
                 />
               )}
               {entry.href && (
-                <p className="mt-4">
+                <p className="mt-3">
                   <NewTabLink
                     href={entry.href}
                     context={entry.title}
-                    className={`inline-flex items-center gap-1 text-sm font-bold underline underline-offset-4 hover:no-underline ${focusRing}`}
+                    className={`inline-flex items-center gap-1 text-sm font-semibold underline underline-offset-4 hover:no-underline ${focusRing}`}
                   >
                     View
                     <ArrowUpRight aria-hidden="true" className="rtl:-scale-x-100 size-4" />
@@ -462,7 +413,7 @@ export default function SoftTheme({
   const blocks = buildBlocks(profile, idPrefix, view, projectId);
   return (
     <ThemeWrapper theme="soft" profile={profile} nav={nav} className={fontClass}>
-      <main id={`${idPrefix}main`} className="mx-auto max-w-4xl px-5 py-12 sm:px-8 sm:py-20">
+      <main id={`${idPrefix}main`} className="mx-auto max-w-3xl px-5 py-12 sm:px-8 sm:py-20">
         {heading ? <PageHeading heading={heading} /> : <Header header={buildHeader(profile)} />}
         {blocks.map((block) => (
           <Section key={block.id} block={block}>

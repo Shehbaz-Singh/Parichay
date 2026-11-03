@@ -32,7 +32,7 @@ const entries: Record<ThemeKey, Omit<ThemeEntry, 'key' | 'scheme' | 'background'
   soft: {
     name: 'Soft',
     description:
-      'Friendly and warm: pastel colors from your accent, rounded shapes and speech-bubble quotes.',
+      'Warm and calm: a centered introduction, a narrow column, a quiet timeline and one tint of your accent.',
   },
   executive: {
     name: 'Executive',
