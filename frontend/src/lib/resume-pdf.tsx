@@ -11,7 +11,6 @@ import { getTheme } from './themes';
 // The resume PDF: the published page's own content (the same header and sections the web theme
 // draws, in the owner's order, hidden and empty sections left out, only the links they show),
 // laid out on paper in the look of the theme they chose, with that theme's fonts and colors.
-// Everything is real text, and the reading order follows the page.
 
 const SIZE = 9.5;
 

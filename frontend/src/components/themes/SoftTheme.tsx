@@ -336,9 +336,7 @@ function BlockBody({ block }: { block: Block }) {
                 </Collapse>
               )}
             </>
-          ) : (
-            <p className="text-muted">{block.ui.noTestimonials}</p>
-          )}
+          ) : null}
           {block.submitTo && (
             <LeaveTestimonial
               slug={block.submitTo}

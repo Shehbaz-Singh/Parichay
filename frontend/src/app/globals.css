@@ -676,3 +676,9 @@ html:has([data-sitenav]) {
 [data-portfolio] time {
   font-variant-numeric: tabular-nums;
 }
+
+/* Long titles, company names and tags wrap instead of running out of their box; the full text is
+   always there for everyone (nothing is cut off with an ellipsis). */
+[data-portfolio] :is(h1, h2, h3, h4, li, blockquote) {
+  overflow-wrap: break-word;
+}

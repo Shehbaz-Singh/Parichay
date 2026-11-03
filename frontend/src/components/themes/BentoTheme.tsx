@@ -597,7 +597,6 @@ function blockTiles(block: Block): Tile[] {
           tone: 'strong',
           node: (
             <TileBody id={block.id} title={block.title}>
-              {tiles.length === 0 && <p className="mb-4 text-muted">{block.ui.noTestimonials}</p>}
               {block.submitTo && (
                 <LeaveTestimonial
                   slug={block.submitTo}

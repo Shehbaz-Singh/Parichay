@@ -91,17 +91,17 @@ function Section({ block, children }: { block: Block; children: ReactNode }) {
 function Masthead({ header }: { header: HeaderModel }) {
   return (
     <header className="rise-in text-center lg:text-start">
+      {/* The location, when there is one, between two rules. With none there is no label: a "Portfolio"
+          caption above every name says nothing. */}
       <div className="border-y border-ink py-3">
         <p
           className={`${caps} flex items-center justify-center gap-1.5 text-muted lg:justify-start`}
         >
-          {header.location ? (
+          {header.location && (
             <>
               <MapPin aria-hidden="true" className="size-3.5 shrink-0" />
               <span>{header.location}</span>
             </>
-          ) : (
-            <span>{header.ui.portfolio}</span>
           )}
         </p>
       </div>
@@ -320,9 +320,7 @@ function BlockBody({ block }: { block: Block }) {
                 </Collapse>
               )}
             </>
-          ) : (
-            <p className="text-muted">{block.ui.noTestimonials}</p>
-          )}
+          ) : null}
           {block.submitTo && (
             <LeaveTestimonial
               slug={block.submitTo}
