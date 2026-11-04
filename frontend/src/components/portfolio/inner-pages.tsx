@@ -51,7 +51,9 @@ export async function pageViewport(username: string, locale?: string): Promise<V
   const profile = await getPublicProfile(username, locale);
   if (!profile) return {};
   const { scheme, background } = getTheme(profile.theme);
-  return { colorScheme: scheme, themeColor: background };
+  // Aurora's light look has a light page: the browser's own chrome follows it.
+  const light = profile.theme === 'aurora' && profile.appearance === 'light';
+  return { colorScheme: light ? 'light' : scheme, themeColor: light ? '#faf8f4' : background };
 }
 
 function metadataFor(
@@ -114,7 +116,8 @@ async function ThemedPage({
       locale={profile.locale}
       links={languageLinks(profile, rest)}
       label={ui.switcher.label}
-      bare={isMulti(profile)}
+      // Aurora's own bar carries the language links and reading preferences, so no strip above it either.
+      bare={isMulti(profile) || getTheme(profile.theme).key === 'aurora'}
     >
       {jsonLd && <JsonLd data={jsonLd} />}
       {profile.isSample && <SampleBanner ui={ui.sample} />}

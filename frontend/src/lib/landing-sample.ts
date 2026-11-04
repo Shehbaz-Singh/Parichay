@@ -49,6 +49,9 @@ function toPublic(sample: SampleProfile): PublicProfile {
     avatarUrl: null,
     theme: sample.theme,
     accentColor: sample.accentColor,
+    leadWith: 'automatic' as const,
+    appearance: 'dark' as const,
+    testimonialStyle: 'list' as const,
     isSample: true,
     defaultLocale: 'en',
     locales: [],
@@ -97,6 +100,7 @@ function toPublic(sample: SampleProfile): PublicProfile {
           id: `p${order}`,
           order,
           featured: false,
+          experienceId: null,
           slug: `p${order}`,
           coverUrl: null,
           coverAlt: null,
@@ -127,6 +131,7 @@ export const SAMPLES: PublicProfile[] = SAMPLE_PROFILES.map(toPublic);
 export const SAMPLE_BY_THEME = {
   ...Object.fromEntries(SAMPLES.map((profile) => [profile.theme, profile])),
   sidebar: { ...SAMPLES[0], theme: 'sidebar' },
+  aurora: { ...SAMPLES[0], theme: 'aurora' },
 } as Record<ThemeKey, PublicProfile>;
 
 // "See an example" goes here: the most complete page.

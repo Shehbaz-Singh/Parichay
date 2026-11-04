@@ -11,7 +11,7 @@ import {
 } from '@parichay/shared';
 import { ApiError } from '@/lib/client-api';
 import { schemaResolver } from '@/lib/form';
-import { TextArea, TextField } from '../../form-fields';
+import { SelectField, TextArea, TextField } from '../../form-fields';
 import { EditorForm } from '../EditorForm';
 import { useEditor, useSection, type SectionItem } from '../editor-context';
 import { LengthNote } from '../LengthNote';
@@ -28,6 +28,7 @@ type Fields = {
   techTags: string;
   featured: boolean;
   coverAlt: string;
+  experienceId: string; // '' means none
 };
 const splitTags = (text: string) =>
   text
@@ -37,11 +38,13 @@ const splitTags = (text: string) =>
 
 function ProjectForm({ item, draft, onDone, onSaved }: ItemFormProps<'projects'>) {
   const { create, updateItem } = useSection('projects');
+  const { profile } = useEditor();
   const source = item ?? draft; // a saved item, or a suggestion from a resume
   const form = useForm<Fields, unknown, ProjectInput>({
     resolver: schemaResolver(projectInputSchema, (v: Fields) => ({
       ...v,
       techTags: splitTags(v.techTags),
+      experienceId: v.experienceId || null,
     })),
     defaultValues: {
       name: source?.name ?? '',
@@ -51,6 +54,7 @@ function ProjectForm({ item, draft, onDone, onSaved }: ItemFormProps<'projects'>
       description: source?.description ?? '',
       techTags: source?.techTags.join(', ') ?? '',
       featured: item?.featured ?? false,
+      experienceId: item?.experienceId ?? '',
     },
   });
 
@@ -92,6 +96,19 @@ function ProjectForm({ item, draft, onDone, onSaved }: ItemFormProps<'projects'>
         placeholder="A weekly meal planner that builds your shopping list for you."
         hint="What it is, who it's for, and what you did on it. About 300 characters reads well; longer text is folded behind “Read more” on your page."
       />
+      {profile.experience.length > 0 && (
+        <SelectField
+          name="experienceId"
+          label="Built while at"
+          options={[
+            { value: '', label: 'No job in particular' },
+            ...profile.experience.map((job) => ({
+              value: job.id,
+              label: `${job.company}: ${job.title}`,
+            })),
+          ]}
+        />
+      )}
       <TextField
         name="techTags"
         label="Technologies"

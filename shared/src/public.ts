@@ -74,6 +74,7 @@ export const publicProjectSchema = z.object({
   description: z.string(),
   techTags: z.array(z.string()),
   featured: z.boolean(),
+  experienceId: z.string().nullable().default(null),
   order: z.number(),
 });
 

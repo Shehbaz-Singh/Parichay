@@ -18,6 +18,7 @@
   "present": "Atual",
   "viewAll": "Ver tudo",
   "viewProject": "Ver projeto",
+  "builtAt": "Criado enquanto trabalhava na {company}",
   "getInTouch": "Entrar em contato",
   "via": "via {label}",
   "availability": "Disponibilidade",
@@ -194,6 +195,7 @@
     "moreTestimonials": "Mais depoimentos ({count})",
     "showLess": "Mostrar menos",
     "viewAllProjects": "Ver todos os projetos",
+    "viewAllExperience": "Ver toda a experiência",
     "moreAbout": "Mais sobre mim",
     "pages": "Páginas",
     "home": "Início"

@@ -72,6 +72,13 @@ async function assertFeaturedRoom(
   }
 }
 
+// A project may name the job it was built during, but only one of the owner's own.
+async function assertOwnJob(section: Section, profileId: string, input: Row) {
+  if (section !== 'projects' || typeof input.experienceId !== 'string') return;
+  const job = await delegates.experience.findFirst({ where: { id: input.experienceId, profileId } });
+  if (!job) throw AppError.notFound(ERRORS.itemNotFound);
+}
+
 // A project's address: made from its name, with a counter when the profile has one like it.
 async function projectSlug(profileId: string, name: string) {
   const base = slugifyTitle(name) === 'post' ? 'project' : slugifyTitle(name);
@@ -91,6 +98,7 @@ async function projectSlug(profileId: string, name: string) {
 export async function createItem(section: Section, profileId: string, input: Row) {
   const delegate = delegates[section];
   await assertFeaturedRoom(section, profileId, input);
+  await assertOwnJob(section, profileId, input);
 
   const count = await delegate.count({ where: { profileId } });
   if (count >= SECTION_LIMITS[section]) {
@@ -129,6 +137,7 @@ export async function createItem(section: Section, profileId: string, input: Row
 
 export async function updateItem(section: Section, profileId: string, id: string, input: Row) {
   await assertFeaturedRoom(section, profileId, input, id);
+  await assertOwnJob(section, profileId, input);
   try {
     return await orNotFound(
       delegates[section].update({ where: { id, profileId }, data: input, ...shape(section) }),

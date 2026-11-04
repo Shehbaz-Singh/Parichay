@@ -61,6 +61,7 @@ export interface ProjectEntry {
   cover: { src: string; alt: string; width: number; height: number } | null;
   description: string;
   tags: string[];
+  builtAt: string | null; // the company of the job it was built during, when the owner linked one
 }
 
 interface TestimonialEntry {
@@ -149,6 +150,30 @@ export type Block =
       total?: string;
     });
 
+// What the page leads with after the introduction and the summary. "Automatic" keeps the owner's order
+// for anyone with jobs (their saved order is theirs); a profile with no jobs (a student, a freelancer)
+// leads with Selected work, or Education when there are no projects. An explicit choice moves that
+// section up, right after About. Only sections that are shown are moved.
+function leadOrder(
+  keys: string[],
+  profile: Pick<PublicProfile, 'leadWith' | 'experience' | 'projects'>,
+): string[] {
+  const wanted =
+    profile.leadWith === 'work'
+      ? 'projects'
+      : profile.leadWith === 'automatic'
+        ? profile.experience.length > 0
+          ? null
+          : keys.includes('projects') && profile.projects.length > 0
+            ? 'projects'
+            : 'education'
+        : profile.leadWith;
+  if (!wanted || !keys.includes(wanted)) return keys;
+  const rest = keys.filter((key) => key !== wanted);
+  const at = rest.indexOf('about') + 1; // 0 when there is no About
+  return [...rest.slice(0, at), wanted, ...rest.slice(at)];
+}
+
 // How much of a long list a visitor is shown before the rest goes behind a button. Short lists are
 // shown whole. The rest is still in the page (see Collapse.tsx), so nothing is lost.
 export const SHOW = { projects: 4, jobs: 4, skills: 12, testimonials: 6 } as const;
@@ -157,8 +182,8 @@ const HOME_PROJECTS = 4;
 
 // The first `count` items, and the others. A list only a little longer than `count` is not split:
 // a button for one or two items is worse than showing them.
-function curate<T>(items: T[], count: number): { shown: T[]; rest: T[] } {
-  if (items.length <= count + 1) return { shown: items, rest: [] };
+function curate<T>(items: T[], count: number, tolerance = 1): { shown: T[]; rest: T[] } {
+  if (items.length <= count + tolerance) return { shown: items, rest: [] };
   return { shown: items.slice(0, count), rest: items.slice(count) };
 }
 
@@ -383,7 +408,13 @@ export function buildBlocks(
   };
   const titles = new Map(profile.sections.map((section) => [section.key, section.title]));
   // A page draws the sections it holds, in its order; Home draws pieces of a few; the rest draw all.
-  const keys = page && !home ? page.sections : profile.sections.map((section) => section.key);
+  const keys =
+    page && !home
+      ? page.sections
+      : leadOrder(
+          profile.sections.map((section) => section.key),
+          profile,
+        );
   const onHome = ['about', 'projects', 'writing', 'contact'];
 
   for (const key of keys) {
@@ -452,7 +483,7 @@ export function buildBlocks(
             variant: 'experience',
             ...base,
             ...(() => {
-              const { shown, rest } = cut(groupJobs(profile.experience, fmt, t), SHOW.jobs);
+              const { shown, rest } = cut(groupJobs(profile.experience, fmt, t), SHOW.jobs, 0);
               return { entries: shown, rest };
             })(),
             total:
@@ -480,6 +511,8 @@ export function buildBlocks(
                 : null,
             description: project.description,
             tags: project.techTags,
+            builtAt:
+              profile.experience.find((job) => job.id === project.experienceId)?.company ?? null,
           },
         }));
         if (entries.length === 0) break;

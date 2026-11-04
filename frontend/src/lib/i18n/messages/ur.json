@@ -18,6 +18,7 @@
   "present": "حال",
   "viewAll": "سب دیکھیں",
   "viewProject": "پروجیکٹ دیکھیں",
+  "builtAt": "{company} میں رہتے ہوئے بنایا",
   "getInTouch": "رابطہ کریں",
   "via": "بذریعہ {label}",
   "availability": "دستیابی",
@@ -188,12 +189,13 @@
   "density": {
     "readMore": "مزید پڑھیں",
     "readLess": "کم پڑھیں",
-    "earlierRoles": "پچھلے کردار ({count})",
+    "earlierRoles": "پچھلا تجربہ ({count})",
     "moreProjects": "مزید پروجیکٹس ({count})",
     "moreSkills": "{count} مزید مہارتیں",
     "moreTestimonials": "مزید تعریفی کلمات ({count})",
     "showLess": "کم دکھائیں",
     "viewAllProjects": "تمام پروجیکٹس دیکھیں",
+    "viewAllExperience": "پورا تجربہ دیکھیں",
     "moreAbout": "میرے بارے میں مزید",
     "pages": "صفحات",
     "home": "ہوم"
@@ -222,5 +224,10 @@
     "home": "ہوم",
     "viewAllWork": "سارا کام دیکھیں",
     "specialties": "تفصیلات"
+  },
+  "aurora": {
+    "workPrev": "پچھلے پروجیکٹس",
+    "workNext": "اگلے پروجیکٹس",
+    "allSkills": "تمام مہارتیں"
   }
 }

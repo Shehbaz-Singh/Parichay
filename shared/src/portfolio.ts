@@ -8,6 +8,14 @@ import {
 } from './availability';
 import { isLocaleCode } from './languages';
 import { DEFAULT_LAYOUT_MODE, layoutModeSchema } from './layout-mode';
+import {
+  DEFAULT_APPEARANCE,
+  DEFAULT_LEAD_WITH,
+  DEFAULT_TESTIMONIAL_STYLE,
+  appearanceSchema,
+  leadWithSchema,
+  testimonialStyleSchema,
+} from './lead-with';
 import { optionalBlock, optionalLine } from './text';
 import { SHARE_MESSAGE_MAX } from './share';
 import { VALIDATION } from './messages';
@@ -101,10 +109,11 @@ export const THEME_KEYS = [
   'executive',
   'creative',
   'sidebar',
+  'aurora',
 ] as const;
 export const themeSchema = z.enum(THEME_KEYS);
 export type ThemeKey = z.infer<typeof themeSchema>;
-export const DEFAULT_THEME: ThemeKey = 'editorial';
+export const DEFAULT_THEME: ThemeKey = 'executive';
 
 export const DEFAULT_ACCENT = '#2563eb';
 
@@ -137,6 +146,11 @@ export const profileInputSchema = z.object({
   // Whether the sitemap lists the pages (opt-in: a portfolio is personal). Saved with the pages.
   sitemapListed: z.boolean().default(false),
   accentColor: accentColorSchema.default(DEFAULT_ACCENT),
+  // What the page leads with after the introduction (lead-with.ts), Aurora's dark or light look, and how
+  // the Sidebar theme draws testimonials.
+  leadWith: leadWithSchema.default(DEFAULT_LEAD_WITH),
+  appearance: appearanceSchema.default(DEFAULT_APPEARANCE),
+  testimonialStyle: testimonialStyleSchema.default(DEFAULT_TESTIMONIAL_STYLE),
   published: z.boolean().default(false),
   // Whether visitors may submit testimonials (see testimonials.ts). Changed by its own endpoint.
   acceptTestimonials: z.boolean().default(false),
@@ -307,6 +321,8 @@ export const projectInputSchema = z.object({
   description: z.string().trim().max(DESCRIPTION_MAX).default(''),
   techTags: z.array(trimmed(30)).max(20).default([]),
   featured: z.boolean().default(false),
+  // The job this project was built during ("Built while at {company}"), or none.
+  experienceId: z.string().min(1).max(40).nullish().transform((v) => v ?? null),
   order: orderField,
 });
 export type ProjectInput = z.infer<typeof projectInputSchema>;

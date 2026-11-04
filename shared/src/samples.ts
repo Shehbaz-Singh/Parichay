@@ -67,7 +67,7 @@ export const SAMPLE_PROFILES: SampleProfile[] = [
     location: 'New Delhi, India',
     theme: 'editorial',
     accentColor: '#9d174d',
-    sections: ['about', 'projects', 'experience', 'skills', 'writing'],
+    sections: ['about', 'experience', 'projects', 'skills', 'writing'],
     availability: {
       status: 'open_to_work',
       message: 'Looking for product design roles in Delhi NCR, or remote.',
@@ -175,7 +175,7 @@ Critique is a conversation. If both people leave knowing what to try next, it di
     location: 'Ludhiana, India',
     theme: 'bento',
     accentColor: '#0f766e',
-    sections: ['about', 'skills', 'experience', 'projects', 'education', 'custom:0'],
+    sections: ['about', 'experience', 'projects', 'skills', 'education', 'custom:0'],
     links: [
       { type: 'github', url: 'https://example.com/ayush-gill/github' },
       { type: 'linkedin', url: 'https://example.com/ayush-gill/linkedin' },
@@ -346,9 +346,9 @@ Critique is a conversation. If both people leave knowing what to try next, it di
     accentColor: '#1d4ed8',
     sections: [
       'about',
-      'skills',
       'experience',
       'projects',
+      'skills',
       'education',
       'custom:0',
       'testimonials',

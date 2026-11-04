@@ -18,6 +18,7 @@
   "present": "বর্তমান",
   "viewAll": "সব দেখুন",
   "viewProject": "প্রজেক্ট দেখুন",
+  "builtAt": "{company}-এ থাকাকালীন তৈরি",
   "getInTouch": "যোগাযোগ করুন",
   "via": "{label} মাধ্যমে",
   "availability": "উপলব্ধতা",
@@ -194,6 +195,7 @@
     "moreTestimonials": "আরও প্রশংসাপত্র ({count})",
     "showLess": "কম দেখান",
     "viewAllProjects": "সব প্রজেক্ট দেখুন",
+    "viewAllExperience": "পূর্ণ অভিজ্ঞতা দেখুন",
     "moreAbout": "আমার সম্পর্কে আরও",
     "pages": "পৃষ্ঠা",
     "home": "হোম"

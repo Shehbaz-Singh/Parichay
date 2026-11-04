@@ -3,7 +3,7 @@ import { Breadcrumbs, projectTrail, type Crumb } from '@/components/portfolio/pa
 import { SITE_URL } from '@/lib/config';
 import { safeHttpUrl } from '@/lib/format';
 import { pagePath, uiFor } from '@/lib/i18n';
-import { findPage, pageHref, pageLabel } from '@/lib/pages';
+import { pageHref, pageLabel } from '@/lib/pages';
 import {
   buildBlocks,
   buildContactForm,
@@ -36,7 +36,9 @@ export interface HomeModel {
   work: { href: string; label: string } | null; // the Work page, when it has more than is shown here
   aboutTitle: string;
   about: { text: string; href: string | null; label: string } | null; // the short About, and the way to the rest
-  skills: string[]; // the first ten
+  // One line to the page that holds the jobs, when the portfolio has pages and Experience is on one.
+  more: { href: string; label: string } | null;
+  skills: string[]; // the first few
   skillsTotal: number;
   now: { role: string; company: string; since: string; open: boolean } | null; // the latest job
   testimonial: { message: string; name: string; detail: string | null } | null; // one pull quote
@@ -45,26 +47,11 @@ export interface HomeModel {
   contact: Extract<Block, { kind: 'contact' }> | null; // the form itself, when there is no Contact page
 }
 
-// Home is a short page: an introduction, a few projects, a line about the person and a way to get in
-// touch. The rest (skills, the latest job, quotes, posts) lives on the pages that have room for it, so
-// those parts of the model are left empty here. A template draws only what it is given.
-const HOME_PROJECTS = 3;
-const HOME_ABOUT = 260;
-
-// The start of a text, up to a sentence end (or a word) near `max` characters.
-function excerpt(text: string, max: number): string {
-  const flat = text.split(/\s+/).join(' ').trim();
-  if (flat.length <= max) return flat;
-  const window = flat.slice(0, max);
-  const sentence = Math.max(
-    window.lastIndexOf('. '),
-    window.lastIndexOf('! '),
-    window.lastIndexOf('? '),
-  );
-  return sentence > max / 2
-    ? window.slice(0, sentence + 1)
-    : `${window.slice(0, window.lastIndexOf(' '))}…`;
-}
+// Home is the introduction and nothing more: the photo, the name, the current position, the major skills and
+// the ways to get in touch. Everything else (the summary, the jobs, the projects, quotes, posts) lives on the
+// pages that have room for it, so those parts of the model are left empty here. A template draws only what
+// it is given.
+const HOME_SKILLS = 6;
 
 function homeModel(profile: PublicProfile, page: PublicPage): HomeModel {
   const blocks = buildBlocks(profile, '', page);
@@ -74,8 +61,10 @@ function homeModel(profile: PublicProfile, page: PublicPage): HomeModel {
   const projects = find('projects');
   const about = find('about');
   const cta = find('cta');
-  const workPage = findPage(profile, 'work');
-  const aboutPage = findPage(profile, 'about');
+  const jobsPage =
+    profile.experience.length > 0
+      ? profile.pages.find((item) => item.key !== 'home' && item.sections.includes('experience'))
+      : undefined;
 
   // The current job (or the latest), one line: the rest of the experience is on the Work page.
   const job =
@@ -84,21 +73,15 @@ function homeModel(profile: PublicProfile, page: PublicPage): HomeModel {
   return {
     kind: 'home',
     header: buildHeader(profile),
-    featured: (projects?.projects ?? []).slice(0, HOME_PROJECTS),
+    featured: [],
     projectTotal: projects?.total ?? 0,
-    work:
-      workPage && projects && projects.total > projects.projects.length
-        ? { href: pageHref(profile, workPage), label: pageLabel(profile, workPage) }
-        : null,
-    aboutTitle: about?.title ?? ui.sections.about,
-    about: about
-      ? {
-          text: excerpt(about.text, HOME_ABOUT),
-          href: aboutPage ? pageHref(profile, aboutPage) : null,
-          label: ui.density.moreAbout,
-        }
+    work: null,
+    more: jobsPage
+      ? { href: pageHref(profile, jobsPage), label: ui.density.viewAllExperience }
       : null,
-    skills: [],
+    aboutTitle: about?.title ?? ui.sections.about,
+    about: null,
+    skills: profile.skills.slice(0, HOME_SKILLS).map((skill) => skill.name),
     skillsTotal: profile.skills.length,
     now: job
       ? { role: job.title, company: job.company, since: job.startDate, open: !job.endDate }

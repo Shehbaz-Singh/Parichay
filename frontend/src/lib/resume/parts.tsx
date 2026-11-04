@@ -2,6 +2,7 @@ import { Image, Link, Text, View } from '@react-pdf/renderer';
 import type { ReactNode } from 'react';
 import type { Block, Entry } from '@/components/themes/blocks';
 import { SITE_URL } from '../config';
+import { parseDescription } from '../description';
 import { formatDate, formatRange } from '../format';
 import { DEVANAGARI } from './fonts';
 import type { Tokens } from './tokens';
@@ -47,17 +48,27 @@ export const plainUrl = (url: string) =>
 export const absolute = (href: string) => (href.startsWith('/') ? `${SITE_URL}${href}` : href);
 
 export function Paragraphs({ text, style }: { text: string | null | undefined; style?: object }) {
-  const parts = (text ?? '')
-    .split(/\r?\n+/)
-    .map((part) => part.trim())
-    .filter(Boolean);
+  // The same reading as the web page: list markers become bullets, blank lines split paragraphs.
+  const parts = parseDescription(text ?? '');
   return (
     <>
-      {parts.map((part, i) => (
-        <Text key={i} style={{ marginTop: i === 0 ? 0 : 3, ...style }}>
-          {rich(part)}
-        </Text>
-      ))}
+      {parts.flatMap((part, i) =>
+        part.kind === 'p'
+          ? [
+              <Text key={i} style={{ marginTop: i === 0 ? 0 : 3, ...style }}>
+                {rich(part.text)}
+              </Text>,
+            ]
+          : part.items.map((item, j) => (
+              <View
+                key={`${i}-${j}`}
+                style={{ flexDirection: 'row', marginTop: i === 0 && j === 0 ? 0 : 2 }}
+              >
+                <Text style={{ width: 10, ...style }}>{'•'}</Text>
+                <Text style={{ flex: 1, ...style }}>{rich(item)}</Text>
+              </View>
+            )),
+      )}
     </>
   );
 }

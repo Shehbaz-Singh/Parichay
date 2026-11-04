@@ -15,6 +15,26 @@ enum TestimonialStatus {
   rejected
 }
 
+// What the public page leads with after the introduction (shared/src/lead-with.ts).
+enum LeadWith {
+  automatic
+  experience
+  work
+  education
+}
+
+// Aurora's look: dark (the default) or light. The other themes have one look and ignore it.
+enum PortfolioAppearance {
+  dark
+  light
+}
+
+// How testimonials are drawn on the Sidebar theme: a plain list (3 shown) or a carousel that never advances by itself.
+enum TestimonialStyle {
+  list
+  carousel
+}
+
 enum LinkBioStyle {
   light
   soft
@@ -92,7 +112,10 @@ model Profile {
   about               String?
   location            String?
   avatarUrl           String?
-  theme               String             @default("editorial")
+  theme               String             @default("executive")
+  leadWith            LeadWith           @default(automatic)
+  appearance          PortfolioAppearance @default(dark)
+  testimonialStyle    TestimonialStyle   @default(list)
   accentColor         String             @default("#2563eb")
   published           Boolean            @default(false)
   // A made-up example profile (shared/src/samples.ts). Seeded without a usable login.
@@ -142,7 +165,7 @@ model Profile {
   availabilityMessage String?            @db.VarChar(140)
   // Order, visibility and headings of the page sections (see shared/src/section-config.ts).
   // The default must match defaultSectionConfig(); existing rows get it when the column is added.
-  sectionConfig       Json               @default("[{\"key\":\"about\",\"visible\":true},{\"key\":\"skills\",\"visible\":true},{\"key\":\"experience\",\"visible\":true},{\"key\":\"projects\",\"visible\":true},{\"key\":\"education\",\"visible\":true},{\"key\":\"testimonials\",\"visible\":false},{\"key\":\"writing\",\"visible\":false},{\"key\":\"contact\",\"visible\":false}]")
+  sectionConfig       Json               @default("[{\"key\":\"about\",\"visible\":true},{\"key\":\"experience\",\"visible\":true},{\"key\":\"projects\",\"visible\":true},{\"key\":\"skills\",\"visible\":true},{\"key\":\"education\",\"visible\":true},{\"key\":\"writing\",\"visible\":false},{\"key\":\"testimonials\",\"visible\":false},{\"key\":\"contact\",\"visible\":false}]")
 
   user            User             @relation(fields: [userId], references: [id], onDelete: Cascade)
   links           Link[]
@@ -193,7 +216,8 @@ model Experience {
   description String
   order       Int       @default(0)
 
-  profile Profile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  profile  Profile   @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  projects Project[]
 
   @@index([profileId])
 }
@@ -216,12 +240,16 @@ model Project {
   coverWidth  Int?
   coverHeight Int?
   order       Int      @default(0)
+  // The job this was built during ("Built while at {company}"). Cleared when that job is deleted.
+  experienceId String?
 
-  profile Profile        @relation(fields: [profileId], references: [id], onDelete: Cascade)
-  images  ProjectImage[]
+  profile    Profile        @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  experience Experience?    @relation(fields: [experienceId], references: [id], onDelete: SetNull)
+  images     ProjectImage[]
 
   @@unique([profileId, slug])
   @@index([profileId])
+  @@index([experienceId])
 }
 
 // A gallery image of a project (at most MAX_PROJECT_IMAGES). The file is in Cloudinary and the row is

@@ -18,6 +18,7 @@
   "present": "Present",
   "viewAll": "View all",
   "viewProject": "View project",
+  "builtAt": "Built while at {company}",
   "getInTouch": "Get in touch",
   "via": "via {label}",
   "availability": "Availability",
@@ -188,12 +189,13 @@
   "density": {
     "readMore": "Read more",
     "readLess": "Read less",
-    "earlierRoles": "Earlier roles ({count})",
+    "earlierRoles": "Earlier experience ({count})",
     "moreProjects": "More projects ({count})",
     "moreSkills": "{count} more skills",
     "moreTestimonials": "More testimonials ({count})",
     "showLess": "Show less",
-    "viewAllProjects": "View all projects",
+    "viewAllProjects": "View all work",
+    "viewAllExperience": "View full experience",
     "moreAbout": "More about me",
     "pages": "Pages",
     "home": "Home"
@@ -273,5 +275,10 @@
     "home": "Home",
     "viewAllWork": "View all work",
     "specialties": "Details"
+  },
+  "aurora": {
+    "workPrev": "Previous projects",
+    "workNext": "Next projects",
+    "allSkills": "All skills"
   }
 }

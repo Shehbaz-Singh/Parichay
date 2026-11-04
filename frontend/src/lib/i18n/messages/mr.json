@@ -18,6 +18,7 @@
   "present": "सध्या",
   "viewAll": "सर्व पहा",
   "viewProject": "प्रकल्प पहा",
+  "builtAt": "{company} मध्ये असताना बनवले",
   "getInTouch": "संपर्क साधा",
   "via": "{label} द्वारे",
   "availability": "उपलब्धता",
@@ -194,6 +195,7 @@
     "moreTestimonials": "आणखी प्रशंसापत्रे ({count})",
     "showLess": "कमी दाखवा",
     "viewAllProjects": "सर्व प्रकल्प पहा",
+    "viewAllExperience": "संपूर्ण अनुभव पहा",
     "moreAbout": "माझ्याबद्दल अधिक",
     "pages": "पृष्ठे",
     "home": "मुख्यपृष्ठ"

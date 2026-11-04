@@ -18,6 +18,7 @@
   "present": "حتى الآن",
   "viewAll": "عرض الكل",
   "viewProject": "عرض المشروع",
+  "builtAt": "أُنجز أثناء العمل في {company}",
   "getInTouch": "تواصل معي",
   "via": "عبر {label}",
   "availability": "التوفر",
@@ -194,6 +195,7 @@
     "moreTestimonials": "المزيد من الشهادات ({count})",
     "showLess": "عرض أقل",
     "viewAllProjects": "عرض كل المشاريع",
+    "viewAllExperience": "عرض كل الخبرات",
     "moreAbout": "المزيد عني",
     "pages": "الصفحات",
     "home": "الرئيسية"

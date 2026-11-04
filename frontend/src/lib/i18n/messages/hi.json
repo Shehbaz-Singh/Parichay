@@ -18,6 +18,7 @@
   "present": "वर्तमान",
   "viewAll": "सभी देखें",
   "viewProject": "प्रोजेक्ट देखें",
+  "builtAt": "{company} में रहते हुए बनाया",
   "getInTouch": "संपर्क करें",
   "via": "{label} के ज़रिए",
   "availability": "उपलब्धता",
@@ -188,12 +189,13 @@
   "density": {
     "readMore": "और पढ़ें",
     "readLess": "कम पढ़ें",
-    "earlierRoles": "पहले की भूमिकाएँ ({count})",
+    "earlierRoles": "पहले का अनुभव ({count})",
     "moreProjects": "और प्रोजेक्ट ({count})",
     "moreSkills": "{count} और कौशल",
     "moreTestimonials": "और प्रशंसापत्र ({count})",
     "showLess": "कम दिखाएँ",
     "viewAllProjects": "सभी प्रोजेक्ट देखें",
+    "viewAllExperience": "पूरा अनुभव देखें",
     "moreAbout": "मेरे बारे में और",
     "pages": "पृष्ठ",
     "home": "होम"
@@ -222,5 +224,10 @@
     "home": "होम",
     "viewAllWork": "सारा काम देखें",
     "specialties": "विवरण"
+  },
+  "aurora": {
+    "workPrev": "पिछले प्रोजेक्ट",
+    "workNext": "अगले प्रोजेक्ट",
+    "allSkills": "सभी कौशल"
   }
 }

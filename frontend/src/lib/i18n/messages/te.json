@@ -18,6 +18,7 @@
   "present": "ప్రస్తుతం",
   "viewAll": "అన్నీ చూడండి",
   "viewProject": "ప్రాజెక్ట్ చూడండి",
+  "builtAt": "{company}లో ఉన్నప్పుడు నిర్మించబడింది",
   "getInTouch": "సంప్రదించండి",
   "via": "{label} ద్వారా",
   "availability": "అందుబాటు",
@@ -194,6 +195,7 @@
     "moreTestimonials": "మరిన్ని టెస్టిమోనియల్స్ ({count})",
     "showLess": "తక్కువ చూపించు",
     "viewAllProjects": "అన్ని ప్రాజెక్టులు చూడండి",
+    "viewAllExperience": "పూర్తి అనుభవం చూడండి",
     "moreAbout": "నా గురించి మరింత",
     "pages": "పేజీలు",
     "home": "హోమ్"

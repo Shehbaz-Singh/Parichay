@@ -137,11 +137,11 @@ const GO_TO: {
   },
   {
     id: 'projects',
-    title: 'Projects',
+    title: 'Selected work',
     href: '/dashboard/profile',
     tab: 'projects',
     icon: FolderKanban,
-    keywords: ['portfolio', 'work samples', 'apps'],
+    keywords: ['projects', 'portfolio', 'work samples', 'apps'],
   },
   {
     id: 'education',

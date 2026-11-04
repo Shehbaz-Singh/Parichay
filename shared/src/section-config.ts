@@ -10,14 +10,16 @@ import { VALIDATION } from './messages';
 // deleted. To add another built-in kind: append its key to SECTION_KEYS and
 // SECTION_LABELS, and register a component for it in the theme. Existing profiles pick the new
 // key up automatically (see normalizeSectionConfig), placed after the others.
+// The order is the default for a new profile: who you are, where you have worked, selected work,
+// skills, education, then the optional sections. A saved order is never changed by this list.
 export const SECTION_KEYS = [
   'about',
-  'skills',
   'experience',
   'projects',
+  'skills',
   'education',
-  'testimonials',
   'writing',
+  'testimonials',
   'contact',
 ] as const;
 export const sectionKeySchema = z.enum(SECTION_KEYS);
@@ -28,7 +30,7 @@ export const SECTION_LABELS: Record<SectionKey, string> = {
   about: 'About',
   skills: 'Skills',
   experience: 'Experience',
-  projects: 'Projects',
+  projects: 'Selected work',
   education: 'Education',
   testimonials: 'Testimonials',
   writing: 'Writing',

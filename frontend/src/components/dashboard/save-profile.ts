@@ -9,7 +9,7 @@ export function saveProfile(profile: MyProfile, changes: Partial<ProfileUpdateIn
   const { resumeEnabled, contactCardEnabled, contactCardPhoto } = profile;
   const { workCardEnabled, timezone, workingHours, replyTime, preferredContact, workNote } =
     profile;
-  const { shareMessage } = profile;
+  const { shareMessage, leadWith, appearance, testimonialStyle } = profile;
   return api<MyProfile>('/profile/me', {
     method: 'PUT',
     body: {
@@ -33,6 +33,9 @@ export function saveProfile(profile: MyProfile, changes: Partial<ProfileUpdateIn
       preferredContact,
       workNote,
       shareMessage,
+      leadWith,
+      appearance,
+      testimonialStyle,
       ...changes,
     },
   });

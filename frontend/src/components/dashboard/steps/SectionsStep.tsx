@@ -8,12 +8,13 @@ import {
   defaultSectionConfig,
   isCustomKey,
   type ConfigKey,
+  type LeadWith,
   type MyProfile,
   type SectionConfig,
   type SectionKey,
 } from '@parichay/shared';
 import { api } from '@/lib/client-api';
-import { Button, Card, Input, Switch } from '../../ui';
+import { Button, Card, Input, Select, Switch } from '../../ui';
 import { useAutosave } from '../autosave';
 import { useEditor } from '../editor-context';
 import { useGo } from '../navigation';
@@ -22,6 +23,15 @@ import { SortableList } from '../SortableList';
 
 // What the form edits. A title is plain text here: blank means "use the default heading".
 type Row = { key: ConfigKey; visible: boolean; title: string };
+
+// What the page leads with after the introduction. Automatic is Experience for anyone with jobs, and
+// Selected work or Education for a student or a freelancer.
+const LEAD_OPTIONS: { value: LeadWith; label: string }[] = [
+  { value: 'automatic', label: 'Automatic' },
+  { value: 'experience', label: 'Experience' },
+  { value: 'work', label: 'Selected work' },
+  { value: 'education', label: 'Education' },
+];
 
 const toRows = (config: SectionConfig): Row[] =>
   config.map(({ key, visible, title }) => ({ key, visible, title: title ?? '' }));
@@ -63,7 +73,7 @@ const hasContent = (profile: MyProfile, key: ConfigKey) =>
 // is saved here: hiding a section keeps its content. Changes show in the preview at once and are
 // saved by themselves a moment later.
 export function SectionsStep() {
-  const { profile, update, setDraft } = useEditor();
+  const { profile, update, setDraft, saveFields } = useEditor();
   const go = useGo();
   const [rows, setRows] = useState(() => toRows(profile.sectionConfig));
 
@@ -88,6 +98,7 @@ export function SectionsStep() {
     },
   });
 
+  const chooseLead = (value: string) => void saveFields({ leadWith: value as LeadWith });
   const patch = (key: ConfigKey, change: Partial<Row>) =>
     setRows((current) => current.map((row) => (row.key === key ? { ...row, ...change } : row)));
   const reorder = (ids: string[]) =>
@@ -98,6 +109,22 @@ export function SectionsStep() {
       <p className="text-sm text-muted">
         Hiding a section keeps everything you wrote in it, so there’s no risk in trying things out.
       </p>
+      <Card padding="sm" className="space-y-2">
+        <label htmlFor="lead-with" className="block text-sm font-medium">
+          Lead with
+        </label>
+        <Select
+          id="lead-with"
+          value={profile.leadWith}
+          options={LEAD_OPTIONS}
+          onChange={chooseLead}
+        />
+        <p className="text-sm text-muted">
+          What comes first after your introduction. Automatic leads with Experience when you have
+          jobs, otherwise with Selected work, otherwise with Education. Your order below still
+          decides everything after it.
+        </p>
+      </Card>
       <InfoToggle label="How to reorder with the keyboard">
         Focus a grip, press Space, move with the arrow keys, then press Space again.
       </InfoToggle>

@@ -45,6 +45,10 @@ export async function profileCard(username: string, locale?: string) {
   const profile = await getPublicProfile(username, locale);
   if (!profile) return new Response('Not found', { status: 404 });
   const showText = drawsText(profile.locale);
+  // The current job (or the latest one): most people are judged on their work history.
+  const job =
+    profile.experience.find((item) => !item.endDate) ??
+    [...profile.experience].sort((a, b) => b.startDate.localeCompare(a.startDate))[0];
 
   const avatar = await loadAvatar(profile.avatarUrl);
   const name = truncate(profile.fullName, 48);
@@ -103,6 +107,11 @@ export async function profileCard(username: string, locale?: string) {
           {showText && profile.tagline && (
             <div style={{ fontSize: 38, marginTop: 20, color: '#cbd5e1', lineHeight: 1.25 }}>
               {truncate(profile.tagline, 90)}
+            </div>
+          )}
+          {showText && job && (
+            <div style={{ fontSize: 30, marginTop: 20, color: '#e2e8f0', fontWeight: 600 }}>
+              {truncate(`${job.title} · ${job.company}`, 70)}
             </div>
           )}
           {profile.location && (

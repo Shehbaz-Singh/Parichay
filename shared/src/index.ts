@@ -24,6 +24,7 @@ export * from './portfolio';
 export * from './public';
 export * from './section-config';
 export * from './layout-mode';
+export * from './lead-with';
 export * from './pages';
 export * from './custom-sections';
 export * from './posts';

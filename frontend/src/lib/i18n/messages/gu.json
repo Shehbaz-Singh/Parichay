@@ -18,6 +18,7 @@
   "present": "હાલ",
   "viewAll": "બધું જુઓ",
   "viewProject": "પ્રોજેક્ટ જુઓ",
+  "builtAt": "{company}માં હતા ત્યારે બનાવ્યું",
   "getInTouch": "સંપર્ક કરો",
   "via": "{label} દ્વારા",
   "availability": "ઉપલબ્ધતા",
@@ -194,6 +195,7 @@
     "moreTestimonials": "વધુ પ્રશંસાપત્રો ({count})",
     "showLess": "ઓછું બતાવો",
     "viewAllProjects": "બધા પ્રોજેક્ટ જુઓ",
+    "viewAllExperience": "સંપૂર્ણ અનુભવ જુઓ",
     "moreAbout": "મારા વિશે વધુ",
     "pages": "પૃષ્ઠો",
     "home": "હોમ"

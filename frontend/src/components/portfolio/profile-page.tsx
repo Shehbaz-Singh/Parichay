@@ -57,7 +57,9 @@ export async function profileViewport(username: string, locale?: string): Promis
   const profile = await getPublicProfile(username, locale);
   if (!profile) return {};
   const { scheme, background } = getTheme(profile.theme);
-  return { colorScheme: scheme, themeColor: background };
+  // Aurora's light look has a light page: the browser's own chrome follows it.
+  const light = profile.theme === 'aurora' && profile.appearance === 'light';
+  return { colorScheme: light ? 'light' : scheme, themeColor: light ? '#faf8f4' : background };
 }
 
 export async function ProfileView({ username, locale }: { username: string; locale?: string }) {
@@ -91,7 +93,7 @@ export async function ProfileView({ username, locale }: { username: string; loca
       locale={profile.locale}
       links={languageLinks(profile)}
       label={uiFor(profile.locale).switcher.label}
-      bare={multi}
+      bare={multi || getTheme(profile.theme).key === 'aurora'}
     >
       <JsonLd data={personData(profile, path)} />
       {multi && <AnchorForward targets={forward} />}
