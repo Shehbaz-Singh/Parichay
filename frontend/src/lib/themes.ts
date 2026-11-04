@@ -19,30 +19,31 @@ export interface ThemeEntry {
 const entries: Record<ThemeKey, Omit<ThemeEntry, 'key' | 'scheme' | 'background'>> = {
   editorial: {
     name: 'Editorial',
-    description: 'A quiet magazine page: serif headings, a narrow reading column, generous space.',
+    description: 'A quiet magazine page on warm paper: a narrow reading column, small-caps labels and dates in the margin.',
   },
   bento: {
     name: 'Bento',
-    description: 'A grid of rounded tiles that adapt to your content, tinted by your accent color.',
+    description: 'Rounded tiles on a cool page, with Experience as one full-width list and a whisper of your accent.',
   },
   creative: {
     name: 'Creative',
-    description: 'Bold type, a header in your accent color and an expressive layout.',
+    description: 'Bold type, a slanted header band in your accent, hard borders and offset shadows.',
   },
   soft: {
     name: 'Soft',
-    description:
-      'Warm and calm: a centered introduction, a narrow column, a quiet timeline and one tint of your accent.',
+    description: 'Warm and calm: a centered introduction, one narrow column, a quiet timeline and dark ink throughout.',
   },
   sidebar: {
     name: 'Sidebar',
-    description:
-      'A dark side rail with your name and navigation beside a wide, airy page: a big mixed-weight introduction and two bands in your accent.',
+    description: 'A dark side rail with your name and navigation beside an airy page, with Experience in a band of your accent.',
+  },
+  aurora: {
+    name: 'Aurora',
+    description: 'One soft glow of your accent behind the introduction, raised cards and a scrolling strip of selected work. Dark or light.',
   },
   executive: {
     name: 'Executive',
-    description:
-      'A professional two-column resume: sidebar with contact and skills, dense text, prints cleanly.',
+    description: 'A resume-like page: a dark sidebar with contact and skills, dense text led by Experience. Prints cleanly. The default.',
   },
 };
 

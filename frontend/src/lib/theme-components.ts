@@ -1,4 +1,5 @@
 import type { ThemeKey } from '@parichay/shared';
+import AuroraTheme from '@/components/themes/AuroraTheme';
 import CreativeTheme from '@/components/themes/CreativeTheme';
 import BentoTheme from '@/components/themes/BentoTheme';
 import EditorialTheme from '@/components/themes/EditorialTheme';
@@ -16,4 +17,5 @@ export const THEME_COMPONENTS: Record<ThemeKey, ThemeComponent> = {
   soft: SoftTheme,
   executive: ExecutiveTheme,
   sidebar: SidebarTheme,
+  aurora: AuroraTheme,
 };

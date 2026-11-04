@@ -1,12 +1,13 @@
 import { ThemeExplorer } from './ThemeExplorer';
 
 const THEMES = [
-  ['Editorial', 'A quiet magazine page: serif headings, a drop cap, plenty of space.'],
-  ['Bento', 'A grid of rounded tiles that adapt to your content, tinted by your accent.'],
-  ['Soft', 'Warm and calm: a centered introduction, a quiet timeline, one tint.'],
-  ['Executive', 'A professional two-column resume that prints cleanly.'],
-  ['Creative', 'Bold type and a header in your accent color.'],
-  ['Sidebar', 'A dark side rail beside a wide, airy page, with a big mixed-weight introduction.'],
+  ['Executive', 'A resume-like page: a dark sidebar, dense text led by Experience. Prints cleanly.'],
+  ['Editorial', 'A quiet magazine page on warm paper with a narrow reading column.'],
+  ['Soft', 'Warm and calm: a centered introduction, a quiet timeline, dark ink throughout.'],
+  ['Bento', 'Rounded tiles on a cool page, with Experience as one full-width list.'],
+  ['Creative', 'Bold type, a slanted header band in your accent and offset shadows.'],
+  ['Sidebar', 'A dark side rail beside an airy page, with Experience in a band of your accent.'],
+  ['Aurora', 'One soft glow of your accent behind the introduction. Dark or light.'],
 ];
 
 // The same example profile in every theme, drawn live: change the theme or the accent color and
@@ -19,7 +20,7 @@ export function Themes() {
       className="mx-auto max-w-6xl scroll-mt-20 px-5 py-20 sm:px-8"
     >
       <h2 id="themes-heading" className="type-page text-3xl sm:text-4xl">
-        Six themes, any accent color
+        Seven themes, any accent color
       </h2>
       <p className="mt-4 max-w-2xl text-lg text-muted">
         Every theme shows the same content, so you can switch at any time without retyping. Try them

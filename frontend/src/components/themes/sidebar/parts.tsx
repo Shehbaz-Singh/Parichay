@@ -31,13 +31,13 @@ export const focusRing =
 export const wrap = '[overflow-wrap:anywhere]';
 // Side padding of every section: it follows the screen but never crowds a phone.
 export const gutter = 'px-[clamp(1.25rem,5vw,4.5rem)]';
-export const h2Class = `mb-10 scroll-mt-6 text-[clamp(1.75rem,3.6vw,2.75rem)] leading-[1.1] font-bold tracking-tight text-balance outline-none sm:mb-14 ${wrap}`;
+export const h2Class = `pt-h1 mb-10 scroll-mt-6 font-bold outline-none sm:mb-14 ${wrap}`;
 
-export const primaryButton = `sb-link inline-flex min-h-12 items-center gap-3 bg-ink px-7 py-3 text-sm font-semibold text-page hover:opacity-90 ${focusRing}`;
-export const outlineButton = `inline-flex min-h-11 max-w-full items-center gap-2 border border-ink px-5 py-2.5 text-sm font-semibold hover:bg-ink hover:text-page ${focusRing}`;
-const bandButton = `inline-flex min-h-11 items-center border border-current px-5 text-sm font-semibold hover:bg-white/15 ${focusRing}`;
-const lightButton = `inline-flex min-h-11 items-center border border-ink px-5 text-sm font-semibold hover:bg-ink hover:text-page ${focusRing}`;
-export const textLink = `font-semibold text-accent-fg underline underline-offset-4 hover:no-underline ${focusRing}`;
+export const primaryButton = `sb-link inline-flex min-h-12 items-center gap-3 bg-ink px-7 py-3 pt-small font-bold text-page hover:opacity-90 ${focusRing}`;
+export const outlineButton = `inline-flex min-h-11 max-w-full items-center gap-2 border border-ink px-5 py-2.5 pt-small font-bold hover:bg-ink hover:text-page ${focusRing}`;
+const bandButton = `inline-flex min-h-11 items-center border border-current px-5 pt-small font-bold hover:bg-white/15 ${focusRing}`;
+const lightButton = `inline-flex min-h-11 items-center border border-ink px-5 pt-small font-bold hover:bg-ink hover:text-page ${focusRing}`;
+export const textLink = `font-bold text-accent-fg underline underline-offset-4 hover:no-underline ${focusRing}`;
 
 export const Arrow = ({ className = 'size-5' }: { className?: string }) => (
   <ArrowRight aria-hidden="true" className={`${className} sb-arrow rtl:-scale-x-100`} />
@@ -61,8 +61,8 @@ export function Frame({
       className={`${band ? 'sb-band' : ''} ${gutter} py-16 sm:py-24`}
     >
       <div className="mx-auto max-w-5xl">
-        {kicker && <p className="sb-it mb-3 text-base italic">{kicker}</p>}
-        <h2 id={block.id} tabIndex={-1} className={h2Class}>
+        {kicker && <p className="sb-it mb-3 pt-body italic">{kicker}</p>}
+        <h2 id={block.id} tabIndex={-1} className={`${h2Class} ${band ? 'pt-title' : ''}`}>
           {block.title}
         </h2>
         {children}
@@ -90,9 +90,22 @@ function Portrait({ avatar }: { avatar: HeaderModel['avatar'] }) {
       <Avatar
         avatar={avatar}
         className="absolute inset-[11%] size-[78%] rounded-full"
-        placeholderClassName="bg-ink text-[clamp(3.5rem,13vw,7rem)] font-bold text-page"
+        placeholderClassName="bg-ink pt-display font-bold text-page"
       />
     </div>
+  );
+}
+
+// The name in mixed weights: the given names light, the family name bold. One word is all bold.
+function MixedName({ name }: { name: string }) {
+  const words = name.trim().split(/\s+/);
+  if (words.length < 2) return <span className="font-bold">{name}</span>;
+  const last = words.pop();
+  return (
+    <>
+      <span className="font-light">{words.join(' ')} </span>
+      <span className="font-bold">{last}</span>
+    </>
   );
 }
 
@@ -108,7 +121,7 @@ export function Hero({
   const ui = header.ui;
   const [role, rest] = header.tagline ? splitTagline(header.tagline) : ['', ''];
   const details = header.links.filter((link) => link.type === 'email' || link.type === 'phone');
-  const chip = `inline-flex min-h-6 max-w-full items-center gap-2 text-sm font-medium underline-offset-4 hover:underline ${focusRing}`;
+  const chip = `inline-flex min-h-6 max-w-full items-center gap-2 pt-small font-bold underline-offset-4 hover:underline ${focusRing}`;
   return (
     <section
       id={id}
@@ -118,19 +131,14 @@ export function Hero({
     >
       <div className="mx-auto grid max-w-6xl items-center gap-12 min-[1100px]:grid-cols-[1.15fr_0.85fr]">
         <div className="min-w-0">
-          <h1 className="sb-tight leading-[1.02]">
-            <span className="block text-[clamp(1.6rem,4vw,3rem)] font-light">{ui.sidebar.hi}</span>
-            <span
-              className={`block text-[clamp(2.6rem,8.5vw,6.25rem)] leading-[1.02] font-bold tracking-tight text-balance ${wrap}`}
-            >
-              {header.name}
-            </span>
+          <h1 className={`sb-tight pt-display ${wrap}`}>
+            <MixedName name={header.name} />
           </h1>
           {header.tagline && (
-            <p className={`mt-6 max-w-xl text-lg leading-snug text-pretty sm:text-xl ${wrap}`}>
+            <p className={`mt-6 max-w-xl pt-body text-pretty ${wrap}`}>
               {rest ? (
                 <>
-                  <em className="sb-it font-semibold">{role}</em>
+                  <em className="sb-it font-bold">{role}</em>
                   {rest}
                 </>
               ) : (
@@ -161,7 +169,7 @@ export function Hero({
           <AvailabilityBadge
             availability={header.availability}
             ui={ui}
-            className="mt-8 max-w-xl border border-line px-4 py-3 text-sm text-ink"
+            className="mt-8 max-w-xl border border-line px-4 py-3 pt-small text-ink"
             dotClassName="bg-accent"
             linkClassName={textLink}
           />
@@ -174,22 +182,18 @@ export function Hero({
 
 // ---- Facts, numbers and the quote
 
+// Facts about the work, worked out from the real dates and lists: plain text, nothing counts up.
 export function Stats({ stats }: { stats: { value: number; label: string }[] }) {
   if (stats.length === 0) return null;
   return (
-    <dl className="flex flex-wrap gap-x-12 gap-y-6">
+    <ul className="pt-h3 flex flex-wrap gap-x-8 gap-y-2 font-bold">
       {stats.map((stat) => (
-        <div key={stat.label} className="flex min-w-0 flex-col-reverse">
-          <dt className="mt-2 max-w-[14ch] text-sm text-muted">{stat.label}</dt>
-          <dd className="text-[clamp(2.6rem,6vw,4rem)] leading-none font-bold tabular-nums">
-            {stat.value}
-            <span aria-hidden="true" className="text-accent">
-              +
-            </span>
-          </dd>
-        </div>
+        <li key={stat.label}>
+          <span className="pt-date">{stat.value}</span>{' '}
+          <span className="font-normal">{stat.label}</span>
+        </li>
       ))}
-    </dl>
+    </ul>
   );
 }
 
@@ -205,8 +209,8 @@ export function Facts({
     <dl aria-label={label} className="grid gap-x-8 gap-y-4 sm:grid-cols-2">
       {facts.map((fact) => (
         <div key={fact.label} className="min-w-0 border-t border-line pt-3">
-          <dt className="text-sm text-muted">{fact.label}</dt>
-          <dd className={`mt-0.5 font-semibold ${wrap}`}>
+          <dt className="pt-small text-muted">{fact.label}</dt>
+          <dd className={`mt-0.5 font-bold ${wrap}`}>
             {fact.href ? (
               <a
                 href={fact.href}
@@ -237,12 +241,10 @@ export function DarkQuote({
       aria-label={label}
       className="sb-quote-dark bg-(--rail) p-8 text-[#f4f3f0] sm:p-12 print:break-inside-avoid"
     >
-      <blockquote
-        className={`sb-tight text-[clamp(1.05rem,1.8vw,1.35rem)] leading-relaxed font-medium text-pretty whitespace-pre-line ${wrap}`}
-      >
+      <blockquote className={`sb-tight pt-h3 font-bold text-pretty whitespace-pre-line ${wrap}`}>
         {quote.message}
       </blockquote>
-      <figcaption className="mt-5 text-sm">
+      <figcaption className="mt-5 pt-small">
         <span className="font-bold">{quote.name}</span>
         {quote.detail && <span className="text-[#c9c6bf]"> · {quote.detail}</span>}
       </figcaption>
@@ -256,7 +258,7 @@ export function WorkingTogether({ work }: { work: NonNullable<HeaderModel['work'
       work={work}
       className="border border-line bg-surface p-5 text-start text-ink"
       linkClassName={textLink}
-      buttonClassName={`bg-ink px-3 py-1.5 text-xs font-semibold text-page hover:opacity-90 ${focusRing}`}
+      buttonClassName={`bg-ink px-3 py-1.5 pt-fine font-bold text-page hover:opacity-90 ${focusRing}`}
     />
   );
 }
@@ -267,31 +269,29 @@ function EntryRow({ entry, locale }: { entry: Entry; locale: string }) {
   return (
     <li className="grid gap-1 border-t border-line py-7 sm:grid-cols-[1fr_auto] sm:gap-x-10 sm:py-9">
       <div className="min-w-0">
-        <h3 className={`text-[clamp(1.4rem,3vw,2.25rem)] leading-tight font-bold ${wrap}`}>
-          {entry.title}
-        </h3>
-        {entry.subtitle && <p className={`mt-1 text-lg ${wrap}`}>{entry.subtitle}</p>}
+        <h3 className={`pt-h2 pt-name font-bold ${wrap}`}>{entry.title}</h3>
+        {entry.subtitle && <p className={`mt-1 pt-body ${wrap}`}>{entry.subtitle}</p>}
         {entry.roles && (
           <RoleList
             roles={entry.roles}
             className="mt-4 space-y-4"
-            titleClassName="text-xl font-semibold"
-            datesClassName="text-sm tabular-nums"
-            descriptionClassName="mt-1 leading-relaxed"
+            titleClassName="pt-h3 font-bold"
+            datesClassName="pt-small tabular-nums"
+            descriptionClassName="mt-1 "
           />
         )}
         {entry.description && (
           <ReadMore
             text={entry.description}
             locale={locale}
-            lines={3}
-            from={240}
-            className="mt-3 leading-relaxed"
+            lines={6}
+            from={1500}
+            className="mt-3 "
           />
         )}
       </div>
       {entry.start && (
-        <p className="text-base font-semibold tabular-nums sm:text-end">
+        <p className="pt-body font-bold tabular-nums sm:text-end">
           <DateRange
             start={entry.start}
             end={entry.end}
@@ -340,11 +340,11 @@ export function Studies({ block }: { block: Extract<Block, { kind: 'entries' }> 
           className="grid gap-1 border-t border-line py-6 sm:grid-cols-[1fr_auto] sm:gap-x-10"
         >
           <div className="min-w-0">
-            <h3 className={`text-xl font-bold sm:text-2xl ${wrap}`}>{entry.title}</h3>
+            <h3 className={`pt-h3 font-bold ${wrap}`}>{entry.title}</h3>
             {entry.subtitle && <p className={`mt-1 text-muted ${wrap}`}>{entry.subtitle}</p>}
           </div>
           {entry.start && (
-            <p className="text-sm font-semibold text-muted tabular-nums sm:text-end">
+            <p className="pt-small font-bold text-muted tabular-nums sm:text-end">
               <DateRange start={entry.start} end={entry.end} fmt={entry.fmt} />
             </p>
           )}
@@ -354,7 +354,7 @@ export function Studies({ block }: { block: Extract<Block, { kind: 'entries' }> 
   );
 }
 
-// ---- Services and any custom section: an accordion of native <details>, so it opens with the keyboard,
+// ---- A custom section the owner made (a list of items): an accordion of native <details>, so it opens with the keyboard,
 // works without JavaScript and is open in print.
 
 export function Accordion({ block }: { block: Extract<Block, { kind: 'entries' }> }) {
@@ -362,13 +362,7 @@ export function Accordion({ block }: { block: Extract<Block, { kind: 'entries' }
     <ul className="border-b border-line">
       {block.entries.map((entry) => {
         const hasBody = entry.subtitle || entry.description || entry.href || entry.start;
-        const title = (
-          <span
-            className={`min-w-0 text-[clamp(1.15rem,2vw,1.5rem)] leading-snug font-semibold ${wrap}`}
-          >
-            {entry.title}
-          </span>
-        );
+        const title = <span className={`min-w-0 pt-h3 font-bold ${wrap}`}>{entry.title}</span>;
         return (
           <li key={entry.id} className="border-t border-line">
             {hasBody ? (
@@ -384,15 +378,15 @@ export function Accordion({ block }: { block: Extract<Block, { kind: 'entries' }
                 </summary>
                 <div className="max-w-3xl pb-8">
                   {entry.subtitle && (
-                    <p className={`text-lg font-semibold ${wrap}`}>{entry.subtitle}</p>
+                    <p className={`pt-body font-bold ${wrap}`}>{entry.subtitle}</p>
                   )}
                   {entry.start && (
-                    <p className="mt-1 text-sm text-muted tabular-nums">
+                    <p className="mt-1 pt-small text-muted tabular-nums">
                       <DateRange start={entry.start} end={entry.end} fmt={entry.fmt} />
                     </p>
                   )}
                   {entry.description && (
-                    <p className={`mt-3 leading-relaxed whitespace-pre-line text-muted ${wrap}`}>
+                    <p className={`mt-3 whitespace-pre-line text-muted ${wrap}`}>
                       {entry.description}
                     </p>
                   )}
@@ -432,11 +426,9 @@ function ProjectRow({ project, index }: { project: ProjectEntry; index: number }
     >
       <div className="min-w-0 sm:w-[42%]">
         {kicker && (
-          <p className={`sb-it mb-2 text-sm font-medium text-muted italic ${wrap}`}>{kicker}</p>
+          <p className={`sb-it mb-2 pt-small font-bold text-muted italic ${wrap}`}>{kicker}</p>
         )}
-        <h3
-          className={`text-[clamp(1.6rem,2.6vw,2.4rem)] leading-tight font-bold text-balance ${wrap}`}
-        >
+        <h3 className={`pt-h1 font-bold text-balance ${wrap}`}>
           <Link
             href={project.detailHref}
             className={`after:absolute after:inset-0 hover:underline hover:underline-offset-4 ${focusRing}`}
@@ -456,11 +448,9 @@ function ProjectRow({ project, index }: { project: ProjectEntry; index: number }
             aria-hidden="true"
             className="flex aspect-[4/3] w-full flex-col justify-end gap-2 bg-accent-soft p-5"
           >
-            <span className={`line-clamp-3 text-2xl leading-tight font-bold ${wrap}`}>
-              {project.name}
-            </span>
+            <span className={`line-clamp-3 pt-h2 font-bold ${wrap}`}>{project.name}</span>
             {project.tags.length > 0 && (
-              <span className={`line-clamp-2 text-sm ${wrap}`}>
+              <span className={`line-clamp-2 pt-small ${wrap}`}>
                 {project.tags.slice(0, 3).join(' · ')}
               </span>
             )}
@@ -528,17 +518,17 @@ function PostCard({ post, locale, badge }: { post: WritingEntry; locale: string;
       ) : (
         <div
           aria-hidden="true"
-          className="flex aspect-[4/3] w-full items-end bg-accent-soft p-5 text-[clamp(3rem,8vw,5rem)] leading-none font-bold"
+          className="flex aspect-[4/3] w-full items-end bg-accent-soft p-5 pt-display leading-none font-bold"
         >
           {Array.from(post.title)[0]}
         </div>
       )}
-      <p className="sb-it mt-4 text-sm text-muted italic">
+      <p className="sb-it mt-4 pt-small text-muted italic">
         <time dateTime={post.date}>{formatDate(post.date, locale)}</time>
-        {post.external && <span className="ms-2 font-semibold not-italic">{badge}</span>}
+        {post.external && <span className="ms-2 font-bold not-italic">{badge}</span>}
       </p>
       <h3
-        className={`mt-1 text-lg leading-snug font-bold group-hover:underline group-hover:underline-offset-4 ${wrap}`}
+        className={`mt-1 pt-body font-bold group-hover:underline group-hover:underline-offset-4 ${wrap}`}
       >
         {link}
       </h3>
@@ -603,7 +593,7 @@ export function ContactSplit({
                   <li key={link.id} className="min-w-0">
                     <a
                       href={link.href}
-                      className={`inline-flex max-w-full items-center gap-3 text-[clamp(1.3rem,3.2vw,2.1rem)] leading-tight font-bold underline-offset-4 hover:underline ${wrap} ${focusRing}`}
+                      className={`inline-flex max-w-full items-center gap-3 pt-h2 font-bold underline-offset-4 hover:underline ${wrap} ${focusRing}`}
                     >
                       <span aria-hidden="true" className="inline-flex shrink-0">
                         <Icon className="size-[0.8em]" />
@@ -621,7 +611,7 @@ export function ContactSplit({
                 <li key={link.id} className="min-w-0">
                   <HeaderLink
                     link={link}
-                    className={`inline-flex min-h-8 items-center gap-2 text-sm font-semibold underline underline-offset-4 hover:no-underline ${wrap} ${focusRing}`}
+                    className={`inline-flex min-h-8 items-center gap-2 pt-small font-bold underline underline-offset-4 hover:no-underline ${wrap} ${focusRing}`}
                   />
                 </li>
               ))}
@@ -647,7 +637,7 @@ export function FormInBand({
     <ContactForm
       form={form}
       page={state}
-      buttonClassName={`inline-flex min-h-12 items-center bg-[#111] px-7 py-3 text-sm font-semibold text-white hover:bg-black ${focusRing}`}
+      buttonClassName={`inline-flex min-h-12 items-center bg-[#111] px-7 py-3 pt-small font-bold text-white hover:bg-black ${focusRing}`}
     />
   );
 }

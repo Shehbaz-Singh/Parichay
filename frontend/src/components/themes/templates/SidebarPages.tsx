@@ -6,7 +6,7 @@ import { Markdown } from '@/components/Markdown';
 import { ShareButton } from '../../ShareButton';
 import { fill, translatorFor } from '@/lib/i18n';
 import type { Block } from '../blocks';
-import { AvailabilityBadge, Avatar, NewTabLink, ResumeLink } from '../parts';
+import { AvailabilityBadge, Avatar, NewTabLink, ResumeLink, MoreLinkView } from '../parts';
 import { ReadMore } from '../ReadMore';
 import { aboutExtras } from '../sidebar/model';
 import {
@@ -98,6 +98,22 @@ function Home({ model, render, idPrefix }: { model: HomeModel; render: Render; i
             {fill(ui.pages.atCompany, { role: model.now.role, company: model.now.company })}
           </span>
         </p>
+      )}
+      {model.skills.length > 0 && (
+        <p className={`${gutter} pb-4 text-base`}>
+          <span className={`mx-auto block max-w-5xl text-muted ${wrap}`}>
+            {model.skills.join(' · ')}
+            {model.skillsTotal > model.skills.length &&
+              ` · ${fill(ui.pages.skillsMore, { count: model.skillsTotal - model.skills.length })}`}
+          </span>
+        </p>
+      )}
+      {model.more && (
+        <div className={`${gutter} pb-6`}>
+          <div className="mx-auto max-w-5xl">
+            <MoreLinkView more={model.more} className="mt-0" />
+          </div>
+        </div>
       )}
       {model.featured.length > 0 && (
         <Plain id={`${idPrefix}home-work`} title={ui.sections.projects}>

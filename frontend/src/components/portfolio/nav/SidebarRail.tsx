@@ -152,7 +152,7 @@ export function SidebarRail({
     if (target) requestAnimationFrame(() => target.focus({ preventScroll: true }));
   };
 
-  const linkClass = `relative flex min-h-10 items-center py-2 ps-4 pe-2 text-[0.95rem] leading-snug text-muted [overflow-wrap:anywhere] before:absolute before:inset-y-1.5 before:start-0 before:w-[3px] before:bg-(--rail-mark) before:opacity-0 hover:text-ink aria-[current]:font-bold aria-[current]:text-ink aria-[current]:before:opacity-100 ${focusRing}`;
+  const linkClass = `relative flex min-h-10 items-center py-2 ps-4 pe-2 pt-small text-muted [overflow-wrap:anywhere] before:absolute before:inset-y-1.5 before:start-0 before:w-[3px] before:bg-(--rail-mark) before:opacity-0 hover:text-ink aria-[current]:font-bold aria-[current]:text-ink aria-[current]:before:opacity-100 ${focusRing}`;
 
   return (
     <header
@@ -177,7 +177,7 @@ export function SidebarRail({
       <div className="flex min-h-14 items-center justify-between gap-3 px-5 min-[900px]:hidden">
         <Link
           href={homeHref}
-          className={`${display} min-w-0 text-xl leading-tight font-semibold [overflow-wrap:anywhere] line-clamp-2 ${focusRing}`}
+          className={`${display} min-w-0 pt-h3 font-bold [overflow-wrap:anywhere] line-clamp-2 ${focusRing}`}
         >
           {logo}
         </Link>
@@ -206,7 +206,7 @@ export function SidebarRail({
       >
         <Link
           href={homeHref}
-          className={`${display} hidden text-[1.7rem] leading-tight font-semibold [overflow-wrap:anywhere] min-[900px]:block ${focusRing}`}
+          className={`${display} hidden pt-h2 font-bold [overflow-wrap:anywhere] min-[900px]:block ${focusRing}`}
         >
           {logo}
         </Link>

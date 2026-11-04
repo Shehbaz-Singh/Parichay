@@ -6,6 +6,7 @@ import type { NavItem } from '@/lib/pages';
 import { LanguageSwitcher, type LanguageLink } from '../LanguageSwitcher';
 import { ReadingPreferences } from '../ReadingPreferences';
 import { Rail } from '../../themes/sidebar/Rail';
+import { AuroraBar } from '../../themes/aurora/Bar';
 import { MobileBar, type MobileStyles } from './MobileBar';
 
 // The navigation of a multi-page portfolio, once for each theme: the same pages in the same order, drawn
@@ -143,7 +144,7 @@ function BentoNav({ profile, items, current, languages, ui }: NavProps) {
         data-sitenav=""
         className="sticky top-0 z-30 hidden px-4 pt-3 text-ink sm:block print:hidden"
       >
-        <div className="mx-auto flex w-fit max-w-full items-center gap-1 rounded-full border border-line bg-surface/90 p-1.5 shadow-raised backdrop-blur">
+        <div className="mx-auto flex w-fit max-w-full items-center gap-1 rounded-full border border-line fx-blur-surface p-1.5 shadow-raised">
           <nav aria-label={ui.pages.nav}>
             <ul className="flex flex-wrap gap-1">
               {items.map((item) => (
@@ -172,7 +173,7 @@ function BentoNav({ profile, items, current, languages, ui }: NavProps) {
 
 // ---- Soft: a calm, rounded row with a dot in front of the current page.
 const softMobile: MobileStyles = {
-  bar: 'border-t border-line bg-page/95 text-ink backdrop-blur',
+  bar: 'border-t border-line fx-blur text-ink',
   item: `${BASE_BAR_ITEM} font-semibold`,
   current: 'bg-accent-soft font-bold',
   sheet: 'bg-page text-ink',
@@ -319,6 +320,19 @@ function SidebarNav({ profile, items, current, languages }: NavProps) {
   );
 }
 
+// ---- Aurora: a slim pinned bar on every screen size (a menu button on a phone); the theme draws it.
+function AuroraNav({ profile, items, current, languages }: NavProps) {
+  return (
+    <AuroraBar
+      profile={profile}
+      items={items}
+      mode="pages"
+      current={current}
+      languages={languages}
+    />
+  );
+}
+
 export const THEME_NAVS: Record<ThemeKey, ComponentType<NavProps>> = {
   editorial: EditorialNav,
   bento: BentoNav,
@@ -326,6 +340,7 @@ export const THEME_NAVS: Record<ThemeKey, ComponentType<NavProps>> = {
   executive: ExecutiveNav,
   creative: CreativeNav,
   sidebar: SidebarNav,
+  aurora: AuroraNav,
 };
 
 // How much of the top of the screen the navigation takes while the page scrolls, for the sticky things
@@ -337,4 +352,5 @@ export const NAV_STICKY_HEIGHT: Record<ThemeKey, string> = {
   executive: '3rem',
   creative: '3.5rem',
   sidebar: '0px', // the navigation is a side rail, or a bar that scrolls away on a phone
+  aurora: '4rem', // the slim bar stays pinned
 };

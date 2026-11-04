@@ -32,7 +32,7 @@ export function Rail({
   const ui = uiFor(profile.locale);
   // Email and phone are set big in the page; the rail holds the profiles elsewhere.
   const socials = header.links.filter((link) => link.type !== 'email' && link.type !== 'phone');
-  const button = `inline-flex min-h-8 items-center gap-1.5 border border-line px-3 text-sm font-semibold hover:bg-surface ${focusRing}`;
+  const button = `inline-flex min-h-8 items-center gap-1.5 border border-line px-3 pt-small font-bold hover:bg-surface ${focusRing}`;
   const iconClass = `inline-flex size-10 items-center justify-center border border-line hover:bg-surface ${focusRing}`;
   return (
     <SidebarRail
@@ -49,7 +49,7 @@ export function Rail({
         skip: ui.sidebar.skip,
       }}
       footer={
-        <p className="text-xs leading-relaxed text-muted [overflow-wrap:anywhere]">
+        <p className="pt-fine text-muted [overflow-wrap:anywhere]">
           © {footer.year} {footer.name}
         </p>
       }
@@ -83,7 +83,7 @@ export function Rail({
         </ul>
       )}
       {mode === 'pages' && (
-        <div className="flex flex-col items-start gap-3 text-sm">
+        <div className="flex flex-col items-start gap-3 pt-small">
           {languages.length > 1 && (
             <LanguageSwitcher
               links={languages}

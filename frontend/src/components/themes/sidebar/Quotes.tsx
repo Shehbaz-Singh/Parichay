@@ -18,9 +18,11 @@ export interface Quote {
 export function Quotes({
   quotes,
   labels,
+  quoteClassName = 'pt-h3 font-normal',
 }: {
   quotes: Quote[];
   labels: { prev: string; next: string; position: string };
+  quoteClassName?: string; // the size of the quote text
 }) {
   const id = useId();
   const [enhanced, setEnhanced] = useState(false);
@@ -29,7 +31,7 @@ export function Quotes({
   const total = quotes.length;
   const step = (by: number) => setIndex((index + by + total) % total);
   const button =
-    'inline-flex size-12 items-center justify-center border-2 border-current hover:bg-white/15 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-current print:hidden';
+    'inline-flex size-12 items-center justify-center border-2 border-current hover:bg-black/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-current print:hidden';
 
   return (
     <div>
@@ -42,10 +44,12 @@ export function Quotes({
         {quotes.map((quote, i) => (
           <li key={quote.id} hidden={enhanced && i !== index} className="min-w-0">
             <figure>
-              <blockquote className="sb-tight text-[clamp(1.15rem,2vw,1.6rem)] leading-relaxed font-medium text-pretty whitespace-pre-line [overflow-wrap:anywhere]">
+              <blockquote
+                className={`sb-tight ${quoteClassName} text-pretty whitespace-pre-line [overflow-wrap:anywhere]`}
+              >
                 {quote.message}
               </blockquote>
-              <figcaption className="mt-6 text-base">
+              <figcaption className="mt-6 pt-body">
                 <span className="font-bold">{quote.name}</span>
                 {quote.detail && <span className="block opacity-90">{quote.detail}</span>}
               </figcaption>
@@ -63,7 +67,7 @@ export function Quotes({
             <ArrowRight aria-hidden="true" className="size-5 rtl:-scale-x-100" />
             <span className="sr-only">{labels.next}</span>
           </button>
-          <span className="ms-2 text-sm tabular-nums">
+          <span className="ms-2 pt-small tabular-nums">
             {fill(labels.position, { n: index + 1, total })}
           </span>
         </div>

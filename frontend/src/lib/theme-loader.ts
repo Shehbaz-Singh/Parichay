@@ -14,6 +14,7 @@ const loaders: Record<ThemeKey, () => Promise<ThemeModule>> = {
   soft: () => import('@/components/themes/SoftTheme'),
   executive: () => import('@/components/themes/ExecutiveTheme'),
   sidebar: () => import('@/components/themes/SidebarTheme'),
+  aurora: () => import('@/components/themes/AuroraTheme'),
 };
 
 export async function loadTheme(key: ThemeKey): Promise<ThemeComponent> {

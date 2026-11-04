@@ -9,7 +9,8 @@ import {
   type FooterModel,
   type HeaderModel,
 } from './blocks';
-import { Collapse } from './Collapse';
+import { Expander } from './kit';
+import { Quotes } from './sidebar/Quotes';
 import { LeaveTestimonial } from './LeaveTestimonial';
 import { ReadMore } from './ReadMore';
 import { EmptyPage, MoreLinkView } from './parts';
@@ -17,7 +18,6 @@ import { ThemeWrapper } from './ThemeWrapper';
 import { Rail } from './sidebar/Rail';
 import { SidebarPages } from './templates/SidebarPages';
 import { pageView } from './templates/model';
-import { Quotes } from './sidebar/Quotes';
 import { aboutExtras } from './sidebar/model';
 import {
   Accordion,
@@ -30,6 +30,7 @@ import {
   Projects,
   Roles,
   Stats,
+  outlineButton,
   Studies,
   Writing,
   WorkingTogether,
@@ -43,13 +44,13 @@ import type { ThemeProps } from './types';
 // A dark rail beside a wide, airy page. The rail holds the name (a serif logotype), the navigation, the
 // social icons and a quiet last line; the page beside it is near-white with the accent used for shapes,
 // two gradient bands (experience and contact) and links. The signature is the rail with the oversized
-// mixed-weight introduction. Everything the accent decides is checked in lib/sidebar-colors.ts, so white
+// mixed-weight introduction. Everything the accent decides is checked in lib/palette/recipes.ts, so white
 // text on the rail and on the bands reads in any color. IBM Plex Sans for text, Source Serif 4 for the
 // logotype only; the script of a language that is not Latin brings its own font (lib/locale-fonts).
 
 const sans = IBM_Plex_Sans({
   subsets: ['latin'],
-  weight: ['300', '400', '500', '600', '700'],
+  weight: ['300', '400', '700'],
   style: ['normal', 'italic'],
   display: 'swap',
   fallback: ['var(--font-script, sans-serif)'],
@@ -68,13 +69,13 @@ export const fontClass = `${sans.className} ${serif.variable}`;
 
 function Footer({ footer }: { footer: FooterModel }) {
   return (
-    <footer className={`${gutter} pt-8 pb-12 text-sm text-muted`}>
+    <footer className={`${gutter} pt-8 pb-12 pt-small text-muted`}>
       <div className="mx-auto max-w-5xl border-t border-line pt-6">
         <p>
           Made {footer.message}{' '}
           <a
             href={footer.cta.href}
-            className={`font-semibold text-ink underline underline-offset-4 hover:no-underline ${focusRing}`}
+            className={`font-bold text-ink underline underline-offset-4 hover:no-underline ${focusRing}`}
           >
             {footer.cta.label}
           </a>
@@ -108,7 +109,7 @@ function BlockView({
                 locale={block.locale}
                 from={900}
                 lines={9}
-                className="text-lg leading-8 sm:text-xl sm:leading-9"
+                className="pt-body "
               />
               <Stats stats={extras.stats} />
             </div>
@@ -132,7 +133,7 @@ function BlockView({
           {items.map((skill) => (
             <li
               key={skill.id}
-              className={`border border-line px-4 py-2 text-sm font-medium ${wrap}`}
+              className={`border border-line px-4 py-2 pt-small font-bold ${wrap}`}
             >
               {skill.name}
             </li>
@@ -143,14 +144,13 @@ function BlockView({
         <Frame block={block}>
           {list(block.skills)}
           {block.rest.length > 0 && (
-            <Collapse
+            <Expander
               className="mt-8"
               label={fill(ui.density.moreSkills, { count: block.rest.length })}
               closeLabel={ui.density.showLess}
-              buttonClassName={`inline-flex min-h-11 items-center border border-ink px-5 text-sm font-semibold hover:bg-ink hover:text-page ${focusRing}`}
             >
               <div className="mt-6">{list(block.rest)}</div>
-            </Collapse>
+            </Expander>
           )}
           {more}
         </Frame>
@@ -170,35 +170,58 @@ function BlockView({
         </Frame>
       );
     case 'testimonials': {
-      const quotes = [...block.testimonials, ...block.rest];
+      const list = (items: typeof block.testimonials) => (
+        <ul className="space-y-10">
+          {items.map((quote) => (
+            <li key={quote.id} className="min-w-0">
+              <figure className="border-s-4 border-accent ps-6">
+                <blockquote className={`pt-h3 pt-measure font-normal whitespace-pre-line ${wrap}`}>
+                  {quote.message}
+                </blockquote>
+                <figcaption className="pt-small mt-4">
+                  <span className="font-bold">{quote.name}</span>
+                  {quote.detail && <span className="block text-muted">{quote.detail}</span>}
+                </figcaption>
+              </figure>
+            </li>
+          ))}
+        </ul>
+      );
+      const all = [...block.testimonials, ...block.rest];
+      // The owner may choose a carousel (two labeled buttons, nothing advances by itself).
+      const carousel = profile.testimonialStyle === 'carousel' && all.length > 1;
       return (
-        <section
-          aria-labelledby={block.id}
-          className={`sb-accent ${gutter} bg-accent py-16 text-on-accent [--accent-fg:var(--on-accent)] [--border:var(--on-accent)] [--text:var(--on-accent)] sm:py-24`}
-        >
-          <div className="mx-auto max-w-4xl">
-            <h2 id={block.id} tabIndex={-1} className={h2Class}>
-              {block.title}
-            </h2>
-            {quotes.length > 0 && (
-              <Quotes
-                quotes={quotes}
-                labels={{
-                  prev: ui.sidebar.prev,
-                  next: ui.sidebar.next,
-                  position: ui.sidebar.position,
-                }}
-              />
-            )}
-            {block.submitTo && (
+        <Frame block={block}>
+          {carousel && (
+            <Quotes
+              quotes={all}
+              labels={{
+                prev: ui.sidebar.prev,
+                next: ui.sidebar.next,
+                position: ui.sidebar.position,
+              }}
+            />
+          )}
+          {!carousel && all.length > 0 && list(all.slice(0, 3))}
+          {!carousel && all.length > 3 && (
+            <Expander
+              className="mt-10"
+              label={fill(ui.density.moreTestimonials, { count: all.length - 3 })}
+              closeLabel={ui.density.showLess}
+            >
+              <div className="mt-10">{list(all.slice(3))}</div>
+            </Expander>
+          )}
+          {block.submitTo && (
+            <div className="mt-10 print:hidden">
               <LeaveTestimonial
                 slug={block.submitTo}
                 ui={ui.leave}
-                buttonClassName={`mt-10 inline-flex min-h-12 items-center border border-white/50 bg-[#111] px-7 py-3 text-sm font-semibold text-white hover:bg-black ${focusRing}`}
+                buttonClassName={outlineButton}
               />
-            )}
-          </div>
-        </section>
+            </div>
+          )}
+        </Frame>
       );
     }
     case 'cta':
@@ -208,11 +231,11 @@ function BlockView({
             <h2 id={block.id} tabIndex={-1} className={`${h2Class} !mb-4`}>
               {block.title}
             </h2>
-            <p className="max-w-xl text-lg text-pretty">{block.text}</p>
+            <p className="max-w-xl pt-body text-pretty">{block.text}</p>
             <p className="mt-8">
               <a
                 href={block.href}
-                className={`inline-flex min-h-12 items-center bg-[#111] px-7 py-3 text-sm font-semibold text-white hover:bg-black ${focusRing}`}
+                className={`inline-flex min-h-12 items-center bg-[#111] px-7 py-3 pt-small font-bold text-white hover:bg-black ${focusRing}`}
               >
                 {block.label}
               </a>
@@ -337,8 +360,8 @@ export default function SidebarTheme({
         (heading ? (
           <div className={`${gutter} pt-12 sm:pt-20`}>
             <div className="mx-auto max-w-5xl">
-              <p className="mb-3 text-base text-muted">{profile.fullName}</p>
-              <h1 className={`${h2Class} !text-[clamp(2.4rem,7vw,5rem)]`}>{heading}</h1>
+              <p className="pt-body mb-3 text-muted">{profile.fullName}</p>
+              <h1 className={`${h2Class} pt-title pt-name`}>{heading}</h1>
             </div>
           </div>
         ) : (
