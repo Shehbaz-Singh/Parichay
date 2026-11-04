@@ -15,6 +15,7 @@ import {
   HeaderLink,
   NewTabLink,
   ResumeLink,
+  MoreLinkView,
 } from '../parts';
 import { ThemeWrapper } from '../ThemeWrapper';
 import { WorkCard } from '../WorkCard';
@@ -86,14 +87,11 @@ function Heading({ id, number, children }: { id: string; number?: number; childr
   return (
     <div className="min-w-0">
       {number !== undefined && (
-        <span aria-hidden="true" className={`block text-7xl sm:text-8xl ${outline}`}>
+        <span aria-hidden="true" className={`pt-display block leading-none opacity-40 ${outline}`}>
           {pad(number)}
         </span>
       )}
-      <h2
-        id={id}
-        className={`mt-2 text-3xl leading-tight font-black tracking-tight text-balance ${wrapText} sm:text-4xl`}
-      >
+      <h2 id={id} className="pt-h2 mt-2 font-extrabold [overflow-wrap:break-word]">
         {children}
       </h2>
     </div>
@@ -115,7 +113,7 @@ function Band({
   return (
     <section
       aria-labelledby={id}
-      className="grid gap-6 border-t-4 border-ink py-12 first:border-t-0 md:grid-cols-[14rem_minmax(0,1fr)] md:gap-10"
+      className="grid gap-6 border-t-4 border-ink py-12 first:border-t-0 md:grid-cols-[16rem_minmax(0,1fr)] md:gap-10"
     >
       <div className="min-w-0 md:sticky md:top-[calc(2rem+var(--nav-h,0px))] md:self-start">
         <Heading id={id} number={number}>
@@ -370,6 +368,7 @@ function Home({ model, render }: { model: HomeModel; render: CreativePagesProps[
           </Band>
         )}
 
+        {model.more && <MoreLinkView more={model.more} className="mt-8" />}
         {model.testimonial && (
           <Band id="home-kind" title={t.kindWords}>
             <figure className={`rounded-2xl p-6 sm:p-8 ${shadow}`}>

@@ -10,19 +10,17 @@ import {
   buildFooter,
   buildHeader,
   type Block,
-  type Entry,
   type FooterModel,
   type HeaderModel,
 } from './blocks';
 import { fill, uiFor } from '@/lib/i18n';
-import { Collapse } from './Collapse';
+import { EntryList, Expander, SkillList } from './kit';
 import { ReadMore } from './ReadMore';
 import { ContactForm } from './ContactForm';
 import { LeaveTestimonial } from './LeaveTestimonial';
 import { WorkCard } from './WorkCard';
 import {
   Avatar,
-  DateRange,
   EmptyPage,
   AvailabilityBadge,
   HeaderLink,
@@ -30,9 +28,6 @@ import {
   ResumeLink,
   WritingList,
   InitialsBadge,
-  NewTabLink,
-  RoleList,
-  TotalExperience,
   FooterLines,
   MoreLinkView,
   PageHeading,
@@ -81,7 +76,7 @@ const focusRing =
 // What the accent looks like as text on a dark tile, for `tiles="dark"`.
 const DARK_TILE = { scheme: 'dark', background: '#12141c', text: '#eef0f6' } as const;
 
-type Tone = 'plain' | 'strong' | 'solid';
+type Tone = 'plain' | 'strong' | 'solid' | 'mesh';
 interface Tile {
   key: string;
   span: number; // out of 6 columns, from the amount of content
@@ -91,7 +86,7 @@ interface Tile {
 
 // ---- sizes. A tile is as wide as its text needs; the packing below fixes the rows.
 function spanFor(weight: number, min: number, max: number): number {
-  const span = weight < 200 ? 2 : weight < 450 ? 3 : weight < 900 ? 4 : 6;
+  const span = weight < 450 ? 3 : 6;
   return Math.min(max, Math.max(min, span));
 }
 
@@ -127,7 +122,7 @@ const SM = ['', 'sm:col-span-1', 'sm:col-span-2'];
 
 function Heading({ id, children }: { id: string; children: ReactNode }) {
   return (
-    <h2 id={id} className="mb-4 text-sm font-semibold text-muted">
+    <h2 id={id} className="pt-small mb-4 font-semibold text-muted">
       {children}
     </h2>
   );
@@ -142,104 +137,29 @@ function TileBody({ id, title, children }: { id: string; title: string; children
   );
 }
 
-const chip = 'rounded-full border border-line bg-page/70 px-3 py-1 text-sm font-medium';
+const chip = 'rounded-full border border-line bg-page/70 px-3 py-1 font-medium';
 
+// Experience is the largest group: one full-width list tile, the latest roles in full and the rest behind
+// "Earlier experience". Education and custom lists use the same list at the width their text needs.
 function EntriesTile({ block }: { block: Extract<Block, { kind: 'entries' }> }) {
-  const [latest, ...earlier] = block.entries;
-  const open = block.variant !== 'custom';
-  const dates = (entry: Entry) =>
-    entry.start && (
-      <DateRange
-        start={entry.start}
-        end={entry.end}
-        openEnded={open}
-        duration={entry.duration}
-        fmt={entry.fmt}
-      />
-    );
-  const earlierList = (list: typeof block.entries, spacing: string) => (
-    <ol className={`${spacing} divide-y divide-line border-line`}>
-      {list.map((entry) => (
-        <li key={entry.id} className="min-w-0 py-3 text-sm">
-          <p className="font-semibold">
-            {entry.title}
-            {entry.subtitle && <span className="font-normal text-muted"> · {entry.subtitle}</span>}
-          </p>
-          {entry.start && <p className="text-muted tabular-nums">{dates(entry)}</p>}
-          {entry.roles && (
-            <RoleList
-              roles={entry.roles}
-              className="mt-2 space-y-2 border-s border-line ps-3"
-              titleClassName="font-medium"
-              datesClassName="text-muted tabular-nums"
-            />
-          )}
-          {entry.description && (
-            <ReadMore
-              text={entry.description}
-              locale={entry.fmt.locale}
-              className="mt-1 text-muted"
-            />
-          )}
-        </li>
-      ))}
-    </ol>
-  );
+  const lead = block.variant === 'experience';
   return (
-    <TileBody id={block.id} title={block.title}>
-      <TotalExperience
-        total={block.total}
-        label={block.ui.totalExperience}
-        className="mb-3 text-sm text-muted"
+    <section aria-labelledby={block.id} className="min-w-0">
+      <h2 id={block.id} className={`${display} mb-5 font-bold ${lead ? 'pt-h1' : 'pt-h2'}`}>
+        {block.title}
+      </h2>
+      <EntryList
+        block={block}
+        totalClassName="text-muted"
+        classes={{
+          list: 'divide-y divide-line',
+          item: 'py-6 first:pt-0',
+          title: `${display} font-bold ${lead ? 'pt-h2' : 'pt-h3'}`,
+          org: 'text-muted',
+          dates: 'text-muted',
+        }}
       />
-      <div className="min-w-0">
-        {latest.start && (
-          <p className="mb-2 inline-block rounded-full bg-accent-soft px-3 py-0.5 text-xs font-semibold text-ink tabular-nums">
-            {dates(latest)}
-          </p>
-        )}
-        <h3 className={`${display} text-xl leading-snug font-bold`}>{latest.title}</h3>
-        {latest.subtitle && <p className="text-muted">{latest.subtitle}</p>}
-        {latest.roles && (
-          <RoleList
-            roles={latest.roles}
-            className="mt-3 space-y-3 border-s border-line ps-4"
-            titleClassName="font-semibold"
-            datesClassName="text-sm text-muted tabular-nums"
-            descriptionClassName="mt-1 text-sm leading-relaxed"
-          />
-        )}
-        {latest.description && (
-          <ReadMore
-            text={latest.description}
-            locale={latest.fmt.locale}
-            className="mt-3 leading-relaxed"
-          />
-        )}
-        {latest.href && (
-          <p className="mt-3 text-sm">
-            <NewTabLink
-              href={latest.href}
-              context={latest.title}
-              className={`inline-flex items-center gap-1 font-semibold underline underline-offset-4 hover:no-underline ${focusRing}`}
-            >
-              View
-              <ArrowUpRight aria-hidden="true" className="rtl:-scale-x-100 size-4" />
-            </NewTabLink>
-          </p>
-        )}
-      </div>
-      {earlier.length > 0 && earlierList(earlier, 'mt-5 border-t')}
-      {block.variant === 'experience' && block.rest.length > 0 && (
-        <Collapse
-          className="mt-4"
-          label={fill(block.ui.density.earlierRoles, { count: block.rest.length })}
-          closeLabel={block.ui.density.showLess}
-        >
-          {earlierList(block.rest, 'mt-3 border-t')}
-        </Collapse>
-      )}
-    </TileBody>
+    </section>
   );
 }
 
@@ -248,44 +168,38 @@ function identityTile(header: HeaderModel): Tile {
   return {
     key: 'identity',
     span: 4,
-    tone: 'strong',
+    tone: 'mesh', // the one tile with a mesh of the accent and its neighbors
     node: (
       <div className="flex h-full min-w-0 flex-col justify-between gap-8">
         <Avatar
           avatar={header.avatar}
           className="size-24 rounded-[1.75rem] sm:size-28"
-          placeholderClassName={`${display} bg-accent text-4xl font-bold text-on-accent`}
+          placeholderClassName={`${display} bg-accent pt-title font-bold text-on-accent`}
         />
         <div className="min-w-0">
           {header.location && (
-            <p className="mb-3 flex items-center gap-1.5 text-sm font-medium text-muted">
+            <p className="pt-small mb-3 flex items-center gap-1.5 font-medium text-muted">
               <MapPin aria-hidden="true" className="size-4 shrink-0" />
               <span>{header.location}</span>
             </p>
           )}
-          <h1
-            className={`${display} text-[clamp(2rem,6vw,3.5rem)] leading-[1.05] font-bold tracking-tight text-balance`}
-          >
-            {header.name}
-          </h1>
+          <h1 className={`${display} pt-title pt-name font-bold`}>{header.name}</h1>
           {header.tagline && (
-            <p className="mt-3 max-w-xl text-lg leading-snug text-pretty text-muted">
-              {header.tagline}
-            </p>
+            <p className="pt-h3 pt-measure mt-3 font-normal text-muted">{header.tagline}</p>
           )}
           <AvailabilityBadge
             availability={header.availability}
             ui={header.ui}
-            className="mt-5 w-fit rounded-2xl bg-surface px-3.5 py-2.5 text-sm text-ink"
+            className="pt-small mt-5 w-fit rounded-2xl bg-surface px-3.5 py-2.5 text-ink"
             dotClassName="bg-accent-fg"
             linkClassName={`font-semibold text-accent-fg underline underline-offset-2 hover:no-underline ${focusRing}`}
           />
           {header.work && (
             <WorkCard
               work={header.work}
-              className="mt-4 w-full max-w-sm rounded-2xl bg-surface px-4 py-3.5 text-ink"
+              className="pt-small mt-4 w-full max-w-sm rounded-2xl bg-surface px-4 py-3.5 text-ink"
               linkClassName={`font-semibold text-accent-fg underline underline-offset-2 hover:no-underline ${focusRing}`}
-              buttonClassName={`rounded-full border border-line px-3 py-1 text-xs font-semibold hover:bg-page ${focusRing}`}
+              buttonClassName={`pt-fine rounded-full border border-line px-3 py-1 font-semibold hover:bg-page ${focusRing}`}
             />
           )}
         </div>
@@ -295,7 +209,7 @@ function identityTile(header: HeaderModel): Tile {
 }
 
 function linksTile(header: HeaderModel, idPrefix: string): Tile {
-  const link = `flex max-w-full items-center gap-3 rounded-xl px-3 py-2 text-sm font-semibold transition-colors hover:bg-surface ${focusRing}`;
+  const link = `pt-small flex max-w-full items-center gap-3 rounded-xl px-3 py-2 font-semibold transition-colors hover:bg-surface ${focusRing}`;
   return {
     key: 'links',
     span: 2,
@@ -345,7 +259,7 @@ function blockTiles(block: Block): Tile[] {
                 locale={block.locale}
                 from={900}
                 lines={9}
-                className="text-lg leading-relaxed"
+                className="pt-body"
               />
               {block.moreLink && <MoreLinkView more={block.moreLink} />}
             </TileBody>
@@ -358,34 +272,13 @@ function blockTiles(block: Block): Tile[] {
           key: block.id,
           span: spanFor(
             block.skills.reduce((sum, skill) => sum + skill.name.length + 6, 0),
-            2,
-            4,
+            3,
+            3,
           ),
           tone: 'plain',
           node: (
             <TileBody id={block.id} title={block.title}>
-              <ul className="flex flex-wrap gap-2">
-                {block.skills.map((skill) => (
-                  <li key={skill.id} className={chip}>
-                    {skill.name}
-                  </li>
-                ))}
-              </ul>
-              {block.rest.length > 0 && (
-                <Collapse
-                  className="mt-3"
-                  label={fill(block.ui.density.moreSkills, { count: block.rest.length })}
-                  closeLabel={block.ui.density.showLess}
-                >
-                  <ul className="mt-3 flex flex-wrap gap-2">
-                    {block.rest.map((skill) => (
-                      <li key={skill.id} className={chip}>
-                        {skill.name}
-                      </li>
-                    ))}
-                  </ul>
-                </Collapse>
-              )}
+              <SkillList block={block} className="flex flex-wrap gap-2" itemClassName={chip} />
             </TileBody>
           ),
         },
@@ -396,7 +289,7 @@ function blockTiles(block: Block): Tile[] {
       return [
         {
           key: block.id,
-          span: spanFor(weight, 3, 6),
+          span: block.variant === 'experience' ? 6 : spanFor(weight, 3, 6),
           tone: 'plain',
           node: <EntriesTile block={block} />,
         },
@@ -405,9 +298,7 @@ function blockTiles(block: Block): Tile[] {
     case 'projects': {
       const tiles: Tile[] = block.projects.map((project, position) => ({
         key: `${block.id}-${project.id}`,
-        span: isHeroProject(block, project)
-          ? 6
-          : spanFor(len(project.name, project.description) + project.tags.length * 8, 2, 3),
+        span: isHeroProject(block, project) ? 6 : 3,
         tone: 'plain',
         node: (
           <section
@@ -420,12 +311,12 @@ function blockTiles(block: Block): Tile[] {
             />
             {/* The section's heading is said once, on the first tile; the others carry it for screen
                 readers only, so every tile does not repeat a label. */}
-            <p className={position === 0 ? 'mb-4 text-sm font-semibold text-muted' : 'sr-only'}>
+            <p className={position === 0 ? 'pt-small mb-4 font-semibold text-muted' : 'sr-only'}>
               {block.title}
             </p>
             <h2
               id={`${block.id}-${project.id}`}
-              className={`${display} flex items-start justify-between gap-3 text-xl leading-snug font-bold`}
+              className={`${display} pt-h3 flex items-start justify-between gap-3 font-bold`}
             >
               <Link
                 href={project.detailHref}
@@ -442,13 +333,13 @@ function blockTiles(block: Block): Tile[] {
               <ReadMore
                 text={project.description}
                 locale={block.locale}
-                className="mt-3 flex-1 leading-relaxed text-muted"
+                className="pt-body mt-3 flex-1 text-muted"
               />
             )}
             {project.tags.length > 0 && (
               <ul className="mt-5 flex flex-wrap gap-1.5">
                 {project.tags.map((tag) => (
-                  <li key={tag} className={`${chip} px-2.5 py-0.5 text-xs`}>
+                  <li key={tag} className={`${chip} pt-fine px-2.5 py-0.5`}>
                     {tag}
                   </li>
                 ))}
@@ -457,7 +348,7 @@ function blockTiles(block: Block): Tile[] {
             <ProjectVisit
               project={project}
               label={block.ui.viewProject}
-              className={`text-sm font-semibold underline underline-offset-4 hover:no-underline ${focusRing}`}
+              className={`pt-small font-semibold underline underline-offset-4 hover:no-underline ${focusRing}`}
             />
           </section>
         ),
@@ -476,14 +367,14 @@ function blockTiles(block: Block): Tile[] {
           span: 6,
           tone: 'plain',
           node: (
-            <Collapse
+            <Expander
               label={fill(block.ui.density.moreProjects, { count: block.rest.length })}
               closeLabel={block.ui.density.showLess}
             >
               <ul className="mt-5 grid gap-x-8 gap-y-6 md:grid-cols-2">
                 {block.rest.map((project) => (
                   <li key={project.id} className="min-w-0">
-                    <h3 className={`${display} text-lg leading-snug font-bold`}>
+                    <h3 className={`${display} pt-h3 font-bold`}>
                       <Link href={project.detailHref} className={`underline ${focusRing}`}>
                         {project.name}
                       </Link>
@@ -496,12 +387,12 @@ function blockTiles(block: Block): Tile[] {
                       />
                     )}
                     {project.tags.length > 0 && (
-                      <p className="mt-2 text-sm text-muted">{project.tags.join(' · ')}</p>
+                      <p className="pt-small mt-2 text-muted">{project.tags.join(' · ')}</p>
                     )}
                   </li>
                 ))}
               </ul>
-            </Collapse>
+            </Expander>
           ),
         });
       }
@@ -520,11 +411,11 @@ function blockTiles(block: Block): Tile[] {
                 className="grid gap-x-8 gap-y-6 md:grid-cols-3"
                 itemClassName="group relative min-w-0"
                 coverClassName="mb-3 aspect-[40/21] w-full rounded-2xl object-cover"
-                titleClassName={`${display} text-lg leading-snug font-bold`}
+                titleClassName={`${display} pt-h3 font-bold`}
                 linkClassName={`after:absolute after:inset-0 after:rounded-2xl ${focusRing}`}
-                metaClassName="mt-1 text-sm font-medium text-muted"
-                excerptClassName="mt-2 leading-relaxed text-muted"
-                moreClassName={`mt-6 inline-block text-sm font-semibold text-accent-fg underline underline-offset-2 hover:no-underline ${focusRing}`}
+                metaClassName="pt-small mt-1 font-medium text-muted"
+                excerptClassName="pt-body mt-2 text-muted"
+                moreClassName={`pt-small mt-6 inline-block font-semibold text-accent-fg underline underline-offset-2 hover:no-underline ${focusRing}`}
               />
             </TileBody>
           ),
@@ -541,7 +432,7 @@ function blockTiles(block: Block): Tile[] {
               <CtaView
                 block={block}
                 className="print:hidden"
-                linkClassName={`inline-flex items-center gap-2 rounded-full bg-ink px-5 py-2 text-sm font-semibold text-page transition-opacity hover:opacity-90 ${focusRing}`}
+                linkClassName={`pt-small inline-flex items-center gap-2 rounded-full bg-ink px-5 py-2 font-semibold text-page transition-opacity hover:opacity-90 ${focusRing}`}
               />
             </TileBody>
           ),
@@ -558,7 +449,7 @@ function blockTiles(block: Block): Tile[] {
               <div className="max-w-xl print:hidden">
                 <ContactForm
                   form={block.form}
-                  buttonClassName={`inline-flex items-center rounded-full border border-line bg-page/70 px-5 py-2 text-sm font-semibold transition-colors hover:bg-page ${focusRing}`}
+                  buttonClassName={`pt-small inline-flex items-center rounded-full border border-line bg-page/70 px-5 py-2 font-semibold transition-colors hover:bg-page ${focusRing}`}
                 />
               </div>
             </TileBody>
@@ -574,15 +465,15 @@ function blockTiles(block: Block): Tile[] {
           <figure className="flex h-full min-w-0 flex-col">
             <span
               aria-hidden="true"
-              className={`${display} block h-9 text-6xl leading-[0.9] font-bold text-accent-fg`}
+              className={`${display} block h-9 pt-display leading-[0.9] font-bold text-accent-fg`}
             >
               “
             </span>
-            <blockquote className="mt-2 flex-1 text-lg leading-snug whitespace-pre-line">
+            <blockquote className="pt-body mt-2 flex-1 whitespace-pre-line">
               {item.message}
             </blockquote>
-            <figcaption className="mt-5 flex items-center gap-3 text-sm">
-              <InitialsBadge name={item.name} className="size-9 bg-accent-soft text-xs text-ink" />
+            <figcaption className="pt-small mt-5 flex items-center gap-3">
+              <InitialsBadge name={item.name} className="pt-fine size-9 bg-accent-soft text-ink" />
               <span className="min-w-0">
                 <span className="block font-semibold">{item.name}</span>
                 {item.detail && <span className="block text-muted">{item.detail}</span>}
@@ -597,24 +488,22 @@ function blockTiles(block: Block): Tile[] {
           span: 6,
           tone: 'plain',
           node: (
-            <Collapse
+            <Expander
               label={fill(block.ui.density.moreTestimonials, { count: block.rest.length })}
               closeLabel={block.ui.density.showLess}
             >
               <ul className="mt-5 grid gap-6 md:grid-cols-2">
                 {block.rest.map((item) => (
                   <li key={item.id} className="min-w-0">
-                    <blockquote className="leading-snug whitespace-pre-line">
-                      {item.message}
-                    </blockquote>
-                    <p className="mt-2 text-sm">
+                    <blockquote className="pt-body whitespace-pre-line">{item.message}</blockquote>
+                    <p className="pt-small mt-2">
                       <span className="font-semibold">{item.name}</span>
                       {item.detail && <span className="text-muted">, {item.detail}</span>}
                     </p>
                   </li>
                 ))}
               </ul>
-            </Collapse>
+            </Expander>
           ),
         });
       }
@@ -629,7 +518,7 @@ function blockTiles(block: Block): Tile[] {
                 <LeaveTestimonial
                   slug={block.submitTo}
                   ui={block.ui.leave}
-                  buttonClassName={`inline-flex items-center rounded-full border border-line bg-page/70 px-5 py-2 text-sm font-semibold transition-colors hover:bg-page ${focusRing}`}
+                  buttonClassName={`pt-small inline-flex items-center rounded-full border border-line bg-page/70 px-5 py-2 font-semibold transition-colors hover:bg-page ${focusRing}`}
                 />
               )}
             </TileBody>
@@ -643,7 +532,7 @@ function blockTiles(block: Block): Tile[] {
 
 function Footer({ footer }: { footer: FooterModel }) {
   return (
-    <footer className="mx-auto max-w-6xl px-4 pb-10 text-center text-sm text-muted sm:px-6">
+    <footer className="pt-small mx-auto max-w-6xl px-4 pb-10 text-center text-muted sm:px-6">
       <FooterLines
         footer={footer}
         linkClassName={`font-semibold text-ink underline underline-offset-4 hover:no-underline ${focusRing}`}
@@ -693,12 +582,12 @@ export default function BentoTheme({
         full={page.key === 'about'}
         wrapClassName="mb-5 flex items-center gap-4 rounded-3xl border border-line bg-surface p-5 sm:gap-6 sm:p-6"
         avatarClassName="size-20 shrink-0 rounded-2xl sm:size-28"
-        placeholderClassName={`${display} bg-page text-3xl font-bold text-ink`}
-        nameClassName={`${display} text-xl font-bold`}
+        placeholderClassName={`${display} bg-page pt-title font-bold text-ink`}
+        nameClassName={`${display} pt-h2 font-bold`}
         taglineClassName="mt-1 text-muted"
-        metaClassName="mt-1 text-sm text-muted"
-        pillClassName={`inline-flex items-center gap-2 rounded-full border border-line bg-page px-4 py-2 text-sm font-semibold hover:bg-surface ${focusRing}`}
-        badgeClassName="mt-3 text-sm text-ink"
+        metaClassName="pt-small mt-1 text-muted"
+        pillClassName={`pt-small inline-flex items-center gap-2 rounded-full border border-line bg-page px-4 py-2 font-semibold hover:bg-surface ${focusRing}`}
+        badgeClassName="pt-small mt-3 text-ink"
         badgeDotClassName="bg-accent-fg"
         badgeLinkClassName={`font-semibold text-accent-fg underline underline-offset-2 hover:no-underline ${focusRing}`}
       />
@@ -732,8 +621,8 @@ export default function BentoTheme({
                 title={page ? pageLabel(profile, page) : undefined}
                 kicker={profile.fullName}
                 wrapClassName="mb-5 px-1 sm:mb-7"
-                kickerClassName={`mb-1 text-sm font-semibold text-muted`}
-                className={`${display} text-4xl leading-tight font-bold tracking-tight text-balance sm:text-6xl`}
+                kickerClassName={`pt-small mb-1 font-semibold text-muted`}
+                className={`${display} pt-display pt-name font-bold`}
               />
             ))}
           {identity}
@@ -743,7 +632,7 @@ export default function BentoTheme({
                 key={tile.key}
                 data-tone={tile.tone}
                 style={{ '--i': i } as CSSProperties}
-                className={`bento-tile relative min-w-0 rounded-3xl border p-6 transition duration-300 hover:shadow-raised sm:p-7 ${SM[sm[i]]} ${LG[lg[i]]}`}
+                className={`bento-tile fx-item relative min-w-0 rounded-3xl border p-6 transition duration-200 hover:shadow-raised sm:p-7 ${SM[sm[i]]} ${LG[lg[i]]}`}
               >
                 {tile.node}
               </li>

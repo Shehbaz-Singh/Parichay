@@ -39,9 +39,11 @@ export function parsePrefs(raw: string | null): Prefs {
   }
 }
 
+// Also marks a device that should get the plain variant of the visual effects (data-fx="low": no ambient
+// animation, no blur, solid fills): Save-Data, little memory, few cores or a request for less data.
 // Runs in the head of the page's body before anything after it is painted. Built from CHOICES so it
 // cannot drift from the code above. Everything is in a try: storage may be blocked.
-export const PRE_PAINT_SCRIPT = `(function(){try{var c=${JSON.stringify(CHOICES)},p=JSON.parse(localStorage.getItem(${JSON.stringify(STORAGE_KEY)})||'{}'),h=document.documentElement;for(var k in c)if(c[k].indexOf(p[k])>-1)h.setAttribute('data-read-'+k,p[k])}catch(e){}})()`;
+export const PRE_PAINT_SCRIPT = `(function(){try{var c=${JSON.stringify(CHOICES)},p=JSON.parse(localStorage.getItem(${JSON.stringify(STORAGE_KEY)})||'{}'),h=document.documentElement;for(var k in c)if(c[k].indexOf(p[k])>-1)h.setAttribute('data-read-'+k,p[k])}catch(e){}try{var n=navigator,o=n.connection,l=document.documentElement;if((o&&o.saveData)||(n.deviceMemory&&n.deviceMemory<=2)||(n.hardwareConcurrency&&n.hardwareConcurrency<=2)||matchMedia('(prefers-reduced-data: reduce)').matches)l.setAttribute('data-fx','low')}catch(e){}})()`;
 
 export function applyPrefs(prefs: Prefs) {
   const html = document.documentElement;

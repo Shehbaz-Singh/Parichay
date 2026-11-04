@@ -25,6 +25,8 @@ export interface ThemeProps {
   // Set on pages with something of their own above the sections (a project, a page the owner made, the
   // Contact page): drawn in place of the heading, so it carries the page's one h1.
   lead?: ReactNode;
+  // Aurora only: its dark or light look. Left out, the profile's own setting (profile.appearance) is used.
+  appearance?: 'dark' | 'light';
 }
 
 export type ThemeComponent = (props: ThemeProps) => ReactElement;

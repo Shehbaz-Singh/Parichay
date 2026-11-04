@@ -2,8 +2,8 @@
 
 import { useFormContext, useWatch } from 'react-hook-form';
 import { DEFAULT_ACCENT } from '@parichay/shared';
-import { ACCENT_PRESETS, normalizeHex, readableAccent } from '@/lib/color';
-import { PALETTES } from '@/lib/palettes';
+import { ACCENT_PRESETS, normalizeHex } from '@/lib/color';
+import { HEAVY_SHIFT, themeColors } from '@/lib/palette';
 import { getTheme } from '@/lib/themes';
 import { Card, ErrorText, Input } from '../ui';
 
@@ -16,7 +16,11 @@ export function AccentPicker() {
   const value = useWatch({ control, name: 'accentColor' });
   const theme = getTheme(useWatch({ control, name: 'theme' }));
   const hex = normalizeHex(value);
-  const adjusted = hex !== null && readableAccent(hex, PALETTES[theme.key]) !== hex;
+  // How far the theme had to move this color (in lightness) to read as text and as a button: any move is
+  // told to the owner, a big one more firmly. The check is the one the public page uses (lib/palette).
+  const shift = hex ? themeColors(theme.key, hex).accentShift : 0;
+  const adjusted = shift > 0;
+  const heavy = shift > HEAVY_SHIFT;
   const set = (next: string) =>
     setValue('accentColor', next, { shouldDirty: true, shouldValidate: true });
 
@@ -68,9 +72,20 @@ export function AccentPicker() {
       <ErrorText id="accent-error">{hex ? undefined : 'Use a hex color like #2563eb.'}</ErrorText>
       {adjusted && (
         <Card tone="warning" padding="sm" role="status" className="text-sm">
-          This color is too {theme.scheme === 'dark' ? 'dark' : 'light'} to read as text on the{' '}
-          {theme.name} theme. Buttons and the header use it as it is, and links and tags use a
-          nearby shade that stays readable.
+          {heavy ? (
+            <>
+              This color is too {theme.scheme === 'dark' ? 'dark' : 'light'} to read on the{' '}
+              {theme.name} theme, so the page uses a noticeably{' '}
+              {theme.scheme === 'dark' ? 'lighter' : 'different'} shade for text, links and buttons.
+              Pick a mid-tone for a closer match.
+            </>
+          ) : (
+            <>
+              This color is a little too {theme.scheme === 'dark' ? 'dark' : 'light'} to read as
+              text on the {theme.name} theme, so links, tags and buttons use a nearby shade that
+              stays readable.
+            </>
+          )}
         </Card>
       )}
     </fieldset>

@@ -8,7 +8,7 @@ import { formatMonthYear } from '@/lib/format';
 import { fill, uiFor, type Ui } from '@/lib/i18n';
 import type { Block, ProjectEntry } from '../blocks';
 import { ContactForm } from '../ContactForm';
-import { AvailabilityBadge, HeaderLink, NewTabLink, ResumeLink } from '../parts';
+import { AvailabilityBadge, HeaderLink, NewTabLink, ResumeLink, MoreLinkView } from '../parts';
 import { ThemeWrapper } from '../ThemeWrapper';
 import {
   Breadcrumbs,
@@ -150,6 +150,14 @@ function Home({ model, profile, id, ui, renderBlock, Section }: SubProps<HomeMod
             </span>
           </p>
         )}
+        {model.skills.length > 0 && (
+          <p className={`mt-3 text-sm text-muted ${wrap}`}>
+            {model.skills.join(' · ')}
+            {model.skillsTotal > model.skills.length &&
+              ` · ${fill(ui.pages.skillsMore, { count: model.skillsTotal - model.skills.length })}`}
+          </p>
+        )}
+        {model.more && <MoreLinkView more={model.more} className="mt-3 print:hidden" />}
       </header>
 
       <div className="lg:grid lg:grid-cols-[minmax(0,1fr)_16rem] lg:gap-x-12 print:block">

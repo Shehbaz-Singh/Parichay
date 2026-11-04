@@ -15,6 +15,7 @@ import {
   HeaderLink,
   NewTabLink,
   ResumeLink,
+  MoreLinkView,
 } from '../parts';
 import { ReadMore } from '../ReadMore';
 import { ThemeWrapper } from '../ThemeWrapper';
@@ -384,6 +385,15 @@ function Home({
         </p>
       )}
 
+      {view.skills.length > 0 && (
+        <p className={`${display} mt-6 text-lg text-muted italic ${wrap}`}>
+          {view.skills.join(' · ')}
+          {view.skillsTotal > view.skills.length &&
+            ` · ${fill(ui.pages.skillsMore, { count: view.skillsTotal - view.skills.length })}`}
+        </p>
+      )}
+
+      {view.more && <MoreLinkView more={view.more} className="mt-8" />}
       {view.testimonial && (
         <Rail id="home-kind" title={ui.pages.kindWords}>
           <figure className="max-w-4xl">

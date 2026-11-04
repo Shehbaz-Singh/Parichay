@@ -46,7 +46,7 @@ const chip = 'rounded-full border border-line bg-page/70 px-3 py-1 text-sm font-
 const wrap = '[overflow-wrap:anywhere]';
 const stretched = `after:absolute after:inset-0 after:rounded-3xl ${focusRing}`;
 
-type Tone = 'plain' | 'strong' | 'solid';
+type Tone = 'plain' | 'strong' | 'solid' | 'mesh';
 export interface BentoTile {
   key: string;
   span: number; // out of 6 columns
@@ -114,7 +114,7 @@ function Grid({ tiles }: { tiles: BentoTile[] }) {
           key={tile.key}
           data-tone={tile.tone}
           style={{ '--i': i } as CSSProperties}
-          className={`bento-tile relative min-w-0 overflow-hidden rounded-3xl border transition duration-300 hover:shadow-raised print:break-inside-avoid ${
+          className={`bento-tile fx-item relative min-w-0 overflow-hidden rounded-3xl border transition duration-300 hover:shadow-raised print:break-inside-avoid ${
             tile.flush ? 'p-0' : 'p-6 sm:p-7'
           } ${SM[sm[i]]} ${LG[lg[i]]}`}
         >
@@ -573,6 +573,14 @@ function homeTiles(
   }
   if (model.writing) tiles.push(...blockTiles(model.writing));
 
+  if (model.more) {
+    tiles.push({
+      key: 'more',
+      span: 6,
+      tone: 'plain',
+      node: <MoreLinkView more={model.more} className="text-center" />,
+    });
+  }
   if (model.cta) {
     const { title, text, href, label } = model.cta;
     tiles.push({

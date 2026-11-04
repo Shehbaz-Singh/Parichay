@@ -18,7 +18,7 @@ const FEATURES = [
   {
     Icon: Palette,
     title: 'Themes and accent colors',
-    text: 'Six themes and any accent color. Text colors adjust so your page stays readable.',
+    text: 'Seven themes and any accent color. Text colors adjust so your page stays readable.',
   },
   {
     Icon: LayoutList,

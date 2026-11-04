@@ -28,7 +28,7 @@ It is a full-stack TypeScript project: a Next.js frontend, an Express API, a Pos
 
 - **Resume import.** Upload a PDF and your details, links, skills, jobs, education and projects are filled in for you to review. Nothing is saved until you say so, and the PDF itself is never stored.
 - **Live preview.** See your page change as you type, at phone, tablet or desktop width, using the same theme your visitors will see. Changes save automatically.
-- **Six themes, any accent color.** Editorial, Bento, Soft, Executive, Creative and Sidebar, each with its own fonts. Text colors adjust so your page stays readable on any accent.
+- **Seven themes, any accent color.** Editorial, Bento, Soft, Executive, Creative, Sidebar and Aurora (dark only), each with its own fonts. Text colors adjust so your page stays readable on any accent.
 - **Sections you control.** Show, hide, rename and reorder sections, and add your own, like Certifications, Awards or Open source. Hiding a section keeps what you wrote in it.
 - **Writing.** Publish short posts in Markdown with a cover image, or link to articles you wrote elsewhere. Each post gets its own page and share image.
 - **Testimonials.** Let visitors leave one, and approve each before it appears. Their email is never public.

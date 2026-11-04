@@ -72,4 +72,9 @@
     transition-delay: 0s !important;
     scroll-behavior: auto !important;
   }
+  /* The entrances and the glow's drift are off: everything is shown as it is. */
+  html[data-read-motion='reduce'] [data-reading] :is(.fx-item, .fx-rule, .au-glow),
+  html[data-read-motion='reduce'] [data-reading] main section[aria-labelledby] {
+    animation: none !important;
+  }
 }

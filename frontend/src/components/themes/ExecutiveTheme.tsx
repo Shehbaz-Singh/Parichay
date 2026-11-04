@@ -1,8 +1,7 @@
 import type { ReactNode } from 'react';
 import { pageLabel } from '@/lib/pages';
-import Link from 'next/link';
 import { Source_Sans_3, Source_Serif_4 } from 'next/font/google';
-import { ArrowUpRight, MapPin } from 'lucide-react';
+import { MapPin } from 'lucide-react';
 import { ShareButton } from '../ShareButton';
 import {
   buildBlocks,
@@ -12,31 +11,25 @@ import {
   type FooterModel,
   type HeaderModel,
 } from './blocks';
-import { fill, uiFor } from '@/lib/i18n';
-import { Collapse } from './Collapse';
+import { uiFor } from '@/lib/i18n';
 import { ReadMore } from './ReadMore';
+import { fill } from '@/lib/i18n';
+import { EntryList, Expander, ProjectList, SkillList } from './kit';
 import { ContactForm } from './ContactForm';
 import { LeaveTestimonial } from './LeaveTestimonial';
 import { WorkCard } from './WorkCard';
 import {
   Avatar,
-  DateRange,
   EmptyPage,
   AvailabilityBadge,
   HeaderLink,
   ContactLink,
   ResumeLink,
   WritingList,
-  NewTabLink,
-  RoleList,
-  TotalExperience,
   FooterLines,
   MoreLinkView,
   PageHeading,
-  ProjectCover,
-  ProjectVisit,
   CtaView,
-  isHeroProject,
 } from './parts';
 import { ThemeWrapper } from './ThemeWrapper';
 import type { ThemeProps } from './types';
@@ -73,7 +66,7 @@ const display = 'font-(family-name:--font-theme-display)';
 const focusRing =
   'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-fg';
 const link = `text-accent-fg underline underline-offset-2 hover:no-underline ${focusRing}`;
-const small = 'text-xs font-bold tracking-[0.14em] uppercase';
+const small = 'pt-label';
 
 function Sidebar({
   header,
@@ -86,42 +79,30 @@ function Sidebar({
   nameAsParagraph?: boolean; // the page's own template carries the h1
   skills: Extract<Block, { kind: 'skills' }> | undefined;
 }) {
-  const contact = `flex max-w-full items-start gap-2.5 py-1 text-sm hover:underline ${focusRing}`;
-  const skillList = (items: Extract<Block, { kind: 'skills' }>['skills']) => (
-    <ul className="space-y-1.5 text-sm">
-      {items.map((skill) => (
-        <li
-          key={skill.id}
-          className="flex items-baseline gap-2.5 before:size-1.5 before:shrink-0 before:bg-accent before:content-[''] print:before:bg-black"
-        >
-          {skill.name}
-        </li>
-      ))}
-    </ul>
-  );
+  const contact = `flex max-w-full items-start gap-2.5 py-1 pt-small hover:underline ${focusRing}`;
   return (
     <aside className="exec-side p-7 sm:p-9 lg:sticky lg:top-[var(--nav-h,0px)] lg:h-[calc(100vh-var(--nav-h,0px))] lg:overflow-y-auto lg:[scrollbar-width:none] lg:[&::-webkit-scrollbar]:hidden xl:p-10 print:static print:h-auto print:overflow-visible print:border-e print:border-line print:p-5">
       <Avatar
         avatar={header.avatar}
         className="size-28 rounded-full ring-4 ring-white/20 print:ring-0"
-        placeholderClassName={`${display} bg-surface text-4xl font-semibold`}
+        placeholderClassName={`${display} bg-surface pt-title font-semibold`}
       />
       {nameAsParagraph ? (
-        <p className={`${display} mt-6 text-3xl leading-tight font-semibold text-balance`}>
+        <p className={`${display} pt-title pt-name mt-6 font-semibold`}>
           {header.name}
         </p>
       ) : (
-        <h1 className={`${display} mt-6 text-3xl leading-tight font-semibold text-balance`}>
+        <h1 className={`${display} pt-title pt-name mt-6 font-semibold`}>
           {header.name}
         </h1>
       )}
       {header.tagline && (
-        <p className="mt-2 leading-snug text-pretty text-muted">{header.tagline}</p>
+        <p className="pt-small mt-2 text-muted">{header.tagline}</p>
       )}
       <AvailabilityBadge
         availability={header.availability}
         ui={header.ui}
-        className="mt-5 rounded-md border border-line bg-surface px-3 py-2.5 text-sm"
+        className="mt-5 rounded-md border border-line bg-surface px-3 py-2.5 pt-small"
         dotClassName="bg-accent-fg"
         linkClassName={`font-semibold underline underline-offset-2 hover:no-underline ${focusRing}`}
       />
@@ -130,7 +111,7 @@ function Sidebar({
           work={header.work}
           className="mt-4 rounded-md border border-s-4 border-line border-s-accent bg-surface px-3 py-3 text-ink"
           linkClassName={`font-semibold underline underline-offset-2 hover:no-underline ${focusRing}`}
-          buttonClassName={`rounded border border-line px-2.5 py-1 text-xs font-semibold hover:bg-page ${focusRing}`}
+          buttonClassName={`rounded border border-line px-2.5 py-1 pt-fine font-semibold hover:bg-page ${focusRing}`}
         />
       )}
 
@@ -143,7 +124,7 @@ function Sidebar({
         </h2>
         <ul className="space-y-0.5">
           {header.location && (
-            <li className="flex items-start gap-2.5 py-1 text-sm">
+            <li className="flex items-start gap-2.5 py-1 pt-small">
               <MapPin aria-hidden="true" className="mt-0.5 size-4 shrink-0" />
               <span>{header.location}</span>
             </li>
@@ -174,35 +155,36 @@ function Sidebar({
           <h2 id={skills.id} className={`${small} mb-3 text-muted`}>
             {skills.title}
           </h2>
-          {skillList(skills.skills)}
-          {skills.rest.length > 0 && (
-            <Collapse
-              className="mt-3"
-              label={fill(skills.ui.density.moreSkills, { count: skills.rest.length })}
-              closeLabel={skills.ui.density.showLess}
-              buttonClassName="inline-block text-sm font-semibold underline underline-offset-2 hover:no-underline print:hidden"
-            >
-              <div className="mt-3">{skillList(skills.rest)}</div>
-            </Collapse>
-          )}
+          <SkillList
+            block={skills}
+            itemClassName="flex items-baseline gap-2.5 before:size-1.5 before:shrink-0 before:bg-accent before:content-[''] print:before:bg-black"
+            expanderClassName="[&_.collapse-btn]:text-ink"
+          />
         </section>
       )}
     </aside>
   );
 }
 
+// Experience is the strongest section: a larger heading over a heavier rule. Everything else is one step down.
 function Section({ block, children }: { block: Block; children: ReactNode }) {
+  const lead = block.kind === 'entries' && block.variant === 'experience';
   return (
     <section
       aria-labelledby={block.id}
-      className="mt-9 first:mt-0 2xl:break-inside-avoid print:break-inside-auto"
+      className="mt-12 first:mt-0 print:break-inside-auto"
     >
       <h2
         id={block.id}
-        className={`${display} relative mb-5 break-after-avoid border-b border-line pb-2 text-xl font-semibold`}
+        className={`${display} relative mb-5 break-after-avoid border-b pb-2 font-semibold ${
+          lead ? 'pt-h1 border-ink' : 'pt-h2 border-line'
+        }`}
       >
         {block.title}
-        <span aria-hidden="true" className="absolute -bottom-px start-0 h-0.5 w-12 bg-accent" />
+        <span
+          aria-hidden="true"
+          className={`absolute -bottom-px start-0 w-12 bg-accent ${lead ? 'h-[3px]' : 'h-0.5'}`}
+        />
       </h2>
       {children}
     </section>
@@ -230,62 +212,16 @@ function BlockBody({ block }: { block: Block }) {
           locale={block.locale}
           from={900}
           lines={9}
-          className="leading-relaxed"
+          className="pt-body"
         />
       );
-    case 'projects': {
-      const listProjects = (items: typeof block.projects) => (
-        <ul className="space-y-5">
-          {items.map((project) => (
-            <li key={project.id} className="min-w-0 break-inside-avoid">
-              <ProjectCover
-                project={project}
-                className={`mb-2 h-auto w-full border border-line print:hidden ${isHeroProject(block, project) ? 'max-w-2xl' : 'max-w-sm'}`}
-              />
-              <h3 className="font-bold">
-                <Link href={project.detailHref} className={link}>
-                  {project.name}
-                </Link>
-              </h3>
-              {project.description && (
-                <ReadMore
-                  text={project.description}
-                  locale={block.locale}
-                  className="mt-1 leading-relaxed"
-                />
-              )}
-              {project.tags.length > 0 && (
-                <p className="mt-1 text-sm text-muted">{project.tags.join(' · ')}</p>
-              )}
-              <ProjectVisit
-                project={project}
-                label={block.ui.viewProject}
-                className={`inline-flex items-baseline gap-1 text-sm ${link}`}
-              >
-                <ArrowUpRight
-                  aria-hidden="true"
-                  className="rtl:-scale-x-100 size-3.5 shrink-0 self-center print:hidden"
-                />
-              </ProjectVisit>
-            </li>
-          ))}
-        </ul>
-      );
+    case 'projects':
       return (
-        <>
-          {listProjects(block.projects)}
-          {block.rest.length > 0 && (
-            <Collapse
-              className="mt-6"
-              label={fill(block.ui.density.moreProjects, { count: block.rest.length })}
-              closeLabel={block.ui.density.showLess}
-            >
-              {listProjects(block.rest)}
-            </Collapse>
-          )}
-        </>
+        <ProjectList
+          block={block}
+          classes={{ title: display, link, meta: 'text-muted', cover: 'border border-line' }}
+        />
       );
-    }
     case 'writing':
       return (
         <WritingList
@@ -294,9 +230,9 @@ function BlockBody({ block }: { block: Block }) {
           itemClassName="min-w-0 break-inside-avoid"
           titleClassName="font-bold"
           linkClassName={link}
-          metaClassName="mt-0.5 text-sm text-muted"
-          excerptClassName="mt-1 leading-relaxed"
-          moreClassName={`mt-5 inline-block text-sm font-semibold print:hidden ${link}`}
+          metaClassName="pt-small mt-0.5 text-muted"
+          excerptClassName="pt-body mt-1"
+          moreClassName={`pt-small mt-5 inline-block font-semibold print:hidden ${link}`}
         />
       );
     case 'testimonials': {
@@ -305,10 +241,10 @@ function BlockBody({ block }: { block: Block }) {
           {items.map((item) => (
             <li key={item.id} className="min-w-0 break-inside-avoid">
               <figure className="border-s-2 border-accent ps-4">
-                <blockquote className={`${display} leading-relaxed whitespace-pre-line italic`}>
+                <blockquote className={`${display} pt-body whitespace-pre-line italic`}>
                   {item.message}
                 </blockquote>
-                <figcaption className="mt-2 text-sm">
+                <figcaption className="pt-small mt-2">
                   <span className="font-bold">{item.name}</span>
                   {item.detail && <span className="text-muted">, {item.detail}</span>}
                 </figcaption>
@@ -323,13 +259,12 @@ function BlockBody({ block }: { block: Block }) {
             <>
               {listTestimonials(block.testimonials)}
               {block.rest.length > 0 && (
-                <Collapse
-                  className="mt-6"
+                <Expander
                   label={fill(block.ui.density.moreTestimonials, { count: block.rest.length })}
                   closeLabel={block.ui.density.showLess}
                 >
                   {listTestimonials(block.rest)}
-                </Collapse>
+                </Expander>
               )}
             </>
           ) : null}
@@ -338,7 +273,7 @@ function BlockBody({ block }: { block: Block }) {
               <LeaveTestimonial
                 slug={block.submitTo}
                 ui={block.ui.leave}
-                buttonClassName={`inline-flex items-center rounded border border-ink px-4 py-1.5 text-sm font-semibold transition-colors hover:bg-page ${focusRing}`}
+                buttonClassName={`inline-flex items-center rounded border border-ink px-4 py-1.5 pt-small font-semibold transition-colors hover:bg-page ${focusRing}`}
               />
             </div>
           )}
@@ -350,7 +285,7 @@ function BlockBody({ block }: { block: Block }) {
         <CtaView
           block={block}
           className="print:hidden"
-          linkClassName={`inline-flex items-center gap-2 rounded border border-ink px-4 py-1.5 text-sm font-semibold transition-colors hover:bg-page ${focusRing}`}
+          linkClassName={`inline-flex items-center gap-2 rounded border border-ink px-4 py-1.5 pt-small font-semibold transition-colors hover:bg-page ${focusRing}`}
         />
       );
     case 'contact':
@@ -358,85 +293,24 @@ function BlockBody({ block }: { block: Block }) {
         <div className="max-w-xl print:hidden">
           <ContactForm
             form={block.form}
-            buttonClassName={`inline-flex items-center rounded border border-ink px-4 py-1.5 text-sm font-semibold transition-colors hover:bg-page ${focusRing}`}
+            buttonClassName={`inline-flex items-center rounded border border-ink px-4 py-1.5 pt-small font-semibold transition-colors hover:bg-page ${focusRing}`}
           />
         </div>
       );
-    case 'entries': {
-      const listEntries = (items: typeof block.entries) => (
-        <ol className="space-y-6">
-          {items.map((entry) => (
-            <li key={entry.id} className="min-w-0 break-inside-avoid">
-              {/* Role, company, dates: the role and the dates share the first line. */}
-              <div className="flex flex-col sm:flex-row sm:items-baseline sm:justify-between sm:gap-6">
-                <h3 className={`${display} text-lg leading-snug font-semibold`}>{entry.title}</h3>
-                {entry.start && (
-                  <p className="text-sm font-semibold text-muted tabular-nums sm:shrink-0 sm:whitespace-nowrap">
-                    <DateRange
-                      start={entry.start}
-                      end={entry.end}
-                      openEnded={block.variant !== 'custom'}
-                      duration={entry.duration}
-                      fmt={entry.fmt}
-                    />
-                  </p>
-                )}
-              </div>
-              {entry.subtitle && <p className="font-semibold text-muted">{entry.subtitle}</p>}
-              {entry.roles && (
-                <RoleList
-                  roles={entry.roles}
-                  className="mt-3 space-y-4 border-s border-line ps-4"
-                  roleClassName="break-inside-avoid"
-                  titleClassName="font-bold"
-                  datesClassName="text-sm font-semibold text-muted tabular-nums"
-                  descriptionClassName="mt-1 leading-relaxed"
-                />
-              )}
-              {entry.description && (
-                <ReadMore
-                  text={entry.description}
-                  locale={entry.fmt.locale}
-                  className="mt-2 leading-relaxed"
-                />
-              )}
-              {entry.href && (
-                <p className="mt-2 text-sm">
-                  <NewTabLink href={entry.href} context={entry.title} className={link}>
-                    View
-                  </NewTabLink>
-                </p>
-              )}
-            </li>
-          ))}
-        </ol>
-      );
+    case 'entries':
       return (
-        <>
-          <TotalExperience
-            total={block.total}
-            label={block.ui.totalExperience}
-            className="mb-4 text-sm text-muted"
-          />
-          {listEntries(block.entries)}
-          {block.variant === 'experience' && block.rest.length > 0 && (
-            <Collapse
-              className="mt-6"
-              label={fill(block.ui.density.earlierRoles, { count: block.rest.length })}
-              closeLabel={block.ui.density.showLess}
-            >
-              {listEntries(block.rest)}
-            </Collapse>
-          )}
-        </>
+        <EntryList
+          block={block}
+          totalClassName="text-muted"
+          classes={{ title: display, org: 'text-muted', dates: 'font-semibold text-muted' }}
+        />
       );
-    }
   }
 }
 
 function Footer({ footer }: { footer: FooterModel }) {
   return (
-    <footer className="mt-14 border-t border-line pt-6 text-sm text-muted print:mt-6 print:pt-3">
+    <footer className="pt-small mt-14 border-t border-line pt-6 text-muted print:mt-6 print:pt-3">
       <FooterLines
         footer={footer}
         linkClassName={`font-semibold text-ink underline ${focusRing}`}
@@ -499,13 +373,12 @@ export default function ExecutiveTheme({
                   title={page ? pageLabel(profile, page) : undefined}
                   kicker={profile.fullName}
                   wrapClassName="mb-8 border-b-2 border-ink pb-3"
-                  kickerClassName={`mb-1 text-xs font-semibold tracking-[0.14em] text-muted uppercase`}
-                  className={`text-3xl font-bold tracking-tight text-balance sm:text-4xl`}
+                  kickerClassName="pt-label mb-1 text-muted"
+                  className={`pt-title pt-name font-bold`}
                 />
               ))}
-            {/* Sections flow down the page in the order the owner chose, and on a wide screen
-                across two or three columns instead of one long strip. */}
-            <div className="2xl:columns-2 2xl:gap-x-20 min-[2200px]:columns-3 print:columns-1">
+            {/* Sections flow down the page in the owner's order, in one column at a readable width. */}
+            <div className="max-w-[56rem]">
               {main.map((block) => (
                 <Section key={block.id} block={block}>
                   <BlockView block={block} />

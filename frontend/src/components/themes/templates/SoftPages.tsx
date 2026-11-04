@@ -16,6 +16,7 @@ import {
   NewTabLink,
   ProjectCover,
   ResumeLink,
+  MoreLinkView,
 } from '../parts';
 import { ThemeWrapper } from '../ThemeWrapper';
 import { WorkCard } from '../WorkCard';
@@ -304,6 +305,7 @@ function Home({ model, parts, hero }: { model: HomeModel; parts: Parts; hero: Re
         <parts.Section block={model.writing}>{parts.renderBlock(model.writing)}</parts.Section>
       )}
 
+      {model.more && <MoreLinkView more={model.more} className="mt-10 text-center" />}
       {model.cta && (
         <section
           aria-labelledby={`${idPrefix}home-contact`}

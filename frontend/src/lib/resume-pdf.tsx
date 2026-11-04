@@ -572,6 +572,7 @@ const LAYOUTS: Record<ThemeKey, (props: { c: Ctx }) => ReactNode> = {
   bento: Bento,
   creative: Creative,
   sidebar: Executive, // a dark sidebar beside the main column, like the page
+  aurora: Executive, // the PDF stays light: a dark page does not print
 };
 
 // `photo` is the profile photo as JPEG bytes, or null (initials are drawn instead).

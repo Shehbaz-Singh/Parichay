@@ -1,0 +1,131 @@
+/* The type and spacing system of every public theme. Themes keep their own font pairing, colors, layout
+   and one signature element; the sizes, leading, measure and spacing come from here, so none of them
+   can fall below the others. Everything is in rem, so the visitor's reading preference (the root
+   font size, reading-prefs.css) and browser zoom scale type, spacing and boxes together.
+
+   Scale: a modular scale at about 1.2 from the body size.
+     fine 13px  small 14.5px  body 16px (17.5px from 768px)  h3 21px  h2 25px  h1 30px  title 36px
+   Display text alone is fluid: it grows between 360px and 1440px and stops there.
+   Weights: regular 400, medium 500, bold 700 (a theme may use 600 in place of 700, never both).
+   Spacing: one scale on a 4px base (--sp-1 ... --sp-24). Related things are closer than groups. */
+[data-portfolio] {
+  --t-fine: 0.8125rem;
+  --t-small: 0.90625rem;
+  --t-body: 1rem;
+  --t-h3: 1.25rem;
+  --t-h2: 1.5rem;
+  --t-h1: 1.875rem;
+  --t-title: 2.25rem;
+  /* 40px at 360px wide, 72px at 1440px: 2.5rem + 2rem per 67.5rem of extra width, capped. */
+  --t-display: clamp(2.5rem, calc(2.5rem + (100vw - 22.5rem) * 2 / 67.5), 4.5rem);
+
+  --lh-body: 1.65;
+  --lh-small: 1.5;
+  --lh-heading: 1.25;
+  --lh-display: 1.12;
+  /* Longest line of running text. 66 characters of the body face; descriptions never go wider. */
+  --measure: 66ch;
+
+  --sp-1: 0.25rem;
+  --sp-2: 0.5rem;
+  --sp-3: 0.75rem;
+  --sp-4: 1rem;
+  --sp-5: 1.25rem;
+  --sp-6: 1.5rem;
+  --sp-8: 2rem;
+  --sp-10: 2.5rem;
+  --sp-12: 3rem;
+  --sp-16: 4rem;
+  --sp-24: 6rem;
+  --section-y: var(--sp-12); /* padding above and below a section */
+  --item-gap: var(--sp-6); /* between jobs, projects: items of one group */
+  --group-gap: var(--sp-12); /* between groups of items */
+  --gutter: var(--sp-5); /* the page's side padding */
+}
+@media (min-width: 768px) {
+  [data-portfolio] {
+    --t-body: 1.09375rem;
+    --t-h3: 1.3125rem;
+    --t-h2: 1.5625rem;
+    --t-h1: 1.9375rem;
+    --t-title: 2.375rem;
+    --section-y: var(--sp-16);
+    --group-gap: var(--sp-16);
+    --gutter: var(--sp-8);
+  }
+}
+
+/* A floor, not a style: zero specificity, so any theme class still wins, but running text and
+   headings are never left to the browser's defaults. */
+:where([data-portfolio]) {
+  font-size: var(--t-body);
+  line-height: var(--lh-body);
+}
+:where([data-portfolio] p, [data-portfolio] li, [data-portfolio] dd, [data-portfolio] blockquote) {
+  text-wrap: pretty;
+  overflow-wrap: break-word;
+}
+:where([data-portfolio] h1, [data-portfolio] h2, [data-portfolio] h3, [data-portfolio] h4) {
+  text-wrap: balance;
+  hyphens: manual;
+  overflow-wrap: break-word;
+  line-height: var(--lh-heading);
+}
+:where([data-portfolio] time, [data-portfolio] .pt-date) {
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---- Type steps, for the layout primitives and the themes. Nothing else sets a size. */
+.pt-display {
+  font-size: var(--t-display);
+  line-height: var(--lh-display);
+  text-wrap: balance;
+}
+.pt-h1 {
+  font-size: var(--t-h1);
+  line-height: var(--lh-heading);
+}
+.pt-h2 {
+  font-size: var(--t-h2);
+  line-height: var(--lh-heading);
+}
+.pt-h3 {
+  font-size: var(--t-h3);
+  line-height: var(--lh-heading);
+}
+.pt-title {
+  font-size: var(--t-title);
+  line-height: var(--lh-heading);
+}
+.pt-body {
+  font-size: var(--t-body);
+  line-height: var(--lh-body);
+}
+.pt-small {
+  font-size: var(--t-small);
+  line-height: var(--lh-small);
+}
+.pt-fine {
+  font-size: var(--t-fine);
+  line-height: var(--lh-small);
+}
+/* Small-caps style labels: the only place letter-spacing is added (and not in scripts that join). */
+.pt-label {
+  font-size: var(--t-fine);
+  line-height: var(--lh-small);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.pt-measure {
+  max-width: var(--measure);
+}
+/* A person's name or a job title: never split mid-word, wraps at any length without overflowing. */
+.pt-name {
+  hyphens: none;
+  overflow-wrap: anywhere;
+  text-wrap: balance;
+}
+.pt-date {
+  font-variant-numeric: tabular-nums;
+}

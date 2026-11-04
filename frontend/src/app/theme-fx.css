@@ -1,0 +1,337 @@
+/* The visual effects of the public themes: grain, gradients, blur and motion. Every color here comes from the
+   variables the theme wrapper sets from the owner's accent (lib/palette), never from a fixed palette.
+*/
+
+/* ---- Grain: a faint noise that keeps gradients from banding and gives paper some tooth. An inline SVG
+   (feTurbulence), so there is nothing to download. Two versions: dark noise for light surfaces, light
+   noise for dark ones. */
+:root {
+  --fx-grain-dark: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .6 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  --fx-grain-light: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .6 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+/* A page-wide grain (paper): one fixed layer behind the content, under any card that has its own fill. */
+[data-fx-theme='editorial'],
+[data-fx-theme='soft'] {
+  position: relative;
+  isolation: isolate;
+}
+[data-fx-theme='editorial']::before,
+[data-fx-theme='soft']::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-image: var(--fx-grain-dark);
+  opacity: 0.05;
+}
+[data-fx-theme='soft']::before {
+  opacity: 0.03;
+}
+
+/* ---- Gradient recipes. Interpolated in OKLCH where the browser can (even lightness, no gray middle), in
+   sRGB where it cannot; the endpoints are already gamut-mapped hex. */
+.fx-wash {
+  background-image: linear-gradient(170deg, var(--wash-a), var(--wash-b));
+}
+@supports (background: linear-gradient(in oklch, red, blue)) {
+  .fx-wash {
+    background-image: linear-gradient(170deg in oklch, var(--wash-a), var(--wash-b));
+  }
+}
+
+/* ---- Blur: only on a sticky bar or a menu. A solid fill first; the translucent, blurred one only where the
+   browser supports it and nobody asked for less transparency. */
+.fx-blur {
+  background-color: var(--bg);
+}
+.fx-blur-surface {
+  background-color: var(--surface);
+}
+@supports (backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px)) {
+  @media (prefers-reduced-transparency: no-preference) {
+    @media (not (forced-colors: active)) {
+      html:not([data-fx='low']) .fx-blur {
+        background-color: color-mix(in srgb, var(--bg) 78%, transparent);
+        -webkit-backdrop-filter: blur(14px) saturate(1.15);
+        backdrop-filter: blur(14px) saturate(1.15);
+      }
+      html:not([data-fx='low']) .fx-blur-surface {
+        background-color: color-mix(in srgb, var(--surface) 80%, transparent);
+        -webkit-backdrop-filter: blur(14px) saturate(1.15);
+        backdrop-filter: blur(14px) saturate(1.15);
+      }
+    }
+  }
+}
+
+/* ---- Motion: scroll reveals, in CSS. A section (or an item a theme marks) fades up once as it enters the
+   screen. Where the browser has no scroll-driven animation the same thing is done by components/themes/fx
+   (loaded on demand). Without either, nothing is hidden: everything is simply there. A theme sets its
+   character with --fx-distance, --fx-duration (JS only) and --fx-range (how much of the entry it takes). */
+[data-fx-theme] {
+  --fx-distance: 12px;
+  --fx-duration: 250ms;
+  --fx-range: 35%;
+}
+@keyframes fx-reveal {
+  from {
+    opacity: 0;
+    transform: translateY(var(--fx-distance));
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes fx-draw {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: none;
+  }
+}
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    html:not([data-fx='low']) [data-fx-theme] main section[aria-labelledby]:not(.au-hero),
+    html:not([data-fx='low']) [data-fx-theme] .fx-item {
+      animation: fx-reveal linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry var(--fx-range);
+    }
+    html:not([data-fx='low']) [data-fx-theme] .fx-rule {
+      transform-origin: left center;
+      animation: fx-draw linear both;
+      animation-timeline: view();
+      animation-range: entry 10% entry 50%;
+    }
+    html:not([data-fx='low']) :is([dir='rtl']) .fx-rule {
+      transform-origin: right center;
+    }
+  }
+}
+
+/* Character of each theme's motion. */
+[data-fx-theme='editorial'] {
+  --fx-distance: 6px; /* almost still: a short fade and a rule drawn in */
+  --fx-duration: 300ms;
+  --fx-range: 50%;
+}
+[data-fx-theme='bento'] {
+  --fx-distance: 16px;
+  --fx-duration: 250ms;
+}
+[data-fx-theme='soft'] {
+  --fx-distance: 0px; /* a fade, nothing travels */
+  --fx-duration: 250ms;
+  --fx-range: 45%;
+}
+[data-fx-theme='executive'] {
+  --fx-distance: 0px; /* a document: a quick fade and nothing else */
+  --fx-duration: 250ms;
+  --fx-range: 25%;
+}
+[data-fx-theme='creative'] {
+  --fx-distance: 26px; /* hard and quick */
+  --fx-duration: 250ms;
+  --fx-range: 25%;
+}
+[data-fx-theme='sidebar'] {
+  --fx-distance: 14px;
+  --fx-duration: 250ms;
+}
+[data-fx-theme='aurora'] {
+  --fx-distance: 14px;
+  --fx-duration: 250ms;
+}
+
+/* ---- Bento: tile tints from the scale, an inner light along the top edge, one mesh tile. */
+.bento-tile {
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.65);
+}
+.bento-tile[data-tone='mesh'] {
+  --tile: var(--tile-base-strong, var(--accent-soft));
+  background-color: var(--tile);
+  background-image:
+    radial-gradient(70% 90% at 12% 8%, var(--mesh-a, transparent), transparent 70%),
+    radial-gradient(60% 80% at 92% 90%, var(--mesh-b, transparent), transparent 70%),
+    radial-gradient(50% 60% at 85% 10%, var(--mesh-c, transparent), transparent 70%);
+}
+[data-tiles='dark'] .bento-tile {
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.08);
+}
+[data-tiles='dark'] .bento-tile[data-tone='mesh'] {
+  --tile: color-mix(in srgb, var(--accent) 22%, #12141c);
+  background-image: none;
+}
+
+/* ---- Soft: a gentle wash at the top of the page, behind the introduction (light on light). */
+[data-fx-theme='soft'] > main {
+  position: relative;
+}
+[data-fx-theme='soft'] > main::before {
+  content: '';
+  position: absolute;
+  inset: -2rem 0 auto 0;
+  height: min(32rem, 70vh);
+  z-index: -1;
+  pointer-events: none;
+  background-image: linear-gradient(180deg, var(--wash-a), transparent);
+  opacity: 0.8;
+}
+
+/* ---- Executive: the sidebar's slow wash, from the top color to the bottom color. */
+.exec-side {
+  background-color: var(--side-a, color-mix(in srgb, var(--accent) 22%, #0e1118));
+  background-image: linear-gradient(180deg, var(--side-a), var(--side-b));
+}
+
+/* ---- Creative: the header band is the one gradient of the theme. */
+.cr-hdr {
+  background-color: var(--hdr-a, var(--accent));
+  background-image: linear-gradient(115deg, var(--hdr-a), var(--hdr-b));
+}
+
+/* ---- Sidebar: grain on the two bands (keeps the gradient from banding), a hairline along the rail. */
+.sb-band,
+.sb-accent {
+  position: relative;
+  isolation: isolate;
+}
+.sb-band::before,
+.sb-accent::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-image: var(--fx-grain-light);
+  opacity: 0.07;
+}
+@media (min-width: 900px) {
+  .sb-rail {
+    border-inline-end: 1px solid rgb(255 255 255 / 0.07);
+  }
+}
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .sb-quote-dark {
+    transition: transform 0.25s ease;
+  }
+  .sb-quote-dark:hover {
+    transform: translateY(-2px);
+  }
+}
+
+/* ---- Aurora: the glow gets a second, neighboring-hue layer and grain; the cards an inner light. */
+.au-hero::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-image: var(--fx-grain-light);
+  opacity: 0.06;
+}
+.au-card {
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.07);
+}
+/* The light look: hairline borders instead of an inner light, a dark grain on a wash that does not drift. */
+[data-appearance='light'] .au-card {
+  box-shadow: none;
+}
+[data-appearance='light'] .au-bar {
+  box-shadow: 0 1px 0 var(--border);
+}
+[data-appearance='light'] .au-hero::after {
+  background-image: var(--fx-grain-dark);
+  opacity: 0.045;
+}
+[data-appearance='light'] .au-glow {
+  animation: none;
+}
+.au-bar {
+  /* the bar blurs what scrolls under it (see .fx-blur) and has a hairline of light on its lower edge */
+  box-shadow: 0 1px 0 rgb(255 255 255 / 0.04);
+}
+
+/* The open menu on a phone covers the page: it is solid. */
+.au-bar[data-open] {
+  background-color: var(--bg) !important;
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+}
+
+/* ---- Off: low power, reduced transparency, forced colors, print. Solid fills, no ambient motion. */
+html[data-fx='low'] .au-glow,
+html[data-fx='low'] .au-hero::after,
+html[data-fx='low'] [data-fx-theme]::before,
+html[data-fx='low'] .sb-band::before,
+html[data-fx='low'] .sb-accent::before {
+  display: none;
+}
+html[data-fx='low'] .exec-side,
+html[data-fx='low'] .cr-hdr,
+html[data-fx='low'] .sb-band {
+  background-image: none;
+}
+html[data-fx='low'] .bento-tile[data-tone='mesh'] {
+  background-image: none;
+}
+html[data-fx='low'] .au-glow,
+.au-hero[data-offscreen] .au-glow {
+  animation-play-state: paused;
+}
+/* Plain fallback: no glow at all for reduced motion, low power and forced colors. */
+@media (prefers-reduced-motion: reduce) {
+  .au-glow,
+  .au-foot::before,
+  .au-hero::after {
+    display: none;
+  }
+}
+html[data-fx='low'] .au-foot::before {
+  display: none;
+}
+@media (forced-colors: active) {
+  .au-glow,
+  .au-foot::before {
+    display: none;
+  }
+  [data-fx-theme]::before,
+  .au-hero::after,
+  .sb-band::before,
+  .sb-accent::before,
+  [data-fx-theme='soft'] > main::before {
+    display: none;
+  }
+  .exec-side,
+  .cr-hdr,
+  .sb-band,
+  .bento-tile[data-tone='mesh'] {
+    background-image: none;
+  }
+}
+@media print {
+  [data-fx-theme]::before,
+  [data-fx-theme='soft'] > main::before,
+  .au-hero::after,
+  .sb-band::before,
+  .sb-accent::before {
+    display: none;
+  }
+  .cr-hdr,
+  .bento-tile[data-tone='mesh'] {
+    background-image: none;
+  }
+  [data-portfolio] *,
+  [data-portfolio] *::before,
+  [data-portfolio] *::after {
+    animation: none !important;
+  }
+  .fx-blur,
+  .fx-blur-surface {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+}

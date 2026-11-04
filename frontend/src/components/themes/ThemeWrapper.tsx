@@ -1,8 +1,7 @@
 import type { CSSProperties, ReactNode } from 'react';
 import type { PublicProfile, ThemeKey } from '@parichay/shared';
-import { accentVars } from '@/lib/color';
-import { PALETTES } from '@/lib/palettes';
-import { sidebarVars } from '@/lib/sidebar-colors';
+import { themeColors, type Appearance } from '@/lib/palette';
+import { FxLoader } from './fx/FxLoader';
 import { NAV_STICKY_HEIGHT } from '../portfolio/nav/themed-navs';
 
 const NO_JS =
@@ -19,6 +18,7 @@ export function ThemeWrapper({
   className = '',
   vars,
   nav,
+  appearance = 'dark',
   children,
 }: {
   theme: ThemeKey;
@@ -26,29 +26,39 @@ export function ThemeWrapper({
   className?: string; // the theme's font classes
   vars?: Record<string, string>; // extra CSS variables of the theme
   nav?: ReactNode; // the navigation of a multi-page portfolio, in front of the page
+  appearance?: Appearance; // Aurora's dark or light look; the other themes have one
   children: ReactNode;
 }) {
   // Sidebar's navigation is a rail beside the page, not a bar above or below it: the page and the rail
   // share a row from 900px up, and there is no bottom bar to leave room for.
   const side = theme === 'sidebar';
+  // Aurora's bar is at the top on every screen size, so there is no bottom bar to leave room for either.
+  const aurora = theme === 'aurora';
   return (
     <div
       data-portfolio=""
+      data-fx-theme={theme}
+      data-appearance={theme === 'aurora' ? appearance : undefined}
       // With a navigation there is a bar at the bottom of a phone's screen: room is left for it.
       className={`theme-root min-h-screen overflow-x-clip theme-${theme} ${className} ${
-        nav && !side ? 'pb-[calc(3.5rem+env(safe-area-inset-bottom))] sm:pb-0 print:pb-0' : ''
+        nav && !side && !aurora
+          ? 'pb-[calc(3.5rem+env(safe-area-inset-bottom))] sm:pb-0 print:pb-0'
+          : ''
       }`}
       style={
         {
-          ...accentVars(profile.accentColor, PALETTES[theme]),
+          // The theme's whole palette, from the accent, worked out and contrast-checked on the server
+          // (lib/palette): the first HTML already has the right colors.
+          ...themeColors(theme, profile.accentColor, appearance).vars,
+          ...(theme === 'aurora' && appearance === 'light' ? { colorScheme: 'light' } : {}),
           // How much of the top of the screen the sticky navigation takes, for sticky things below it.
           ...(nav ? { '--nav-h': NAV_STICKY_HEIGHT[theme] } : {}),
-          ...(side ? sidebarVars(profile.accentColor) : {}),
           ...vars,
         } as CSSProperties
       }
     >
       {/* Without JavaScript nothing can be opened, so nothing is folded. */}
+      <FxLoader />
       <noscript>
         <style>{NO_JS}</style>
       </noscript>

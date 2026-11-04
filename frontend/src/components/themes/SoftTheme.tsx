@@ -1,8 +1,7 @@
 import type { ReactNode } from 'react';
 import { pageLabel } from '@/lib/pages';
-import Link from 'next/link';
 import { Fraunces, Nunito_Sans } from 'next/font/google';
-import { ArrowUpRight, MapPin } from 'lucide-react';
+import { MapPin } from 'lucide-react';
 import { ShareButton } from '../ShareButton';
 import {
   buildBlocks,
@@ -13,14 +12,13 @@ import {
   type HeaderModel,
 } from './blocks';
 import { fill, uiFor } from '@/lib/i18n';
-import { Collapse } from './Collapse';
+import { EntryList, Expander, ProjectList, SkillList } from './kit';
 import { ReadMore } from './ReadMore';
 import { ContactForm } from './ContactForm';
 import { LeaveTestimonial } from './LeaveTestimonial';
 import { WorkCard } from './WorkCard';
 import {
   Avatar,
-  DateRange,
   EmptyPage,
   AvailabilityBadge,
   HeaderLink,
@@ -28,17 +26,11 @@ import {
   ResumeLink,
   WritingList,
   InitialsBadge,
-  NewTabLink,
-  RoleList,
-  TotalExperience,
   FooterLines,
   MoreLinkView,
   PageHeading,
-  ProjectCover,
-  ProjectVisit,
   CtaView,
   IdentityStrip,
-  isHeroProject,
 } from './parts';
 import { ThemeWrapper } from './ThemeWrapper';
 import { SoftPages } from './templates/SoftPages';
@@ -75,78 +67,82 @@ const display = 'font-(family-name:--font-theme-display)';
 const focusRing =
   'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-fg';
 const card = 'rounded-3xl border border-line bg-surface';
-const chip = 'rounded-full bg-accent-soft px-3.5 py-1 text-sm font-semibold';
+const chip = 'rounded-full bg-accent-soft px-3.5 py-1 font-semibold';
 
-function Header({ header }: { header: HeaderModel }) {
-  const pill = `inline-flex max-w-full items-center gap-2 rounded-full border border-line bg-surface px-4 py-2 text-sm font-semibold transition-colors duration-200 hover:bg-accent-soft ${focusRing}`;
+// The introduction: centered, a large round photo, the name, one line, then the ways to reach the person.
+// A heavy profile gets the compact one (a smaller photo and tighter spacing) so Experience is not pushed
+// far down the page.
+function Header({ header, compact = false }: { header: HeaderModel; compact?: boolean }) {
+  const pill = `pt-small inline-flex max-w-full items-center gap-2 rounded-full border border-line bg-surface px-4 py-2 font-semibold transition-colors duration-200 hover:bg-accent-soft ${focusRing}`;
   return (
-    <header className="rise-in flex flex-col items-center gap-5 text-center sm:flex-row sm:gap-10 sm:text-start">
+    <header className="rise-in flex flex-col items-center text-center">
       <Avatar
         avatar={header.avatar}
-        className="size-32 shrink-0 rounded-full ring-4 ring-surface sm:size-44"
-        placeholderClassName={`${display} bg-accent-soft text-5xl font-medium text-ink sm:text-6xl`}
+        className={`shrink-0 rounded-full ring-4 ring-surface ${compact ? 'size-24' : 'size-36 sm:size-44'}`}
+        placeholderClassName={`${display} bg-accent-soft font-medium text-ink ${compact ? 'pt-title' : 'text-[3.5rem]'}`}
       />
-      <div className="min-w-0">
-        <h1
-          className={`${display} text-[clamp(2rem,6vw,3.25rem)] leading-[1.1] font-medium text-balance`}
-        >
-          {header.name}
-        </h1>
-        {header.tagline && (
-          <p className="mt-2 max-w-xl text-lg leading-snug text-pretty text-muted sm:text-xl">
-            {header.tagline}
-          </p>
-        )}
-        {header.location && (
-          <p className="mt-3 inline-flex items-center gap-1.5 text-sm text-muted">
-            <MapPin aria-hidden="true" className="size-4 shrink-0" />
-            <span>{header.location}</span>
-          </p>
-        )}
-        <AvailabilityBadge
-          availability={header.availability}
-          ui={header.ui}
-          className="mt-4 max-w-xl justify-center rounded-3xl bg-accent-soft px-4 py-2 text-start text-sm text-ink sm:justify-start"
-          dotClassName="bg-accent-fg"
-          linkClassName={`font-bold text-accent-fg underline underline-offset-2 hover:no-underline ${focusRing}`}
+      <h1 className={`${display} pt-name font-medium ${compact ? 'pt-h1 mt-4' : 'pt-title mt-6'}`}>
+        {header.name}
+      </h1>
+      {header.tagline && <p className="pt-body pt-measure mt-2 text-muted">{header.tagline}</p>}
+      {header.location && (
+        <p className="pt-small mt-3 inline-flex items-center gap-1.5 text-muted">
+          <MapPin aria-hidden="true" className="size-4 shrink-0" />
+          <span>{header.location}</span>
+        </p>
+      )}
+      <AvailabilityBadge
+        availability={header.availability}
+        ui={header.ui}
+        className="pt-small mt-4 max-w-xl justify-center rounded-3xl bg-accent-soft px-4 py-2 text-start text-ink"
+        dotClassName="bg-accent-fg"
+        linkClassName={`font-bold text-ink underline underline-offset-2 hover:no-underline ${focusRing}`}
+      />
+      {header.work && (
+        <WorkCard
+          work={header.work}
+          className="pt-small mt-3 max-w-xl rounded-3xl bg-accent-soft px-4 py-2.5 text-start text-ink"
+          linkClassName={`font-bold text-ink underline underline-offset-2 hover:no-underline ${focusRing}`}
+          buttonClassName={`pt-fine rounded-full bg-ink px-3 py-1 font-bold text-page hover:opacity-90 ${focusRing}`}
         />
-        {header.work && (
-          <WorkCard
-            work={header.work}
-            className="mt-3 max-w-xl rounded-3xl bg-accent-soft px-4 py-2.5 text-start text-ink"
-            linkClassName={`font-bold text-accent-fg underline underline-offset-2 hover:no-underline ${focusRing}`}
-            buttonClassName={`rounded-full bg-ink px-3 py-1 text-xs font-bold text-page hover:opacity-90 ${focusRing}`}
-          />
-        )}
-        <ul className="mt-5 flex flex-wrap justify-center gap-2.5 sm:justify-start">
-          {header.links.map((item) => (
-            <li key={item.id} className="max-w-full">
-              <HeaderLink link={item} className={pill} />
-            </li>
-          ))}
-          {header.contact && (
-            <li className="print:hidden">
-              <ContactLink contact={header.contact} className={pill} />
-            </li>
-          )}
-          {header.resume && (
-            <li>
-              <ResumeLink resume={header.resume} className={pill} />
-            </li>
-          )}
-          <li>
-            <ShareButton {...header.share} ui={header.ui.share} variant="outline" />
+      )}
+      <ul className="mt-5 flex flex-wrap justify-center gap-2.5">
+        {header.links.map((item) => (
+          <li key={item.id} className="max-w-full">
+            <HeaderLink link={item} className={pill} />
           </li>
-        </ul>
-      </div>
+        ))}
+        {header.contact && (
+          <li className="print:hidden">
+            <ContactLink contact={header.contact} className={pill} />
+          </li>
+        )}
+        {header.resume && (
+          <li>
+            <ResumeLink resume={header.resume} className={pill} />
+          </li>
+        )}
+        <li>
+          <ShareButton {...header.share} ui={header.ui.share} variant="outline" />
+        </li>
+      </ul>
     </header>
   );
 }
 
+// A profile with this much to read gets the compact introduction.
+const isHeavy = (profile: { experience: unknown[]; about?: string | null }) =>
+  profile.experience.length >= 4 || (profile.about?.length ?? 0) > 700;
+
+// Experience is the strongest section: a larger heading. Everything else is one step down.
 function Section({ block, children }: { block: Block; children: ReactNode }) {
+  const lead = block.kind === 'entries' && block.variant === 'experience';
   return (
-    <section aria-labelledby={block.id} className="mt-10 sm:mt-14">
-      <h2 id={block.id} className={`${display} mb-5 text-2xl font-medium text-balance sm:text-3xl`}>
+    <section aria-labelledby={block.id} className="mt-12 sm:mt-16">
+      <h2
+        id={block.id}
+        className={`${display} mb-5 font-medium text-balance ${lead ? 'pt-h1' : 'pt-h2'}`}
+      >
         {block.title}
       </h2>
       {children}
@@ -173,117 +169,52 @@ function BlockBody({ block }: { block: Block }) {
           locale={block.locale}
           from={900}
           lines={9}
-          className="text-lg leading-8 sm:text-xl sm:leading-9"
+          className="pt-body"
         />
       );
-    case 'skills': {
-      const listSkills = (items: typeof block.skills) => (
-        <ul className="flex flex-wrap gap-2.5">
-          {items.map((skill) => (
-            <li key={skill.id} className={chip}>
-              {skill.name}
-            </li>
-          ))}
-        </ul>
-      );
+    case 'skills':
+      return <SkillList block={block} className="flex flex-wrap gap-2.5" itemClassName={chip} />;
+    case 'projects':
       return (
-        <>
-          {listSkills(block.skills)}
-          {block.rest.length > 0 && (
-            <Collapse
-              className="mt-6"
-              label={fill(block.ui.density.moreSkills, { count: block.rest.length })}
-              closeLabel={block.ui.density.showLess}
-            >
-              {listSkills(block.rest)}
-            </Collapse>
-          )}
-        </>
+        <ProjectList
+          block={block}
+          classes={{
+            list: 'grid gap-4 sm:grid-cols-2',
+            item: `${card} group relative flex flex-col p-5`,
+            cover: 'rounded-2xl object-cover aspect-[40/21] max-w-none',
+            body: 'flex-1 text-muted',
+            meta: 'text-muted',
+            link: `font-semibold text-ink underline decoration-line underline-offset-4 hover:no-underline after:absolute after:inset-0 after:rounded-3xl ${focusRing}`,
+          }}
+        />
       );
-    }
-    case 'projects': {
-      const listProjects = (items: typeof block.projects) => (
-        <ul className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {items.map((project) => (
-            <li
-              key={project.id}
-              className={`${card} group relative flex min-w-0 flex-col p-5 ${isHeroProject(block, project) ? 'md:col-span-2 lg:col-span-3 md:p-7' : ''}`}
-            >
-              <ProjectCover
-                project={project}
-                className={`mb-4 w-full rounded-2xl object-cover ${isHeroProject(block, project) ? 'aspect-[21/9]' : 'aspect-[40/21]'}`}
-              />
-              <h3
-                className={`${display} leading-snug font-medium ${isHeroProject(block, project) ? 'text-3xl' : 'text-xl'}`}
-              >
-                <Link
-                  href={project.detailHref}
-                  className={`underline decoration-line underline-offset-4 group-hover:decoration-current after:absolute after:inset-0 after:rounded-3xl ${focusRing}`}
-                >
-                  {project.name}
-                </Link>
-              </h3>
-              {project.description && (
-                <ReadMore
-                  text={project.description}
-                  locale={block.locale}
-                  className="mt-3 flex-1 leading-relaxed text-muted"
-                />
-              )}
-              {project.tags.length > 0 && (
-                <p className="mt-4 text-sm text-muted">{project.tags.join(' · ')}</p>
-              )}
-              <ProjectVisit
-                project={project}
-                label={block.ui.viewProject}
-                className={`inline-flex items-center gap-1 text-sm font-bold text-accent-fg underline underline-offset-4 hover:no-underline ${focusRing}`}
-              />
-            </li>
-          ))}
-        </ul>
-      );
-      return (
-        <>
-          {listProjects(block.projects)}
-          {block.rest.length > 0 && (
-            <Collapse
-              className="mt-6"
-              label={fill(block.ui.density.moreProjects, { count: block.rest.length })}
-              closeLabel={block.ui.density.showLess}
-            >
-              {listProjects(block.rest)}
-            </Collapse>
-          )}
-        </>
-      );
-    }
     case 'writing':
       return (
         <WritingList
           block={block}
-          className="grid gap-6 md:grid-cols-2"
-          itemClassName={`${card} group relative flex min-w-0 flex-col p-6`}
+          className="grid gap-4"
+          itemClassName={`${card} group relative flex min-w-0 flex-col p-5`}
           coverClassName="mb-5 aspect-[40/21] w-full rounded-2xl object-cover"
-          titleClassName={`${display} text-xl leading-snug font-medium`}
+          titleClassName={`${display} pt-h3 font-medium`}
           linkClassName={`after:absolute after:inset-0 after:rounded-3xl ${focusRing}`}
-          metaClassName="mt-1 text-sm text-muted"
-          excerptClassName="mt-3 leading-relaxed text-muted"
-          moreClassName={`mt-6 inline-block font-bold text-accent-fg underline underline-offset-2 hover:no-underline ${focusRing}`}
+          metaClassName="pt-small mt-1 text-muted"
+          excerptClassName="pt-body mt-3 text-muted"
+          moreClassName={`pt-small mt-6 inline-block font-bold text-ink underline underline-offset-2 hover:no-underline ${focusRing}`}
         />
       );
     case 'testimonials': {
       const listTestimonials = (items: typeof block.testimonials) => (
-        <ul className="grid gap-5 md:grid-cols-2">
+        <ul className="space-y-4">
           {items.map((item) => (
             <li key={item.id} className="min-w-0">
               <figure className="flex h-full flex-col rounded-3xl bg-accent-soft p-6">
-                <blockquote className="flex-1 text-lg leading-relaxed whitespace-pre-line">
+                <blockquote className="pt-body pt-measure flex-1 whitespace-pre-line">
                   {item.message}
                 </blockquote>
-                <figcaption className="mt-5 flex items-center gap-3 text-sm">
+                <figcaption className="pt-small mt-5 flex items-center gap-3">
                   <InitialsBadge
                     name={item.name}
-                    className={`${display} size-10 bg-surface text-base text-ink`}
+                    className={`${display} size-10 bg-surface pt-body text-ink`}
                   />
                   <span className="min-w-0">
                     <span className="block font-bold">{item.name}</span>
@@ -301,13 +232,12 @@ function BlockBody({ block }: { block: Block }) {
             <>
               {listTestimonials(block.testimonials)}
               {block.rest.length > 0 && (
-                <Collapse
-                  className="mt-6"
+                <Expander
                   label={fill(block.ui.density.moreTestimonials, { count: block.rest.length })}
                   closeLabel={block.ui.density.showLess}
                 >
                   {listTestimonials(block.rest)}
-                </Collapse>
+                </Expander>
               )}
             </>
           ) : null}
@@ -315,7 +245,7 @@ function BlockBody({ block }: { block: Block }) {
             <LeaveTestimonial
               slug={block.submitTo}
               ui={block.ui.leave}
-              buttonClassName={`mt-10 inline-flex items-center rounded-full bg-ink px-6 py-2.5 text-sm font-bold text-page transition-opacity duration-200 hover:opacity-90 ${focusRing}`}
+              buttonClassName={`pt-small mt-10 inline-flex items-center rounded-full bg-ink px-6 py-2.5 font-bold text-page transition-opacity duration-200 hover:opacity-90 ${focusRing}`}
             />
           )}
         </>
@@ -325,7 +255,7 @@ function BlockBody({ block }: { block: Block }) {
       return (
         <CtaView
           block={block}
-          linkClassName={`inline-flex items-center gap-2 rounded-full bg-ink px-6 py-2.5 text-sm font-bold text-page transition-opacity duration-200 hover:opacity-90 ${focusRing}`}
+          linkClassName={`pt-small inline-flex items-center gap-2 rounded-full bg-ink px-6 py-2.5 font-bold text-page transition-opacity duration-200 hover:opacity-90 ${focusRing}`}
         />
       );
     case 'contact':
@@ -333,95 +263,43 @@ function BlockBody({ block }: { block: Block }) {
         <div className="max-w-xl print:hidden">
           <ContactForm
             form={block.form}
-            buttonClassName={`inline-flex items-center rounded-full bg-ink px-6 py-2.5 text-sm font-bold text-page transition-opacity duration-200 hover:opacity-90 ${focusRing}`}
+            buttonClassName={`pt-small inline-flex items-center rounded-full bg-ink px-6 py-2.5 font-bold text-page transition-opacity duration-200 hover:opacity-90 ${focusRing}`}
           />
         </div>
       );
     case 'entries': {
-      const listEntries = (items: typeof block.entries) => (
-        <ol className="space-y-6 border-s-2 border-line ps-6">
-          {items.map((entry) => (
-            <li key={entry.id} className="relative min-w-0">
-              <span
-                aria-hidden="true"
-                className="absolute -start-[1.9rem] top-2 size-3 rounded-full bg-accent ring-4 ring-page"
-              />
-              {entry.start && (
-                <p className="mb-1 text-sm text-muted tabular-nums">
-                  <DateRange
-                    start={entry.start}
-                    end={entry.end}
-                    openEnded={block.variant !== 'custom'}
-                    duration={entry.duration}
-                    fmt={entry.fmt}
-                  />
-                </p>
-              )}
-              <h3 className={`${display} text-xl leading-snug font-medium sm:text-2xl`}>
-                {entry.title}
-              </h3>
-              {entry.subtitle && <p className="mt-0.5 text-muted">{entry.subtitle}</p>}
-              {entry.roles && (
-                <RoleList
-                  roles={entry.roles}
-                  className="mt-4 space-y-4 border-s border-line ps-4"
-                  titleClassName={`${display} text-lg font-medium`}
-                  datesClassName="text-sm text-muted tabular-nums"
-                  descriptionClassName="mt-1 leading-relaxed"
-                />
-              )}
-              {entry.description && (
-                <ReadMore
-                  text={entry.description}
-                  locale={entry.fmt.locale}
-                  className="mt-3 leading-relaxed"
-                />
-              )}
-              {entry.href && (
-                <p className="mt-3">
-                  <NewTabLink
-                    href={entry.href}
-                    context={entry.title}
-                    className={`inline-flex items-center gap-1 text-sm font-semibold underline underline-offset-4 hover:no-underline ${focusRing}`}
-                  >
-                    View
-                    <ArrowUpRight aria-hidden="true" className="rtl:-scale-x-100 size-4" />
-                  </NewTabLink>
-                </p>
-              )}
-            </li>
-          ))}
-        </ol>
+      // Experience sits in one hairline panel with a quiet timeline; other lists are a plain timeline.
+      const experience = block.variant === 'experience';
+      const list = (
+        <EntryList
+          block={block}
+          totalClassName="inline-block rounded-full bg-accent-soft px-4 py-1 font-semibold"
+          marker={
+            <span
+              aria-hidden="true"
+              className="absolute -start-[1.9rem] top-2 size-3 rounded-full bg-accent ring-4 ring-surface"
+            />
+          }
+          classes={{
+            list: 'space-y-8 border-s-2 border-line ps-6',
+            item: 'relative',
+            title: `${display} font-medium ${experience ? 'pt-h2' : 'pt-h3'}`,
+            org: 'text-muted',
+            dates: 'mb-1 text-muted',
+          }}
+        />
       );
-      return (
-        <>
-          <TotalExperience
-            total={block.total}
-            label={block.ui.totalExperience}
-            className="mb-5 inline-block rounded-full bg-accent-soft px-4 py-1 text-sm font-semibold"
-          />
-          {listEntries(block.entries)}
-          {block.variant === 'experience' && block.rest.length > 0 && (
-            <Collapse
-              className="mt-6"
-              label={fill(block.ui.density.earlierRoles, { count: block.rest.length })}
-              closeLabel={block.ui.density.showLess}
-            >
-              {listEntries(block.rest)}
-            </Collapse>
-          )}
-        </>
-      );
+      return experience ? <div className={`${card} p-5 sm:p-8`}>{list}</div> : list;
     }
   }
 }
 
 function Footer({ footer }: { footer: FooterModel }) {
   return (
-    <footer className="mx-auto max-w-4xl px-5 pb-12 text-center text-sm text-muted sm:px-8">
+    <footer className="pt-small mx-auto max-w-3xl px-(--gutter) pb-12 text-center text-muted">
       <FooterLines
         footer={footer}
-        yearClassName="mt-24"
+        yearClassName="mt-16"
         linkClassName={`font-bold text-ink underline underline-offset-4 hover:no-underline ${focusRing}`}
       />
     </footer>
@@ -450,7 +328,7 @@ export default function SoftTheme({
         fontClass={fontClass}
         renderBlock={(block) => <BlockView block={block} />}
         Section={Section}
-        hero={<Header header={buildHeader(profile)} />}
+        hero={<Header header={buildHeader(profile)} compact={isHeavy(profile)} />}
         footer={<Footer footer={buildFooter(profile)} />}
       />
     );
@@ -463,19 +341,19 @@ export default function SoftTheme({
         full={page.key === 'about'}
         wrapClassName="mx-auto mt-6 mb-4 flex max-w-2xl flex-col items-center gap-4 text-center sm:flex-row sm:gap-6 sm:text-start"
         avatarClassName="size-24 shrink-0 rounded-full ring-4 ring-surface sm:size-28"
-        placeholderClassName={`${display} bg-accent-soft text-4xl font-medium text-ink`}
-        nameClassName={`${display} text-xl font-medium`}
-        taglineClassName="mt-1 text-lg leading-snug text-muted"
-        metaClassName="mt-2 text-sm text-muted"
-        pillClassName={`inline-flex max-w-full items-center gap-2 rounded-full border border-line bg-surface px-4 py-2 text-sm font-semibold transition-colors duration-200 hover:bg-accent-soft ${focusRing}`}
-        badgeClassName="mt-3 max-w-xl justify-center rounded-3xl bg-accent-soft px-4 py-2 text-start text-sm text-ink sm:justify-start"
+        placeholderClassName={`${display} bg-accent-soft pt-title font-medium text-ink`}
+        nameClassName={`${display} pt-h2 font-medium`}
+        taglineClassName="pt-body mt-1 text-muted"
+        metaClassName="pt-small mt-2 text-muted"
+        pillClassName={`pt-small inline-flex max-w-full items-center gap-2 rounded-full border border-line bg-surface px-4 py-2 font-semibold transition-colors duration-200 hover:bg-accent-soft ${focusRing}`}
+        badgeClassName="pt-small mt-3 max-w-xl justify-center rounded-3xl bg-accent-soft px-4 py-2 text-start text-ink sm:justify-start"
         badgeDotClassName="bg-accent-fg"
-        badgeLinkClassName={`font-bold text-accent-fg underline underline-offset-2 hover:no-underline ${focusRing}`}
+        badgeLinkClassName={`font-bold text-ink underline underline-offset-2 hover:no-underline ${focusRing}`}
       />
     ) : null;
   return (
     <ThemeWrapper theme="soft" profile={profile} nav={nav} className={fontClass}>
-      <main id={`${idPrefix}main`} className="mx-auto max-w-5xl px-5 py-8 sm:px-8 sm:py-12">
+      <main id={`${idPrefix}main`} className="mx-auto max-w-3xl px-(--gutter) py-8 sm:py-12">
         {lead ??
           (heading ? (
             <PageHeading
@@ -483,11 +361,11 @@ export default function SoftTheme({
               title={page ? pageLabel(profile, page) : undefined}
               kicker={profile.fullName}
               wrapClassName="mb-2 text-center sm:mb-4"
-              kickerClassName="mb-3 text-sm text-muted"
-              className={`${display} text-[clamp(2.25rem,7vw,3.75rem)] leading-[1.1] font-medium text-balance`}
+              kickerClassName="pt-small mb-3 text-muted"
+              className={`${display} pt-title pt-name font-medium`}
             />
           ) : (
-            <Header header={buildHeader(profile)} />
+            <Header header={buildHeader(profile)} compact={isHeavy(profile)} />
           ))}
         {identity}
         {blocks.map((block) => (

@@ -64,6 +64,7 @@ export function tokensFor(theme: ThemeKey, accentColor: string): Tokens {
         line: mix(accent, '#e9e2e6', 0.2),
       };
     case 'sidebar':
+    case 'aurora':
     case 'executive':
       return {
         ...base,

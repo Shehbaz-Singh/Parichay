@@ -6,7 +6,7 @@ import { Card } from '@/components/ui';
 
 const POINTS = [
   'Start from your resume or from scratch',
-  'Six themes, with a live preview',
+  'Seven themes, with a live preview',
   'Publish and share one link',
 ];
 
