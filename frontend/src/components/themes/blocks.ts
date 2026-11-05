@@ -7,6 +7,7 @@ import {
   pagePathOf,
   type PublicLink,
   type PublicPage,
+  type AvatarShape,
   type PublicPostSummary,
   type PublicProfile,
   type SectionKey,
@@ -682,7 +683,8 @@ export interface HeaderModel {
   name: string;
   tagline: string | null;
   location: string | null;
-  avatar: { src: string | null; alt: string; initials: string };
+  // `shape` is the owner's choice for the photo; null leaves it to the theme.
+  avatar: { src: string | null; alt: string; initials: string; shape?: AvatarShape | null };
   links: { id: string; type: PublicLink['type']; href: string; label: string; external: boolean }[];
   // What the Share menu needs (the message is the owner's own, when they wrote one).
   share: { url: string; title: string; message: string | null; subject: string };
@@ -715,6 +717,7 @@ export function buildHeader(profile: PublicProfile): HeaderModel {
       src: safeHttpUrl(profile.avatarUrl),
       alt: fill(ui.photoOf, { name: profile.fullName }),
       initials: initials(profile.fullName),
+      shape: profile.avatarShape,
     },
     links: profile.links.flatMap((link) => {
       const target = linkTarget(link);

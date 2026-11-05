@@ -23,6 +23,13 @@ enum LeadWith {
   education
 }
 
+// The shape of the photo on the public page (shared/src/avatar-shape.ts). Null: the theme decides.
+enum AvatarShape {
+  round
+  soft
+  square
+}
+
 // Aurora's look: dark (the default) or light. The other themes have one look and ignore it.
 enum PortfolioAppearance {
   dark
@@ -112,6 +119,7 @@ model Profile {
   about               String?
   location            String?
   avatarUrl           String?
+  avatarShape         AvatarShape?
   theme               String             @default("index")
   leadWith            LeadWith           @default(automatic)
   appearance          PortfolioAppearance @default(dark)

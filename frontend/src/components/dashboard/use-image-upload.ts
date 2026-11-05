@@ -55,15 +55,32 @@ export function useImageUpload(options: Options) {
     setBusy(false);
   }
 
-  async function remove() {
+  // Sends a file that is already checked (a photo the cropper made). Unlike upload(), it throws,
+  // so the cropper can keep its dialog open, show what went wrong and offer a retry.
+  async function submit(file: File, onProgress?: (fraction: number) => void) {
     if (!endpoint) return;
+    const form = new FormData();
+    form.append(field, file);
+    const result = await api<Record<string, unknown>>(endpoint, {
+      method: 'POST',
+      form,
+      onProgress,
+    });
+    onResult?.(result);
+    onChange(result[resultKey] as string);
+    notify('success', uploaded);
+  }
+
+  async function remove() {
+    if (!endpoint) return false;
     setBusy(true);
-    await attempt(async () => {
+    const ok = await attempt(async () => {
       await api(endpoint, { method: 'DELETE' });
       onChange(null);
     }, removed);
     setBusy(false);
+    return ok;
   }
 
-  return { input, busy, upload, remove };
+  return { input, busy, upload, submit, remove };
 }

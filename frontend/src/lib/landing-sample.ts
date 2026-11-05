@@ -47,6 +47,7 @@ function toPublic(sample: SampleProfile): PublicProfile {
     about: sample.about,
     location: sample.location,
     avatarUrl: null,
+    avatarShape: null,
     theme: sample.theme,
     accentColor: sample.accentColor,
     leadWith: 'automatic' as const,

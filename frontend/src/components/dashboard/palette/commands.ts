@@ -411,6 +411,23 @@ const layout: Source = ({ profile, go, requestJump }) => {
   ];
 };
 
+// Opens Basics with the focus on the photo button; the browser only opens a file chooser from a
+// click, so the person takes it from there (see AvatarUpload).
+const photo: Source = ({ profile, go, requestJump }) => [
+  {
+    id: 'action:photo',
+    group: 'Actions',
+    title: profile.avatarUrl ? 'Change photo' : 'Add a photo',
+    subtitle: 'Choose, position and crop your profile photo',
+    keywords: ['photo', 'avatar', 'picture', 'profile picture', 'crop', 'image', 'headshot'],
+    icon: UserRound,
+    run: async () => {
+      await go('/dashboard/profile', 'basics');
+      requestJump('photo', 'change');
+    },
+  },
+];
+
 const themes: Source = ({ profile, saveFields, notify }) =>
   THEME_LIST.map((theme) => ({
     id: `theme:${theme.key}`,
@@ -530,7 +547,7 @@ const help: Source = ({ showShortcuts }) => [
 ];
 
 // The order here is the order within a group.
-const SOURCES: Source[] = [goTo, actions, layout, themes, accents, items, help];
+const SOURCES: Source[] = [goTo, actions, layout, photo, themes, accents, items, help];
 
 export const buildCommands = (ctx: PaletteContext): Command[] =>
   SOURCES.flatMap((source) => source(ctx));

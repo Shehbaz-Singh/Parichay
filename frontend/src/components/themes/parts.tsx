@@ -2,6 +2,7 @@ import type { ComponentType, ReactNode } from 'react';
 import Link from 'next/link';
 import { ArrowRight, FileDown, Globe, Link2, Mail, Phone, UserPlus } from 'lucide-react';
 import type { PublicLink } from '@parichay/shared';
+import { AVATAR_SHAPE_CLASS, withoutRounding } from './avatar-shape';
 import { formatDate, formatMonthYear, initials } from '@/lib/format';
 import { fill } from '@/lib/i18n';
 import { ReadMore } from './ReadMore';
@@ -172,6 +173,8 @@ export function Avatar({
   className: string; // applied to both
   placeholderClassName: string; // extra, for the initials circle
 }) {
+  // The owner's shape replaces the theme's own rounding; the theme's size and border stay.
+  const shaped = avatar.shape ? `${withoutRounding(className)} ${AVATAR_SHAPE_CLASS[avatar.shape]}` : className;
   if (avatar.src) {
     return (
       // A plain <img>: avatars come from Cloudinary (already 400px) or any host the user chose,
@@ -183,14 +186,14 @@ export function Avatar({
         height={160}
         referrerPolicy="no-referrer"
         decoding="async"
-        className={`${className} object-cover`}
+        className={`${shaped} object-cover`}
       />
     );
   }
   return (
     <div
       aria-hidden="true"
-      className={`${className} flex items-center justify-center select-none ${placeholderClassName}`}
+      className={`${shaped} flex items-center justify-center select-none ${placeholderClassName}`}
     >
       {avatar.initials}
     </div>

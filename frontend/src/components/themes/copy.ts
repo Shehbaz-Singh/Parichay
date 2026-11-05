@@ -15,13 +15,6 @@ function cutAtWord(text: string, max: number): string {
   return `${window.slice(0, Math.max(window.lastIndexOf(' '), max / 2))}…`;
 }
 
-// The first sentence of the About text, for the hero's one line. Null when there is no About text.
-export function heroLine(about: string | null | undefined, max = 140): string | null {
-  const text = about?.replace(/\s+/g, ' ').trim();
-  if (!text) return null;
-  return cutAtWord(sentences(text)[0] ?? text, max);
-}
-
 // The hero's line and what is left of the text after it: the first sentence, when it fits, so the intro below
 // does not say it again. A first sentence that is too long is cut for the hero and the text is left whole.
 export function heroSplit(

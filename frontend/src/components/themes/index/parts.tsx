@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import type { ReactNode } from 'react';
 import { ArrowUpRight } from 'lucide-react';
+import { AVATAR_SHAPE_CLASS } from '../avatar-shape';
 import { formatDate } from '@/lib/format';
 import { fill } from '@/lib/i18n';
 import type { Block, Entry, HeaderModel, ProjectEntry } from '../blocks';
@@ -327,11 +328,15 @@ export function Photo({ avatar }: { avatar: HeaderModel['avatar'] }) {
       src={avatar.src}
       alt={avatar.alt}
       width={400}
-      height={500}
+      height={avatar.shape ? 400 : 500}
       loading="lazy"
       decoding="async"
       referrerPolicy="no-referrer"
-      className="aspect-[4/5] w-full max-w-[22rem] object-cover object-[50%_28%]"
+      className={
+        avatar.shape
+          ? `aspect-square w-full max-w-[22rem] object-cover ${AVATAR_SHAPE_CLASS[avatar.shape]}`
+          : 'aspect-[4/5] w-full max-w-[22rem] object-cover object-[50%_28%]'
+      }
     />
   );
 }

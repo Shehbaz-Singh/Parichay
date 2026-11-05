@@ -16,7 +16,11 @@ import { TextField } from '../../form-fields';
 import { Button, Input, SlowNotice } from '../../ui';
 import { errorText, useEditor, type SectionItem } from '../editor-context';
 import { SortableList } from '../SortableList';
+import { PhotoField } from '../photo/PhotoField';
 import { useImageUpload } from '../use-image-upload';
+
+const COVER_WIDTH = 1200;
+const COVER_ASPECT = COVER_WIDTH / 630;
 
 type Project = SectionItem<'projects'>;
 type GalleryImage = Project['images'][number];
@@ -33,7 +37,7 @@ function useProjectUpdate(projectId: string) {
 
 function CoverImage({ project }: { project: Project }) {
   const change = useProjectUpdate(project.id);
-  const { input, busy, upload, remove } = useImageUpload({
+  const { busy, submit, remove } = useImageUpload({
     endpoint: `/profile/me/projects/${project.id}/cover`,
     field: 'cover',
     resultKey: 'coverUrl',
@@ -68,35 +72,30 @@ function CoverImage({ project }: { project: Project }) {
           className="aspect-[1200/630] w-full max-w-sm rounded-card object-cover"
         />
       )}
-      <input
-        ref={input}
-        type="file"
-        accept={IMAGE_TYPES.join(',')}
-        className="sr-only"
-        tabIndex={-1}
-        aria-hidden="true"
-        onChange={(e) => {
-          void upload(e.target.files?.[0]);
-          e.target.value = ''; // choosing the same file again should still work
-        }}
-      />
-      <div className="flex flex-wrap gap-2">
-        <Button disabled={busy} onClick={() => input.current?.click()}>
-          <ImagePlus aria-hidden="true" className="size-4" />
-          {busy ? 'Working…' : project.coverUrl ? 'Change image' : 'Add a cover image'}
-        </Button>
+      <PhotoField
+        // Covers are stored at 1200 × 630, so that is the shape to crop.
+        aspect={COVER_ASPECT}
+        maxWidth={COVER_WIDTH}
+        round={false}
+        hasCurrent={!!project.coverUrl}
+        busy={busy}
+        chooseLabel="Add a cover image"
+        changeLabel="Change image"
+        onSave={submit}
+        onRemove={remove}
+        current={null}
+      >
         {project.coverUrl && (
-          <Button variant="danger" disabled={busy} onClick={remove}>
+          <Button variant="danger" size="sm" disabled={busy} onClick={remove}>
             <Trash2 aria-hidden="true" className="size-4" />
             Remove image
           </Button>
         )}
-      </div>
-      <p className="text-xs text-muted">
-        JPG, PNG or WebP, up to {megabytes(IMAGE_MAX_BYTES)}. It is cropped to 1200 × 630. It leads
-        the project’s page and is the picture people see when it is shared.
-      </p>
-      <SlowNotice pending={busy} />
+        <p className="text-xs text-muted">
+          It leads the project’s page and is the picture people see when it is shared.
+        </p>
+        <SlowNotice pending={busy} />
+      </PhotoField>
       {project.coverUrl && (
         <TextField
           name="coverAlt"

@@ -8,9 +8,9 @@ import {
   IMAGE_MAX_BYTES,
   IMAGE_TYPES,
   linkTypeSchema,
-  megabytes,
   profileUpdateSchema,
   slugSchema,
+  type AvatarShape,
   type LinkInput,
   type LinkType,
   type MyLink,
@@ -22,24 +22,24 @@ import { ApiError } from '@/lib/client-api';
 import { schemaResolver } from '@/lib/form';
 import { initials } from '@/lib/format';
 import { CheckboxField, Form, SelectField, TextField } from '../../form-fields';
-import { Button, SlowNotice, Switch } from '../../ui';
+import { Button, Select, SlowNotice, Switch } from '../../ui';
 import { useFormAutosave } from '../autosave';
 import { EditorForm } from '../EditorForm';
-import { useEditor, useReportDirty, useSection } from '../editor-context';
+import { errorText, useEditor, useReportDirty, useSection } from '../editor-context';
 import { Collapsible } from '../layout';
 import { useGo } from '../navigation';
 import { SectionManager, type ItemFormProps } from '../SectionManager';
 import { NOTICES, PROBLEMS } from '@/lib/messages';
+import { PHOTO } from '../photo/messages';
+import { PhotoField } from '../photo/PhotoField';
 import { useImageUpload } from '../use-image-upload';
 
+const SHAPE_OPTIONS = Object.entries(PHOTO.shapes).map(([value, label]) => ({ value, label }));
+
 function AvatarUpload() {
-  const { profile, update } = useEditor();
-  const {
-    input,
-    busy: uploading,
-    upload,
-    remove,
-  } = useImageUpload({
+  const { profile, update, jump, clearJump, saveFields, attempt, notify } = useEditor();
+  const [focusRequest, setFocusRequest] = useState(0);
+  const { busy, submit, remove } = useImageUpload({
     endpoint: '/profile/me/avatar',
     field: 'avatar',
     resultKey: 'avatarUrl',
@@ -51,51 +51,75 @@ function AvatarUpload() {
     onChange: (avatarUrl) => update((p) => ({ ...p, avatarUrl })),
   });
 
+  // The command palette's "Change photo" lands here.
+  useEffect(() => {
+    if (jump?.kind !== 'photo') return;
+    setFocusRequest((n) => n + 1);
+    clearJump();
+  }, [jump, clearJump]);
+
   return (
-    <div className="flex items-center gap-4">
-      {profile.avatarUrl ? (
-        // A plain <img>, like the public theme: avatars can come from any host.
-        <img
-          src={profile.avatarUrl}
-          alt="Your current avatar"
-          referrerPolicy="no-referrer"
-          className="size-20 rounded-full object-cover"
-        />
-      ) : (
-        <div
-          aria-hidden="true"
-          className="flex size-20 items-center justify-center rounded-full bg-accent-soft text-2xl font-semibold text-accent"
-        >
-          {initials(profile.fullName)}
-        </div>
-      )}
-      <div className="space-y-1">
-        <input
-          ref={input}
-          type="file"
-          accept={IMAGE_TYPES.join(',')}
-          className="sr-only"
-          tabIndex={-1}
-          aria-hidden="true"
-          onChange={(e) => {
-            void upload(e.target.files?.[0]);
-            e.target.value = ''; // picking the same file again should still trigger onChange
-          }}
-        />
-        <div className="flex gap-2">
-          <Button disabled={uploading} onClick={() => input.current?.click()}>
-            {uploading ? 'Working…' : profile.avatarUrl ? 'Change photo' : 'Upload photo'}
+    <PhotoField
+      hasCurrent={!!profile.avatarUrl}
+      busy={busy}
+      chooseLabel="Upload photo"
+      focusRequest={focusRequest}
+      shape={profile.avatarShape}
+      onSave={async (file, onProgress, shape) => {
+        await submit(file, onProgress);
+        if (shape === undefined) return;
+        // The photo is already saved; a shape that fails to save is only reported.
+        try {
+          await saveFields({ avatarShape: shape });
+        } catch (err) {
+          notify('error', errorText(err));
+        }
+      }}
+      onRemove={remove}
+      current={
+        profile.avatarUrl ? (
+          // A plain <img>, like the public theme: avatars can come from any host.
+          <img
+            src={profile.avatarUrl}
+            alt="Your current avatar"
+            referrerPolicy="no-referrer"
+            className="size-20 rounded-full object-cover"
+          />
+        ) : (
+          <div
+            aria-hidden="true"
+            className="flex size-20 items-center justify-center rounded-full bg-accent-soft text-2xl font-semibold text-accent"
+          >
+            {initials(profile.fullName)}
+          </div>
+        )
+      }
+    >
+      {profile.avatarUrl && (
+        <>
+          <div className="flex flex-wrap items-center gap-2">
+            <label htmlFor="photo-shape" className="text-sm font-medium">
+              {PHOTO.shape}
+            </label>
+            <Select
+              id="photo-shape"
+              value={profile.avatarShape ?? 'theme'}
+              options={SHAPE_OPTIONS}
+              onChange={(value) =>
+                void attempt(
+                  () => saveFields({ avatarShape: value === 'theme' ? null : (value as AvatarShape) }),
+                  PHOTO.shapeSaved,
+                )
+              }
+            />
+          </div>
+          <Button variant="danger" size="sm" disabled={busy} onClick={remove}>
+            Remove
           </Button>
-          {profile.avatarUrl && (
-            <Button variant="danger" disabled={uploading} onClick={remove}>
-              Remove
-            </Button>
-          )}
-        </div>
-        <p className="text-xs text-muted">JPG, PNG or WebP, up to {megabytes(IMAGE_MAX_BYTES)}.</p>
-        <SlowNotice pending={uploading} />
-      </div>
-    </div>
+        </>
+      )}
+      <SlowNotice pending={busy} />
+    </PhotoField>
   );
 }
 

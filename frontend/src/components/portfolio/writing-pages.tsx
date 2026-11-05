@@ -224,6 +224,7 @@ export async function PostView({
                   src: safeHttpUrl(profile.avatarUrl),
                   alt: '', // the name beside it says whose it is
                   initials: initials(profile.fullName),
+                  shape: profile.avatarShape,
                 }}
                 className="size-10 shrink-0 rounded-full"
                 placeholderClassName="bg-accent-soft text-sm font-semibold text-accent-fg"

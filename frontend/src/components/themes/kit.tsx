@@ -23,22 +23,6 @@ import { ReadMore } from './ReadMore';
 type Cx = string | false | null | undefined;
 const cx = (...names: Cx[]) => names.filter(Boolean).join(' ');
 
-export function Container({
-  className,
-  children,
-  as: Tag = 'div',
-}: {
-  className?: string;
-  children: ReactNode;
-  as?: 'div' | 'main' | 'header' | 'footer';
-}) {
-  return (
-    <Tag className={cx('mx-auto w-full max-w-[var(--container,72rem)] px-(--gutter)', className)}>
-      {children}
-    </Tag>
-  );
-}
-
 export function SectionHeading({
   id,
   children,
@@ -81,37 +65,6 @@ export function Section({
       </SectionHeading>
       <div className={gapClassName}>{children}</div>
     </section>
-  );
-}
-
-// A line of small facts: "Lisbon · Open to work · 8 years". Separators are decoration.
-export function MetaRow({
-  items,
-  className,
-}: {
-  items: (ReactNode | null | undefined | false)[];
-  className?: string;
-}) {
-  const shown = items.filter(Boolean);
-  if (shown.length === 0) return null;
-  return (
-    <ul className={cx('pt-small flex flex-wrap items-baseline gap-x-2 gap-y-1', className)}>
-      {shown.map((item, i) => (
-        <li key={i} className="flex items-baseline gap-2">
-          {i > 0 && <span aria-hidden="true">·</span>}
-          {item}
-        </li>
-      ))}
-    </ul>
-  );
-}
-
-// Links in a row that wraps. Each child is a complete link; the row only spaces them.
-export function LinkRow({ children, className }: { children: ReactNode; className?: string }) {
-  return (
-    <div className={cx('pt-small flex flex-wrap items-center gap-x-5 gap-y-2', className)}>
-      {children}
-    </div>
   );
 }
 
@@ -233,8 +186,6 @@ export function ExperienceItem({
     </li>
   );
 }
-
-export const EducationItem = ExperienceItem;
 
 // The whole 'entries' block: total experience (only when worked out from real dates), the shown
 // entries, then the earlier ones behind the expander, or a link to the page with all of them.

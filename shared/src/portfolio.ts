@@ -6,6 +6,7 @@ import {
   DEFAULT_AVAILABILITY_STATUS,
   availabilityStatusSchema,
 } from './availability';
+import { avatarShapeSchema } from './avatar-shape';
 import { isLocaleCode } from './languages';
 import { DEFAULT_LAYOUT_MODE, layoutModeSchema } from './layout-mode';
 import {
@@ -141,6 +142,8 @@ export const profileInputSchema = z.object({
   about: optionalText(ABOUT_MAX),
   location: optionalText(100),
   avatarUrl: httpUrl.nullish().transform((v) => v ?? null),
+  // The photo's shape in every theme (avatar-shape.ts); null leaves it to each theme's design.
+  avatarShape: avatarShapeSchema.nullish().transform((v) => v ?? null),
   theme: themeSchema.default(DEFAULT_THEME),
   // One page or a site of pages (pages.ts). Changed by its own endpoint, together with the page list.
   layoutMode: layoutModeSchema.default(DEFAULT_LAYOUT_MODE),
@@ -375,12 +378,3 @@ export const reorderSchema = z.object({
     .refine((ids) => new Set(ids).size === ids.length, 'ids must be unique'),
 });
 export type ReorderInput = z.infer<typeof reorderSchema>;
-
-// A whole portfolio in one payload (used by the seed script and later by resume auto-fill).
-export const fullProfileInputSchema = profileInputSchema.extend({
-  links: z.array(linkInputSchema).default([]),
-  skills: z.array(skillInputSchema).default([]),
-  experience: z.array(experienceInputSchema).default([]),
-  projects: z.array(projectInputSchema).default([]),
-  education: z.array(educationInputSchema).default([]),
-});

@@ -9,8 +9,10 @@ import {
   useRef,
   useState,
   type ReactNode,
+  type RefObject,
 } from 'react';
 import { Button } from './Button';
+import { cx } from './cx';
 
 // A dialog on the browser's own <dialog>: the page behind it is inert, Tab stays inside, Escape
 // closes it, and focus goes back to what opened it. Clicking outside closes it too.
@@ -20,6 +22,8 @@ export function Modal({
   title,
   description,
   footer,
+  wide,
+  restoreFocus,
   children,
 }: {
   open: boolean;
@@ -27,6 +31,10 @@ export function Modal({
   title: string;
   description?: ReactNode;
   footer?: ReactNode; // the buttons; the first focusable one gets the focus
+  wide?: boolean; // for content that needs room, like the photo cropper
+  // Where focus goes when it closes, when what opened it is not the focused element (a file picker,
+  // a drop). Defaults to the element that had the focus when it opened.
+  restoreFocus?: RefObject<HTMLElement | null>;
   children?: ReactNode;
 }) {
   const ref = useRef<HTMLDialogElement>(null);
@@ -43,9 +51,9 @@ export function Modal({
     if (!open && dialog.open) dialog.close();
     return () => {
       if (dialog.open) dialog.close();
-      if (open) opener?.focus();
+      if (open) (restoreFocus?.current ?? opener)?.focus();
     };
-  }, [open]);
+  }, [open, restoreFocus]);
 
   return (
     // Escape is handled by onCancel below. The click is only a mouse shortcut for
@@ -62,7 +70,10 @@ export function Modal({
         onClose();
       }}
       onClick={(e) => e.target === ref.current && onClose()}
-      className="m-auto w-[calc(100%-2rem)] max-w-md rounded-card bg-page p-0 text-ink shadow-overlay backdrop:bg-black/40"
+      className={cx(
+        'm-auto max-h-[calc(100dvh-2rem)] w-[calc(100%-2rem)] rounded-card bg-page p-0 text-ink shadow-overlay backdrop:bg-black/40',
+        wide ? 'max-w-3xl' : 'max-w-md',
+      )}
     >
       <div className="space-y-4 p-card-lg">
         <h2 id={titleId} className="type-section">

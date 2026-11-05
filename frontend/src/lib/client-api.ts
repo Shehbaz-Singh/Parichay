@@ -20,6 +20,8 @@ interface Options {
   body?: unknown; // sent as JSON
   form?: FormData; // sent as multipart (uploads)
   signal?: AbortSignal;
+  // Upload progress, 0 to 1. fetch cannot report it, so a request with this set is sent with XHR.
+  onProgress?: (fraction: number) => void;
   // Login and register get a 401 for a wrong password, which is not an expired session.
   redirectOn401?: boolean;
 }
@@ -30,8 +32,27 @@ const RETRY_STATUSES = new Set([502, 503, 504]);
 const READ_ATTEMPTS = 3;
 const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
+// The same request as fetch would make, through XHR, for its upload progress events.
+function sendWithProgress(path: string, options: Options): Promise<Response> {
+  return new Promise((resolve, reject) => {
+    const xhr = new XMLHttpRequest();
+    xhr.open(options.method ?? 'POST', `/api${path}`);
+    xhr.responseType = 'arraybuffer';
+    xhr.upload.onprogress = (e) => e.lengthComputable && options.onProgress?.(e.loaded / e.total);
+    xhr.onload = () => {
+      const noBody = xhr.status === 204 || xhr.status === 205;
+      resolve(new Response(noBody ? null : xhr.response, { status: xhr.status }));
+    };
+    xhr.onerror = () => reject(new TypeError('network'));
+    xhr.onabort = () => reject(new DOMException('Aborted', 'AbortError'));
+    options.signal?.addEventListener('abort', () => xhr.abort());
+    xhr.send(options.form);
+  });
+}
+
 async function attempt(path: string, options: Options): Promise<Response | ApiError> {
   try {
+    if (options.onProgress && options.form) return await sendWithProgress(path, options);
     return await fetch(`/api${path}`, {
       method: options.method ?? 'GET',
       headers: options.body !== undefined ? { 'content-type': 'application/json' } : undefined,
@@ -39,7 +60,7 @@ async function attempt(path: string, options: Options): Promise<Response | ApiEr
       signal: options.signal,
     });
   } catch (err) {
-    if (options.signal?.aborted) throw err;
+    if (options.signal?.aborted || (err instanceof DOMException && err.name === 'AbortError')) throw err;
     return new ApiError(
       0,
       'NETWORK',

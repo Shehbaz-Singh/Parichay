@@ -21,5 +21,3 @@ export function parseDescription(text: string): DescriptionPart[] {
   }
   return parts;
 }
-
-export const hasBullets = (text: string) => parseDescription(text).some((p) => p.kind === 'ul');
