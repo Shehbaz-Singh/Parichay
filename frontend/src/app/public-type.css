@@ -4,7 +4,7 @@
    font size, reading-prefs.css) and browser zoom scale type, spacing and boxes together.
 
    Scale: a modular scale at about 1.2 from the body size.
-     fine 13px  small 14.5px  body 16px (17.5px from 768px)  h3 21px  h2 25px  h1 30px  title 36px
+     fine 13px  small 14.5px  body 16px (17px from 768px)  h3 21px  h2 25px  h1 30px  title 36px
    Display text alone is fluid: it grows between 360px and 1440px and stops there.
    Weights: regular 400, medium 500, bold 700 (a theme may use 600 in place of 700, never both).
    Spacing: one scale on a 4px base (--sp-1 ... --sp-24). Related things are closer than groups. */
@@ -44,7 +44,7 @@
 }
 @media (min-width: 768px) {
   [data-portfolio] {
-    --t-body: 1.09375rem;
+    --t-body: 1.0625rem;
     --t-h3: 1.3125rem;
     --t-h2: 1.5625rem;
     --t-h1: 1.9375rem;
@@ -128,4 +128,35 @@
 }
 .pt-date {
   font-variant-numeric: tabular-nums;
+}
+
+/* ---- Tokens first set by Index, shared by every theme that uses the ruled-document pieces (kit.tsx).
+   Display type is tightened for Latin only: a negative letter-spacing breaks the joins of Arabic and Urdu
+   and crowds the marks of the Indic scripts. Display leading is looser for those scripts. */
+[data-portfolio] {
+  --t-lead: clamp(1.25rem, 2.2vw, 1.75rem); /* the role line under a name */
+  --t-section-title: clamp(2.5rem, 3.6vw, 3.5rem);
+  --t-item-title: clamp(1.5rem, 2.4vw, 2rem);
+  --measure-lead: 48ch; /* the hero's one line */
+  --ls-display: -0.02em;
+}
+.pt-tight {
+  letter-spacing: var(--ls-display);
+}
+:where([data-script]:not([data-script='latin'])) .pt-tight {
+  letter-spacing: 0;
+}
+:where(
+    [data-script='devanagari'],
+    [data-script='bengali'],
+    [data-script='gujarati'],
+    [data-script='gurmukhi'],
+    [data-script='telugu'],
+    [data-script='tamil']
+  )
+  [data-portfolio] :is(h1, h2, h3, .pt-display) {
+  line-height: 1.4;
+}
+:where([data-script='arabic'], [data-script='nastaliq']) [data-portfolio] :is(h1, h2, h3, .pt-display) {
+  line-height: 1.7;
 }
