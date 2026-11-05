@@ -10,6 +10,7 @@ import { Skeleton } from '../ui';
 import { cx } from '../ui/cx';
 
 const THEMES: { key: ThemeKey; name: string }[] = [
+  { key: 'index', name: 'Index' },
   { key: 'editorial', name: 'Editorial' },
   { key: 'bento', name: 'Bento' },
   { key: 'soft', name: 'Soft' },

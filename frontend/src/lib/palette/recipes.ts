@@ -213,6 +213,59 @@ function sidebar(p: Palette, c: Checker): Vars {
   return { ...vars, '--rail': rail, '--rail-mark': mark, '--band-a': a, '--band-b': b };
 }
 
+// Index: a near-white page, ink tinted a little toward the accent, hairline rules, and the accent only for the
+// numerals, small markers and links. The one gradient is the hero's mesh: four soft blobs of the accent's hue
+// and its neighbors (20 to 32 degrees either side), light enough for dark ink, with a pale base. Each stop is
+// made in OKLCH and gamut-mapped, then the hero's text is checked against EVERY stop (so against the
+// brightest part and the darkest alike): large type needs 3:1, small text 4.5:1, and the ink is moved until
+// both hold. If even black or white cannot read everywhere (it cannot happen with these lightness ranges),
+// a scrim of that color is added behind the text instead.
+function index(p: Palette, c: Checker): Vars {
+  const bg = '#fcfcfb';
+  const tint = (l: number, share: number) => p.tone(l, share);
+  const panel = tint(0.955, 0.3);
+  const vars = base(
+    p,
+    c,
+    {
+      bg,
+      surface: '#ffffff',
+      text: tint(0.2, 0.1),
+      muted: tint(0.42, 0.14),
+      border: tint(0.9, 0.07),
+    },
+    [panel],
+  );
+  const h = p.neutralAccent ? 255 : p.hue;
+  const chroma = p.neutralAccent ? 0.07 : Math.min(p.chroma, 0.2);
+  const stop = (l: number, share: number, shift: number) =>
+    hex({ l, c: chroma * share, h: shiftHue(h, shift) });
+  const m1 = stop(0.8, 1.25, 0); // the accent's own hue
+  const m2 = stop(0.88, 1, 32); // a neighbor on one side
+  const m3 = stop(0.72, 1.3, -26); // a neighbor on the other, the deepest blob
+  const m4 = stop(0.9, 0.7, 14); // a paler blob between them
+  const m0 = stop(0.93, 0.4, -10); // the base under the blobs
+  const stops = [m0, m1, m2, m3, m4];
+  // Hero text: dark ink if it reads on every stop, white if that is the better of the two.
+  const dark = c.text('hero text', vars['--text'], stops, TEXT_MIN);
+  const worst = (fg: string) => Math.min(...stops.map((s) => ratio(fg, s)));
+  const white = worst('#ffffff') > worst(dark);
+  const heroInk = white ? '#ffffff' : dark;
+  const reads = worst(heroInk) >= TEXT_MIN;
+  return {
+    ...vars,
+    '--panel': panel,
+    '--ix-m0': m0,
+    '--ix-m1': m1,
+    '--ix-m2': m2,
+    '--ix-m3': m3,
+    '--ix-m4': m4,
+    '--ix-hero-ink': heroInk,
+    '--ix-hero-page': white ? '#111111' : bg,
+    '--ix-scrim': reads ? 'transparent' : white ? 'rgb(0 0 0 / 0.38)' : 'rgb(255 255 255 / 0.5)',
+  };
+}
+
 // The light variant: the same layout on warm off-white. The glow becomes a soft wash of the accent (the
 // strength is lowered until the muted text on its darkest point reads 5:1), cards are white with a hairline
 // border and nothing moves. Every pair is checked like the dark one.
@@ -312,6 +365,7 @@ function aurora(p: Palette, c: Checker): Vars {
 }
 
 const RECIPES: Record<ThemeKey, (p: Palette, c: Checker) => Vars> = {
+  index,
   editorial,
   bento,
   soft,

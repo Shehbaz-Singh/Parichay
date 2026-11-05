@@ -31,7 +31,7 @@ export function ThemeWrapper({
 }) {
   // Sidebar's navigation is a rail beside the page, not a bar above or below it: the page and the rail
   // share a row from 900px up, and there is no bottom bar to leave room for.
-  const side = theme === 'sidebar';
+  const side = theme === 'sidebar' || theme === 'index';
   // Aurora's bar is at the top on every screen size, so there is no bottom bar to leave room for either.
   const aurora = theme === 'aurora';
   return (

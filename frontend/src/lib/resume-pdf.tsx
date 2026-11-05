@@ -566,6 +566,7 @@ function Creative({ c }: { c: Ctx }) {
 }
 
 const LAYOUTS: Record<ThemeKey, (props: { c: Ctx }) => ReactNode> = {
+  index: Executive, // light, one column of text: the executive resume reads closest
   editorial: Editorial,
   executive: Executive,
   soft: Soft,

@@ -229,5 +229,9 @@
     "workPrev": "پچھلے پروجیکٹس",
     "workNext": "اگلے پروجیکٹس",
     "allSkills": "تمام مہارتیں"
+  },
+  "index": {
+    "contents": "فہرست",
+    "backToTop": "اوپر جائیں"
   }
 }

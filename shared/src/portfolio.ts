@@ -103,6 +103,7 @@ export const slugSchema = slugFormatSchema.refine(
 // type is a Record over this list), so adding a theme means adding the key here and the entry
 // there. Only these keys are accepted when saving.
 export const THEME_KEYS = [
+  'index',
   'editorial',
   'bento',
   'soft',
@@ -113,7 +114,7 @@ export const THEME_KEYS = [
 ] as const;
 export const themeSchema = z.enum(THEME_KEYS);
 export type ThemeKey = z.infer<typeof themeSchema>;
-export const DEFAULT_THEME: ThemeKey = 'executive';
+export const DEFAULT_THEME: ThemeKey = 'index';
 
 export const DEFAULT_ACCENT = '#2563eb';
 

@@ -117,7 +117,7 @@ async function ThemedPage({
       links={languageLinks(profile, rest)}
       label={ui.switcher.label}
       // Aurora's own bar carries the language links and reading preferences, so no strip above it either.
-      bare={isMulti(profile) || getTheme(profile.theme).key === 'aurora'}
+      bare={isMulti(profile) || ['aurora', 'index'].includes(getTheme(profile.theme).key)}
     >
       {jsonLd && <JsonLd data={jsonLd} />}
       {profile.isSample && <SampleBanner ui={ui.sample} />}

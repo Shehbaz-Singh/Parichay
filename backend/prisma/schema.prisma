@@ -112,7 +112,7 @@ model Profile {
   about               String?
   location            String?
   avatarUrl           String?
-  theme               String             @default("executive")
+  theme               String             @default("index")
   leadWith            LeadWith           @default(automatic)
   appearance          PortfolioAppearance @default(dark)
   testimonialStyle    TestimonialStyle   @default(list)

@@ -7,6 +7,7 @@ import { LanguageSwitcher, type LanguageLink } from '../LanguageSwitcher';
 import { ReadingPreferences } from '../ReadingPreferences';
 import { Rail } from '../../themes/sidebar/Rail';
 import { AuroraBar } from '../../themes/aurora/Bar';
+import { IndexRail } from '../../themes/index/Rail';
 import { MobileBar, type MobileStyles } from './MobileBar';
 
 // The navigation of a multi-page portfolio, once for each theme: the same pages in the same order, drawn
@@ -333,7 +334,21 @@ function AuroraNav({ profile, items, current, languages }: NavProps) {
   );
 }
 
+// ---- Index: a slim left rail on wide screens, a top bar with a menu button below 900px; the theme draws it.
+function IndexNav({ profile, items, current, languages }: NavProps) {
+  return (
+    <IndexRail
+      profile={profile}
+      items={items}
+      mode="pages"
+      current={current}
+      languages={languages}
+    />
+  );
+}
+
 export const THEME_NAVS: Record<ThemeKey, ComponentType<NavProps>> = {
+  index: IndexNav,
   editorial: EditorialNav,
   bento: BentoNav,
   soft: SoftNav,
@@ -346,6 +361,7 @@ export const THEME_NAVS: Record<ThemeKey, ComponentType<NavProps>> = {
 // How much of the top of the screen the navigation takes while the page scrolls, for the sticky things
 // below it (a theme's section labels). The masthead and the soft row scroll away with the page.
 export const NAV_STICKY_HEIGHT: Record<ThemeKey, string> = {
+  index: '0px', // the rail is beside the page, or a bar that scrolls away on a phone
   editorial: '0px',
   bento: '4.25rem',
   soft: '0px',

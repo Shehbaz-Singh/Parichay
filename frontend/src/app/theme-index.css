@@ -1,0 +1,229 @@
+/* Index: a brand-guidelines page. A near-white page, a slim rail, one soft gradient (the hero's), hairline
+   rules and nothing else decorative. The colors are set inline by the theme from the accent
+   (lib/palette/recipes.ts, which checks every pair); the values here are what shows before that. Light only. */
+.theme-root.theme-index {
+  --bg: #fcfcfb;
+  --surface: #ffffff;
+  --text: #1b1c1f;
+  --muted: #51545c;
+  --border: #e3e4e6;
+  --panel: #f1f2f5;
+  --ix-m0: #e8e9f0;
+  --ix-m1: #c9d3f2;
+  --ix-m2: #ddd2f3;
+  --ix-m3: #b8c9ec;
+  --ix-m4: #e6e0f6;
+  --ix-hero-ink: #1b1c1f;
+  --ix-hero-page: #fcfcfb;
+  --ix-scrim: transparent;
+  color-scheme: light;
+  background: var(--bg);
+  color: var(--text);
+  /* 17px; the visitor's reading size scales it (rem), and it never drops under 16px on a phone. */
+  font-size: 1.0625rem;
+  line-height: 1.65;
+  font-variant-numeric: lining-nums;
+}
+
+/* Tight display type is for Latin only: a negative letter-spacing breaks the joins of Arabic and Urdu and
+   crowds the marks of the Indic scripts. */
+.theme-index .ix-tight {
+  letter-spacing: -0.02em;
+}
+:where([data-script]:not([data-script='latin'])) .theme-index .ix-tight {
+  letter-spacing: 0;
+}
+
+/* The form is the shared one: here its captions keep 13px and its boxes are square. */
+.theme-index .text-xs {
+  font-size: 0.8125rem;
+  line-height: 1.5;
+}
+.theme-index :is(.rounded-xl, .rounded-lg, .rounded-control) {
+  border-radius: 0;
+}
+
+/* The share button is shared with every theme; here it is plain underlined text, like the links beside it. */
+.theme-index .ix-share {
+  min-height: 2.5rem;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  font-size: 0.9375rem;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 4px;
+  transition: none;
+}
+.theme-index .ix-share:hover {
+  background: transparent;
+  text-decoration-thickness: 2px;
+}
+.theme-index .ix-share svg {
+  display: none;
+}
+
+/* ---- The hero: four soft blobs of the accent's hue and its neighbors on a pale base, a fine grain on top.
+   Made of gradients and one small inline tile: nothing is downloaded. No blur filter and no blend mode (they
+   cost a phone half a second to paint), and the grain tile is small on purpose: a larger one would be the
+   page's largest contentful paint, ahead of the name. */
+.ix-hero {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  background-color: var(--ix-m0);
+  color: var(--ix-hero-ink);
+}
+.ix-hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  background:
+    radial-gradient(58% 68% at 18% 22%, var(--ix-m1), transparent 72%),
+    radial-gradient(54% 64% at 84% 26%, var(--ix-m2), transparent 72%),
+    radial-gradient(70% 70% at 52% 96%, var(--ix-m3), transparent 74%),
+    radial-gradient(48% 58% at 92% 88%, var(--ix-m4), transparent 72%), var(--ix-m0);
+}
+@supports (background: radial-gradient(in oklch, red, blue)) {
+  .ix-hero::before {
+    background:
+      radial-gradient(in oklch 58% 68% at 18% 22%, var(--ix-m1), transparent 72%),
+      radial-gradient(in oklch 54% 64% at 84% 26%, var(--ix-m2), transparent 72%),
+      radial-gradient(in oklch 70% 70% at 52% 96%, var(--ix-m3), transparent 74%),
+      radial-gradient(in oklch 48% 58% at 92% 88%, var(--ix-m4), transparent 72%), var(--ix-m0);
+  }
+}
+.ix-hero::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0.1;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='96' height='96'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='1' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.9 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+/* Only when the ink could not read on every part of the mesh: a soft pad behind the text. */
+.ix-hero-content {
+  background: radial-gradient(ellipse at center, var(--ix-scrim) 0%, transparent 70%);
+}
+/* The mesh mirrors with the page. */
+:where([dir='rtl']) .ix-hero::before {
+  transform: scaleX(-1);
+}
+
+/* ---- Motion: the hero's gradient fades in over a quarter of a second, and that is all. Text is never faded: an
+   automated contrast check that lands mid-fade reads a half-transparent color, and a fade below the fold is
+   over before anyone scrolls to it. */
+@keyframes ix-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .ix-hero::before {
+    animation: ix-fade 0.24s ease-out both;
+  }
+}
+html[data-fx='low'] .ix-hero::before {
+  animation: none;
+}
+
+/* ---- Scripts: more leading than Latin, and a size that matches the Latin x-height. */
+:where(
+    [data-script='devanagari'],
+    [data-script='bengali'],
+    [data-script='gujarati'],
+    [data-script='gurmukhi'],
+    [data-script='telugu'],
+    [data-script='tamil']
+  )
+  .theme-index {
+  line-height: 1.85;
+  font-size-adjust: 0.5;
+}
+:where(
+    [data-script='devanagari'],
+    [data-script='bengali'],
+    [data-script='gujarati'],
+    [data-script='gurmukhi'],
+    [data-script='telugu'],
+    [data-script='tamil']
+  )
+  .theme-index
+  :is(h1, h2, h3, .ix-lead) {
+  line-height: 1.4;
+}
+:where([data-script='arabic']) .theme-index {
+  line-height: 1.95;
+}
+:where([data-script='nastaliq']) .theme-index {
+  line-height: 2.4;
+}
+:where([data-script='arabic'], [data-script='nastaliq']) .theme-index :is(h1, h2, h3, .ix-lead) {
+  line-height: 1.7;
+}
+:where([data-script='nastaliq']) .theme-index :is(h1, h2, h3, .ix-lead) {
+  line-height: 2.1;
+}
+
+/* ---- The rail's current item and the contents list are underlined as well as bold: never color alone. */
+:where([data-script='nastaliq']) .ix-nav a {
+  min-height: 2.75rem;
+  line-height: 2.2;
+}
+:where([data-script='arabic'], [data-script='devanagari']) .ix-nav a {
+  line-height: 1.7;
+}
+.ix-nav a[aria-current] {
+  font-weight: 600;
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 6px;
+}
+
+/* ---- Print: white, no rail, no gradient, and the address of every link written out. */
+@media print {
+  .ix-rail,
+  .ix-hero::before,
+  .ix-hero::after {
+    display: none !important;
+  }
+  .ix-hero {
+    background: none;
+    color: #111;
+    min-height: 0 !important;
+    padding-block: 2rem !important;
+  }
+  .ix-hero * {
+    color: #111 !important;
+  }
+  .theme-root.theme-index {
+    background: #fff;
+    color: #111;
+    font-size: 11pt;
+  }
+  .theme-index .ix-panel {
+    background: none;
+    border: 1px solid #999;
+  }
+  .theme-index main a[href^='http']::after,
+  .theme-index footer a[href^='http']::after,
+  .theme-index main a[href^='mailto:']::after,
+  .theme-index main a[href^='tel:']::after {
+    content: ' (' attr(href) ')';
+    font-size: 0.8em;
+    font-weight: 400;
+    word-break: break-all;
+  }
+}
+@media (forced-colors: active) {
+  .ix-hero::before,
+  .ix-hero::after {
+    display: none;
+  }
+}

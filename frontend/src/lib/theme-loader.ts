@@ -8,6 +8,7 @@ interface ThemeModule {
   fontClass: string; // the class that sets the theme's fonts
 }
 const loaders: Record<ThemeKey, () => Promise<ThemeModule>> = {
+  index: () => import('@/components/themes/IndexTheme'),
   editorial: () => import('@/components/themes/EditorialTheme'),
   bento: () => import('@/components/themes/BentoTheme'),
   creative: () => import('@/components/themes/CreativeTheme'),

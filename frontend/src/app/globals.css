@@ -1,6 +1,7 @@
 @import 'tailwindcss';
 @import './reading-prefs.css';
 @import './theme-fx.css';
+@import './theme-index.css';
 @import './public-type.css';
 
 /* ===== Design tokens: the one place the look of the app is defined =====

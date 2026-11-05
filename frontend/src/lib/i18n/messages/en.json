@@ -280,5 +280,9 @@
     "workPrev": "Previous projects",
     "workNext": "Next projects",
     "allSkills": "All skills"
+  },
+  "index": {
+    "contents": "Contents",
+    "backToTop": "Back to the top"
   }
 }

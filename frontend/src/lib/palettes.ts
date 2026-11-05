@@ -10,6 +10,7 @@ export interface Palette {
 
 // A Record over the shared key list, so a theme the API accepts cannot be missing here.
 export const PALETTES: Record<ThemeKey, Palette> = {
+  index: { scheme: 'light', background: '#fcfcfb', text: '#1b1c1f' },
   editorial: { scheme: 'light', background: '#faf8f4', text: '#1f1c18' },
   bento: { scheme: 'light', background: '#f5f6fa', text: '#141824' },
   creative: { scheme: 'light', background: '#ffffff', text: '#09090b' },

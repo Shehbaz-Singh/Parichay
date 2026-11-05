@@ -17,6 +17,10 @@ export interface ThemeEntry {
 // accepts has no entry, or an entry has no key. The components themselves are in
 // theme-components.ts (all of them, for the editor) and theme-loader.ts (one, for a public page).
 const entries: Record<ThemeKey, Omit<ThemeEntry, 'key' | 'scheme' | 'background'>> = {
+  index: {
+    name: 'Index',
+    description: 'A brand-guidelines page: a slim sidebar, one soft gradient, numbered sections in a narrow column and hairline rules. Light only. The default.',
+  },
   editorial: {
     name: 'Editorial',
     description: 'A quiet magazine page on warm paper: a narrow reading column, small-caps labels and dates in the margin.',
@@ -43,7 +47,7 @@ const entries: Record<ThemeKey, Omit<ThemeEntry, 'key' | 'scheme' | 'background'
   },
   executive: {
     name: 'Executive',
-    description: 'A resume-like page: a dark sidebar with contact and skills, dense text led by Experience. Prints cleanly. The default.',
+    description: 'A resume-like page: a dark sidebar with contact and skills, dense text led by Experience. Prints cleanly.',
   },
 };
 

@@ -50,7 +50,7 @@ function readTsPath(base) {
 const { themeColors } = load(resolve(lib, 'palette/index.ts'));
 const { ratio, mixHex } = load(resolve(lib, 'palette/oklch.ts'));
 
-const THEMES = ['editorial', 'bento', 'soft', 'executive', 'creative', 'sidebar', 'aurora'];
+const THEMES = ['index', 'editorial', 'bento', 'soft', 'executive', 'creative', 'sidebar', 'aurora'];
 const ACCENTS = {
   default: '#2563eb',
   yellow: '#facc15',
@@ -137,6 +137,17 @@ for (const [theme, appearance] of LOOKS) {
       gradient(where, 'white on band gradient', '#ffffff', v['--band-a'], v['--band-b'], 4.6);
       check(where, 'white on rail', '#ffffff', v['--rail'], 7);
       check(where, 'rail mark on rail', v['--rail-mark'], v['--rail'], 4.5);
+    }
+    if (theme === 'index') {
+      check(where, 'text on panel', v['--text'], v['--panel'], 4.5);
+      check(where, 'muted on panel', v['--muted'], v['--panel'], 4.5);
+      check(where, 'accent text on panel', v['--accent-fg'], v['--panel'], 4.5);
+      // The hero: its text over EVERY stop of the mesh (so the brightest and the darkest part), 4.5:1 for
+      // small text (so large display text clears its 3:1 with room), through the scrim when there is one.
+      for (const stop of ['--ix-m0', '--ix-m1', '--ix-m2', '--ix-m3', '--ix-m4']) {
+        check(where, `hero text on ${stop}`, v['--ix-hero-ink'], v[stop], 4.5);
+      }
+      check(where, 'hero button text on hero ink', v['--ix-hero-page'], v['--ix-hero-ink'], 7);
     }
     if (theme === 'aurora') {
       for (const surface of ['--au-raised', '--au-raised-hover']) {

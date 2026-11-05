@@ -130,6 +130,7 @@ export const SAMPLES: PublicProfile[] = SAMPLE_PROFILES.map(toPublic);
 // featured sample in it.
 export const SAMPLE_BY_THEME = {
   ...Object.fromEntries(SAMPLES.map((profile) => [profile.theme, profile])),
+  index: { ...SAMPLES[0], theme: 'index' },
   sidebar: { ...SAMPLES[0], theme: 'sidebar' },
   aurora: { ...SAMPLES[0], theme: 'aurora' },
 } as Record<ThemeKey, PublicProfile>;

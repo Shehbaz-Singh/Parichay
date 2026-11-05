@@ -229,5 +229,9 @@
     "workPrev": "पिछले प्रोजेक्ट",
     "workNext": "अगले प्रोजेक्ट",
     "allSkills": "सभी कौशल"
+  },
+  "index": {
+    "contents": "विषय-सूची",
+    "backToTop": "ऊपर जाएँ"
   }
 }

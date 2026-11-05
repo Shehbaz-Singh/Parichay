@@ -93,7 +93,7 @@ export async function ProfileView({ username, locale }: { username: string; loca
       locale={profile.locale}
       links={languageLinks(profile)}
       label={uiFor(profile.locale).switcher.label}
-      bare={multi || getTheme(profile.theme).key === 'aurora'}
+      bare={multi || ['aurora', 'index'].includes(getTheme(profile.theme).key)}
     >
       <JsonLd data={personData(profile, path)} />
       {multi && <AnchorForward targets={forward} />}
