@@ -36,12 +36,10 @@ export function start({ reveal }: { reveal: boolean }): () => void {
       const stop = inView(
         el,
         () => {
-          animate(el, { opacity: 1, transform: 'none' }, { duration, ease: EASE_OUT }).then(
-            () => {
-              el.style.opacity = '';
-              el.style.transform = '';
-            },
-          );
+          animate(el, { opacity: 1, transform: 'none' }, { duration, ease: EASE_OUT }).then(() => {
+            el.style.opacity = '';
+            el.style.transform = '';
+          });
           stop();
         },
         { amount: 0.12 },

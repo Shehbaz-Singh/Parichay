@@ -30,6 +30,7 @@ import {
   type ProjectPageModel,
   type WorkPageModel,
 } from './model';
+import { focusRing, display, wrap } from '@/components/themes/tokens';
 
 // The pages of a multi-page portfolio in the Editorial theme: a quiet magazine. Serif display type, a
 // narrow reading column, thin rules, small-capital labels and italic captions. Each page is laid out as a
@@ -39,12 +40,8 @@ import {
 // only draws it. It does not import the theme (the theme imports this), so what it needs from the theme
 // arrives as props.
 
-const display = 'font-(family-name:--font-theme-display)';
 const caps = 'text-xs font-semibold tracking-[0.18em] uppercase';
-const focusRing =
-  'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-fg';
 const link = `ed-underline text-accent-fg ${focusRing}`;
-const wrap = '[overflow-wrap:anywhere]';
 const title1 = `${display} text-5xl leading-[0.98] font-medium tracking-tight text-balance ${wrap} sm:text-7xl lg:text-8xl`;
 
 export interface EditorialPagesProps {

@@ -174,7 +174,9 @@ export function Avatar({
   placeholderClassName: string; // extra, for the initials circle
 }) {
   // The owner's shape replaces the theme's own rounding; the theme's size and border stay.
-  const shaped = avatar.shape ? `${withoutRounding(className)} ${AVATAR_SHAPE_CLASS[avatar.shape]}` : className;
+  const shaped = avatar.shape
+    ? `${withoutRounding(className)} ${AVATAR_SHAPE_CLASS[avatar.shape]}`
+    : className;
   if (avatar.src) {
     return (
       // A plain <img>: avatars come from Cloudinary (already 400px) or any host the user chose,

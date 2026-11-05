@@ -9,6 +9,7 @@ import { Rail } from '../../themes/sidebar/Rail';
 import { AuroraBar } from '../../themes/aurora/Bar';
 import { IndexRail } from '../../themes/index/Rail';
 import { MobileBar, type MobileStyles } from './MobileBar';
+import { focusRing, display } from '@/components/themes/tokens';
 
 // The navigation of a multi-page portfolio, once for each theme: the same pages in the same order, drawn
 // the way that theme draws everything else. From `sm` up it is the design below; on a phone every theme
@@ -23,10 +24,6 @@ export interface NavProps {
   languages: LanguageLink[];
   ui: Ui;
 }
-
-const focusRing =
-  'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-fg';
-const display = 'font-(family-name:--font-theme-display)';
 
 // The language links and the reading preferences, in the navigation (or at the end of the phone menu).
 function Utilities({

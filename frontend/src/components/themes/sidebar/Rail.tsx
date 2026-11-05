@@ -5,9 +5,7 @@ import { ReadingPreferences } from '../../portfolio/ReadingPreferences';
 import { SidebarRail, type RailItem } from '../../portfolio/nav/SidebarRail';
 import { buildFooter, buildHeader } from '../blocks';
 import { LINK_ICONS, NewTabLink } from '../parts';
-
-const focusRing =
-  'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-fg';
+import { focusRing } from '@/components/themes/tokens';
 
 // The Sidebar theme's rail, for both modes: the single page (links to its sections) and a multi-page
 // portfolio (links to its pages, with the language links and reading preferences, which the theme's

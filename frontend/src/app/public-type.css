@@ -140,12 +140,6 @@
   --measure-lead: 48ch; /* the hero's one line */
   --ls-display: -0.02em;
 }
-.pt-tight {
-  letter-spacing: var(--ls-display);
-}
-:where([data-script]:not([data-script='latin'])) .pt-tight {
-  letter-spacing: 0;
-}
 :where(
     [data-script='devanagari'],
     [data-script='bengali'],
@@ -154,9 +148,12 @@
     [data-script='telugu'],
     [data-script='tamil']
   )
-  [data-portfolio] :is(h1, h2, h3, .pt-display) {
+  [data-portfolio]
+  :is(h1, h2, h3, .pt-display) {
   line-height: 1.4;
 }
-:where([data-script='arabic'], [data-script='nastaliq']) [data-portfolio] :is(h1, h2, h3, .pt-display) {
+:where([data-script='arabic'], [data-script='nastaliq'])
+  [data-portfolio]
+  :is(h1, h2, h3, .pt-display) {
   line-height: 1.7;
 }

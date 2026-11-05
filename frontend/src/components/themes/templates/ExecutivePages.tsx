@@ -20,6 +20,7 @@ import {
   type ProjectPageModel,
   type WorkPageModel,
 } from './model';
+import { focusRing, display, wrap } from '@/components/themes/tokens';
 
 // The Executive theme's pages in multi mode: a resume sheet. The sidebar (identity, contact, skills) stays
 // on every page, as on a resume; the main column changes its form with the page. Home is a summary
@@ -28,12 +29,8 @@ import {
 // interactive chrome is print:hidden. What the theme file owns (the sidebar, the section frame, the block
 // renderer, the footer) comes in as props, so this file never imports the theme (no cycle).
 
-const display = 'font-(family-name:--font-theme-display)';
-const focusRing =
-  'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-fg';
 const link = `text-accent-fg underline underline-offset-2 hover:no-underline ${focusRing}`;
 const small = 'text-xs font-bold tracking-[0.14em] uppercase';
-const wrap = '[overflow-wrap:anywhere]';
 
 export interface ExecutivePagesProps {
   profile: PublicProfile;

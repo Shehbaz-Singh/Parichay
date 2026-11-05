@@ -4,13 +4,13 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useCallback, useEffect, useId, useRef, useState, type ReactNode } from 'react';
 import { Menu, X } from 'lucide-react';
+import { focusRing, WIDE } from '@/components/themes/tokens';
 
 // The Index theme's navigation: a slim white rail down the left (the right in a right-to-left language)
 // from 900px up, a top bar with a menu button below. One element does both: the bar is always there on a
 // phone, and the rest (numbered links, the secondary links, language and reading preferences) is the rail
 // itself above 900px and a full-height panel when the button opens it. The panel traps Tab, closes with
-// Escape or a link and gives focus back to the button. Without JavaScript the panel is simply shown under
-// the bar.
+// Escape or a link and gives focus back to the button. 
 //
 // `pages` mode (a multi-page portfolio): real links, the current page marked with aria-current="page".
 // `sections` mode (the single page): links to the sections' headings; the one being read is marked
@@ -29,10 +29,6 @@ export interface IndexRailText {
   close: string;
   skip: string;
 }
-
-const focusRing =
-  'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-fg';
-const WIDE = '(min-width: 900px)';
 
 export function IndexRailMenu({
   name,

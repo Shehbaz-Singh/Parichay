@@ -22,13 +22,11 @@ import {
 import { ShareButton } from '../../ShareButton';
 import { WorkCard } from '../WorkCard';
 import { splitTagline } from './model';
+import { focusRing, display, wrap } from '@/components/themes/tokens';
+export { focusRing, display, wrap };
 
 // The pieces of the Sidebar theme that both the single page and the pages of a multi-page portfolio use.
 
-export const display = 'font-(family-name:--font-theme-display)';
-export const focusRing =
-  'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-fg';
-export const wrap = '[overflow-wrap:anywhere]';
 // Side padding of every section: it follows the screen but never crowds a phone.
 export const gutter = 'px-[clamp(1.25rem,5vw,4.5rem)]';
 export const h2Class = `pt-h1 mb-10 scroll-mt-6 font-bold outline-none sm:mb-14 ${wrap}`;

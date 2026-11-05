@@ -32,6 +32,7 @@ import {
   type ProjectPageModel,
   type WorkPageModel,
 } from './model';
+import { focusRing, display, wrap } from '@/components/themes/tokens';
 
 // The pages of a multi-page portfolio in the Bento theme. Every page is its own composition of rounded
 // tiles, tinted from the accent, in the same grid as the single page (six units wide on a desktop, two
@@ -39,11 +40,7 @@ import {
 // the others with a small one beside the page's title. The theme passes in what it draws itself (its
 // frame's fonts, the tiles of a block, the footer), so this file never imports the theme.
 
-const display = 'font-(family-name:--font-theme-display)';
-const focusRing =
-  'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-fg';
 const chip = 'rounded-full border border-line bg-page/70 px-3 py-1 text-sm font-medium';
-const wrap = '[overflow-wrap:anywhere]';
 const stretched = `after:absolute after:inset-0 after:rounded-3xl ${focusRing}`;
 
 type Tone = 'plain' | 'strong' | 'solid' | 'mesh';
@@ -52,7 +49,7 @@ export interface BentoTile {
   span: number; // out of 6 columns
   tone: Tone;
   node: ReactNode;
-  flush?: boolean; // no padding: an image reaches the edges
+  flush?: boolean;
 }
 
 export interface BentoPagesProps {

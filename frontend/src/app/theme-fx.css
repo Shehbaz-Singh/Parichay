@@ -31,15 +31,6 @@
 
 /* ---- Gradient recipes. Interpolated in OKLCH where the browser can (even lightness, no gray middle), in
    sRGB where it cannot; the endpoints are already gamut-mapped hex. */
-.fx-wash {
-  background-image: linear-gradient(170deg, var(--wash-a), var(--wash-b));
-}
-@supports (background: linear-gradient(in oklch, red, blue)) {
-  .fx-wash {
-    background-image: linear-gradient(170deg in oklch, var(--wash-a), var(--wash-b));
-  }
-}
-
 /* ---- Blur: only on a sticky bar or a menu. A solid fill first; the translucent, blurred one only where the
    browser supports it and nobody asked for less transparency. */
 .fx-blur {
@@ -194,13 +185,11 @@
 }
 
 /* ---- Sidebar: grain on the two bands (keeps the gradient from banding), a hairline along the rail. */
-.sb-band,
-.sb-accent {
+.sb-band {
   position: relative;
   isolation: isolate;
 }
-.sb-band::before,
-.sb-accent::before {
+.sb-band::before {
   content: '';
   position: absolute;
   inset: 0;
@@ -266,8 +255,7 @@
 html[data-fx='low'] .au-glow,
 html[data-fx='low'] .au-hero::after,
 html[data-fx='low'] [data-fx-theme]::before,
-html[data-fx='low'] .sb-band::before,
-html[data-fx='low'] .sb-accent::before {
+html[data-fx='low'] .sb-band::before {
   display: none;
 }
 html[data-fx='low'] .exec-side,
@@ -301,7 +289,6 @@ html[data-fx='low'] .au-foot::before {
   [data-fx-theme]::before,
   .au-hero::after,
   .sb-band::before,
-  .sb-accent::before,
   [data-fx-theme='soft'] > main::before {
     display: none;
   }
@@ -316,8 +303,7 @@ html[data-fx='low'] .au-foot::before {
   [data-fx-theme]::before,
   [data-fx-theme='soft'] > main::before,
   .au-hero::after,
-  .sb-band::before,
-  .sb-accent::before {
+  .sb-band::before {
     display: none;
   }
   .cr-hdr,

@@ -35,6 +35,7 @@ import { ThemeWrapper } from './ThemeWrapper';
 import type { ThemeProps } from './types';
 import { ExecutivePages } from './templates/ExecutivePages';
 import { pageView } from './templates/model';
+import { focusRing, display } from '@/components/themes/tokens';
 
 // A professional, resume-like page: a document on a gray desk with two columns. The left sidebar
 // (dark, tinted by the accent) holds the photo, name, tagline, contact links and skills; the wider
@@ -62,9 +63,6 @@ const serif = Source_Serif_4({
 // The class that sets this theme's fonts; the Writing pages use it too.
 export const fontClass = `${sans.className} ${serif.variable}`;
 
-const display = 'font-(family-name:--font-theme-display)';
-const focusRing =
-  'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-fg';
 const link = `text-accent-fg underline underline-offset-2 hover:no-underline ${focusRing}`;
 const small = 'pt-label';
 
@@ -88,17 +86,11 @@ function Sidebar({
         placeholderClassName={`${display} bg-surface pt-title font-semibold`}
       />
       {nameAsParagraph ? (
-        <p className={`${display} pt-title pt-name mt-6 font-semibold`}>
-          {header.name}
-        </p>
+        <p className={`${display} pt-title pt-name mt-6 font-semibold`}>{header.name}</p>
       ) : (
-        <h1 className={`${display} pt-title pt-name mt-6 font-semibold`}>
-          {header.name}
-        </h1>
+        <h1 className={`${display} pt-title pt-name mt-6 font-semibold`}>{header.name}</h1>
       )}
-      {header.tagline && (
-        <p className="pt-small mt-2 text-muted">{header.tagline}</p>
-      )}
+      {header.tagline && <p className="pt-small mt-2 text-muted">{header.tagline}</p>}
       <AvailabilityBadge
         availability={header.availability}
         ui={header.ui}
@@ -170,10 +162,7 @@ function Sidebar({
 function Section({ block, children }: { block: Block; children: ReactNode }) {
   const lead = block.kind === 'entries' && block.variant === 'experience';
   return (
-    <section
-      aria-labelledby={block.id}
-      className="mt-12 first:mt-0 print:break-inside-auto"
-    >
+    <section aria-labelledby={block.id} className="mt-12 first:mt-0 print:break-inside-auto">
       <h2
         id={block.id}
         className={`${display} relative mb-5 break-after-avoid border-b pb-2 font-semibold ${

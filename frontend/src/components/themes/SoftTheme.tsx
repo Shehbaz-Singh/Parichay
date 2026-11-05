@@ -36,6 +36,7 @@ import { ThemeWrapper } from './ThemeWrapper';
 import { SoftPages } from './templates/SoftPages';
 import { pageView } from './templates/model';
 import type { ThemeProps } from './types';
+import { focusRing, display } from '@/components/themes/tokens';
 
 // Warm and calm. A centered introduction (a big round photo, the name, one line), then one narrow
 // column of sections with room between them. Open panels with a hairline, not stacked shadows:
@@ -63,9 +64,6 @@ const fraunces = Fraunces({
 // The class that sets this theme's fonts; the Writing pages use it too.
 export const fontClass = `${sans.className} ${fraunces.variable}`;
 
-const display = 'font-(family-name:--font-theme-display)';
-const focusRing =
-  'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-fg';
 const card = 'rounded-3xl border border-line bg-surface';
 const chip = 'rounded-full bg-accent-soft px-3.5 py-1 font-semibold';
 

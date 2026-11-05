@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useCallback, useEffect, useId, useRef, useState, type ReactNode } from 'react';
 import { Menu, X } from 'lucide-react';
+import { focusRing, display, WIDE } from '@/components/themes/tokens';
 
 // The Sidebar theme's navigation: a dark rail down the left (the right in RTL) from 900px up, a slim bar
 // with a menu button below. One element does both: the bar is always there on a phone, and the rest (the
@@ -28,11 +29,6 @@ export interface RailText {
   close: string;
   skip: string;
 }
-
-const focusRing =
-  'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-fg';
-const display = 'font-(family-name:--font-theme-display)';
-const WIDE = '(min-width: 900px)';
 
 export function SidebarRail({
   logo,

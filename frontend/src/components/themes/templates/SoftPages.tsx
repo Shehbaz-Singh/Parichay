@@ -30,15 +30,13 @@ import {
   type ProjectPageModel,
   type WorkPageModel,
 } from './model';
+import { focusRing, display } from '@/components/themes/tokens';
 
 // The pages of a multi-page portfolio in the Soft theme: warm and calm. A centered introduction, one
 // narrow column, open panels with a hairline, soft tinted chips, a quiet timeline and nothing that moves.
 // SoftTheme passes in what lives in its own file (the block renderer, the section frame, the hero and the
 // footer), so this file never imports from it.
 
-const display = 'font-(family-name:--font-theme-display)';
-const focusRing =
-  'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-fg';
 const panel = 'rounded-3xl border border-line bg-surface';
 const tint = 'rounded-3xl bg-accent-soft';
 const chip = 'rounded-full bg-accent-soft px-3.5 py-1 text-sm font-semibold';

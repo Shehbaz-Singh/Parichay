@@ -22,15 +22,14 @@ import {
 import { WorkCard } from '../WorkCard';
 import { ShareButton } from '../../ShareButton';
 import { Strip } from './Strip';
+import { focusRing, wrap } from '@/components/themes/tokens';
+export { focusRing, wrap };
 
 // The pieces of the Aurora theme that both the single page and the pages of a multi-page portfolio use.
 // Surfaces are the page color and one raised step (.au-card); the accent appears as text, rings, the one
 // solid button and the tints behind covers, all from lib/palette/recipes.ts. The glow is in the hero and the
 // footer card and nowhere else.
 
-export const focusRing =
-  'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-fg';
-export const wrap = '[overflow-wrap:anywhere]';
 // Side padding of every section, and the widest a section's content gets.
 export const gutter = 'px-[clamp(1rem,5vw,3rem)]';
 export const column = 'mx-auto max-w-6xl';
@@ -299,9 +298,7 @@ function ProjectCard({
           aria-hidden="true"
           className={`flex aspect-[16/10] w-full items-end bg-accent-soft p-5 text-accent-fg ${wrap}`}
         >
-          <span className={`${display} line-clamp-3 pt-h2 `}>
-            {project.name}
-          </span>
+          <span className={`${display} line-clamp-3 pt-h2 `}>{project.name}</span>
         </div>
       )}
       <div className="flex flex-1 flex-col p-5">

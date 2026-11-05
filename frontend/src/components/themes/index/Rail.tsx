@@ -5,9 +5,8 @@ import { ReadingPreferences } from '../../portfolio/ReadingPreferences';
 import { IndexRailMenu } from '../../portfolio/nav/IndexRailMenu';
 import { buildHeader } from '../blocks';
 import { pad } from './model';
+import { focusRing } from '@/components/themes/tokens';
 
-const focusRing =
-  'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-fg';
 const secondaryLink = `inline-flex min-h-9 items-center py-1 text-ink underline decoration-1 underline-offset-4 hover:decoration-2 ${focusRing}`;
 
 // The Index theme's rail for both modes: the single page (links to its sections) and a multi-page

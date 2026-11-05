@@ -302,12 +302,10 @@ button,
   color: var(--band-ink);
 }
 /* The form's fields stay light on the band, so what is typed in them is dark. */
-.sb-band :is(input, textarea, select),
-.sb-accent :is(input, textarea, select) {
+.sb-band :is(input, textarea, select) {
   color: #1c1b19;
 }
-.sb-band :is(input, textarea)::placeholder,
-.sb-accent :is(input, textarea)::placeholder {
+.sb-band :is(input, textarea)::placeholder {
   color: #5f5b54;
 }
 /* A script that has no italic (Devanagari, Arabic, ...) gets a heavier upright in place of a slanted one. */

@@ -41,6 +41,7 @@ import { ThemeWrapper } from './ThemeWrapper';
 import { BentoPages } from './templates/BentoPages';
 import { pageView } from './templates/model';
 import type { ThemeProps } from './types';
+import { focusRing, display } from '@/components/themes/tokens';
 
 // A bento grid: the page is rounded tiles of different sizes. The person and the links come first,
 // then one tile per section (one per project, one per testimonial) in the owner's order. Tile
@@ -68,10 +69,6 @@ const sora = Sora({
 
 // The class that sets this theme's fonts; the Writing pages use it too.
 export const fontClass = `${sans.className} ${sora.variable}`;
-
-const display = 'font-(family-name:--font-theme-display)';
-const focusRing =
-  'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-fg';
 
 // What the accent looks like as text on a dark tile, for `tiles="dark"`.
 const DARK_TILE = { scheme: 'dark', background: '#12141c', text: '#eef0f6' } as const;

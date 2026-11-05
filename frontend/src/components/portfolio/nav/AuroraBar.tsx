@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useCallback, useEffect, useId, useRef, useState, type ReactNode } from 'react';
 import { Menu, X } from 'lucide-react';
+import { focusRing, WIDE } from '@/components/themes/tokens';
 
 // The Aurora theme's navigation: a slim bar pinned to the top, the name or monogram on the left, the
 // pages in the middle and one action on the right (with the language links and reading preferences next
@@ -34,10 +35,6 @@ export interface BarAction {
   label: string;
   download?: boolean;
 }
-
-const focusRing =
-  'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-fg';
-const WIDE = '(min-width: 900px)';
 
 export function AuroraBarView({
   logo,

@@ -2,12 +2,10 @@ import Link from 'next/link';
 import type { PublicProfile } from '@parichay/shared';
 import { pagePath, uiFor } from '@/lib/i18n';
 import { findPage, pageHref, pageLabel } from '@/lib/pages';
+import { focusRing } from '@/components/themes/tokens';
 
 // The pieces of a project page that every theme's template shares: its breadcrumbs, and the way back
 // (the themes draw the rest in their own templates, components/themes/templates/).
-
-const focusRing =
-  'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-fg';
 
 // ---- breadcrumbs
 

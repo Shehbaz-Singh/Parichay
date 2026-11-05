@@ -34,6 +34,7 @@ import { EditorialPages } from './templates/EditorialPages';
 import { pageView } from './templates/model';
 import { ThemeWrapper } from './ThemeWrapper';
 import type { ThemeProps } from './types';
+import { focusRing, display } from '@/components/themes/tokens';
 
 // A quiet magazine page on warm paper (.theme-editorial). A narrow reading column; a masthead with a
 // large serif name between two rules; the About text opens with a drop cap; section labels are small
@@ -62,10 +63,7 @@ const serif = Newsreader({
 // The class that sets this theme's fonts; the Writing pages use it too.
 export const fontClass = `${sans.className} ${serif.variable}`;
 
-const display = 'font-(family-name:--font-theme-display)';
 const caps = 'pt-label';
-const focusRing =
-  'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-fg';
 const link = `ed-underline text-accent-fg ${focusRing}`;
 
 // One narrow column. The label is small capitals with a short accent rule that draws in as it enters.

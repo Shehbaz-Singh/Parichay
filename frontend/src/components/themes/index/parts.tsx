@@ -268,7 +268,12 @@ export function Roles({ block }: { block: Extract<Block, { kind: 'entries' }> })
   const list = (items: Entry[]) => (
     <ol>
       {items.map((entry) => (
-        <SplitExperienceItem key={entry.id} entry={entry} ui={block.ui} titleClassName={roleTitle} />
+        <SplitExperienceItem
+          key={entry.id}
+          entry={entry}
+          ui={block.ui}
+          titleClassName={roleTitle}
+        />
       ))}
     </ol>
   );

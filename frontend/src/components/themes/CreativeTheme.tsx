@@ -36,6 +36,7 @@ import { CreativePages } from './templates/CreativePages';
 import { pageView } from './templates/model';
 import { ThemeWrapper } from './ThemeWrapper';
 import type { ThemeProps } from './types';
+import { focusRing } from '@/components/themes/tokens';
 
 // Bold and expressive. The one big idea: every section hangs off a huge outlined number that stays
 // in view while its content scrolls past (stacked above the title on a phone), under a header in
@@ -65,9 +66,6 @@ const monoText = 'font-(family-name:--font-theme-mono)';
 // The one hover motion: the card lifts toward the top left as its offset shadow grows.
 const shifts =
   'transition-all duration-200 focus-within:-translate-x-0.5 focus-within:-translate-y-0.5 focus-within:shadow-[9px_9px_0_0_var(--accent)] motion-safe:hover:-translate-x-0.5 motion-safe:hover:-translate-y-0.5 hover:shadow-[9px_9px_0_0_var(--accent)]';
-
-const focusRing =
-  'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-fg';
 
 function Header({ header }: { header: HeaderModel }) {
   const pill = `pt-small inline-flex max-w-full items-center gap-2 rounded-full border-2 border-current px-4 py-2 font-bold transition hover:bg-on-accent hover:text-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-on-accent motion-safe:hover:-translate-y-0.5`;
@@ -406,7 +404,10 @@ function ThemeSection({ block }: { block: Block }): ReactNode {
             {String(count).padStart(2, '0')}
           </span>
         )}
-        <h2 id={block.id} className={`mt-2 font-extrabold [overflow-wrap:break-word] ${lead ? 'pt-h1' : 'pt-h2'}`}>
+        <h2
+          id={block.id}
+          className={`mt-2 font-extrabold [overflow-wrap:break-word] ${lead ? 'pt-h1' : 'pt-h2'}`}
+        >
           {block.title}
         </h2>
       </div>

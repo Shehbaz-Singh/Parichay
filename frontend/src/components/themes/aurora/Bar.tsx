@@ -4,9 +4,7 @@ import { LanguageSwitcher, type LanguageLink } from '../../portfolio/LanguageSwi
 import { ReadingPreferences } from '../../portfolio/ReadingPreferences';
 import { AuroraBarView, type BarAction, type BarItem } from '../../portfolio/nav/AuroraBar';
 import { buildHeader } from '../blocks';
-
-const focusRing =
-  'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-fg';
+import { focusRing } from '@/components/themes/tokens';
 
 // The Aurora theme's top bar, for both modes: the single page (links to its sections) and a multi-page
 // portfolio (links to its pages, with the language links and reading preferences, which the theme's nav

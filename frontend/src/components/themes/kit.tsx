@@ -14,6 +14,8 @@ import {
   TotalExperience,
 } from './parts';
 import { ReadMore } from './ReadMore';
+import { focusRing, wrap } from '@/components/themes/tokens';
+export { focusRing, wrap };
 
 // The layout primitives every public theme is built from. They carry the shared type steps, measure
 // and spacing (app/public-type.css) and the structure (headings, lists, the one expander); a theme
@@ -376,9 +378,6 @@ export function SkillList({
 // hairline rules, the two-column "title left, text right" grid, and size and weight for hierarchy. A theme
 // supplies its colors and fonts through its own variables and the class names passed in.
 
-export const focusRing =
-  'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-fg';
-export const wrap = '[overflow-wrap:anywhere]';
 // The one plain-text link: underlined, never color alone.
 export const textLink = `underline decoration-1 underline-offset-4 hover:decoration-2 ${focusRing}`;
 // A label column and a text column that starts at the middle and stops at about 66 characters; one column
