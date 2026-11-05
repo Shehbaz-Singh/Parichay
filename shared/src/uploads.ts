@@ -8,5 +8,9 @@ export const RESUME_MAX_BYTES = 5 * 1024 * 1024; // the API's limit for a resume
 // holds a resume to that, which is a little below what the API itself would take.
 export const RESUME_PROXY_MAX_BYTES = 4.5 * 1024 * 1024;
 
+// A project's or post's cover is stored at this size (the shape link previews use).
+export const COVER_WIDTH = 1200;
+export const COVER_HEIGHT = 630;
+
 const MB = 1024 * 1024;
 export const megabytes = (bytes: number) => `${bytes / MB} MB`; // "2 MB", "4.5 MB"

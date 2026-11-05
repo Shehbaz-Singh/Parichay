@@ -13,6 +13,7 @@ export const PHOTO = {
   change: 'Change photo',
   limits: `JPG, PNG or WebP, up to ${megabytes(PHOTO_LIMITS.maxInputBytes)}. You crop it on the next screen.`,
   opening: 'Opening your photo…',
+  working: 'Working…',
 
   title: 'Position your photo',
   description: 'Drag the photo to move it. Only what is inside the frame is kept.',
@@ -40,15 +41,12 @@ export const PHOTO = {
   previewCard: 'Card',
   previewNav: 'Small',
 
-  alt: (name: string) => `Photo of ${name}`,
-
   save: 'Save photo',
   saving: 'Uploading…',
   retry: 'Try again',
   cancel: 'Cancel',
   reset: 'Reset',
   remove: 'Remove current photo',
-  removing: 'Removing…',
   progress: 'Upload progress',
 
   discardTitle: 'Discard your changes?',

@@ -4,7 +4,6 @@ import { lazy, Suspense, useEffect, useRef, useState, type ReactNode } from 'rea
 import { Camera, ImagePlus } from 'lucide-react';
 import { IMAGE_TYPES } from '@parichay/shared';
 import { cx } from '@/components/ui/cx';
-import { PHOTO_LIMITS } from '@/lib/photo/geometry';
 import { PhotoError, inspectFile } from '@/lib/photo/process';
 import { Button } from '../../ui';
 import { useEditor } from '../editor-context';
@@ -112,7 +111,7 @@ export function PhotoField({
         <div className="flex flex-wrap gap-2">
           <Button ref={trigger} disabled={busy} onClick={() => pick.current?.click()}>
             <ImagePlus aria-hidden="true" className="size-4" />
-            {busy ? 'Working…' : hasCurrent ? changeLabel : chooseLabel}
+            {busy ? PHOTO.working : hasCurrent ? changeLabel : chooseLabel}
           </Button>
           {touch && (
             <Button disabled={busy} onClick={() => camera.current?.click()}>
@@ -133,7 +132,6 @@ export function PhotoField({
             restoreFocus={trigger}
             onClose={() => setFile(null)}
             {...dialog}
-            maxWidth={dialog.maxWidth ?? PHOTO_LIMITS.avatarSide}
           />
         </Suspense>
       )}

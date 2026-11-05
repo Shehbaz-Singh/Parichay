@@ -7,7 +7,7 @@ import type { AvatarShape } from '@parichay/shared';
 import { AVATAR_SHAPE_CLASS } from '../../themes/avatar-shape';
 import { ApiError } from '@/lib/client-api';
 import { cx } from '@/components/ui/cx';
-import { PHOTO_LIMITS, centerOn, cropNaturalWidth, isDark, shareInside, type Box } from '@/lib/photo/geometry';
+import { CROPPER, PHOTO_LIMITS, centerOn, cropNaturalWidth, isDark, shareInside, type Box } from '@/lib/photo/geometry';
 import {
   PhotoError,
   brightness,
@@ -47,14 +47,13 @@ export interface PhotoCropDialogProps {
   restoreFocus: RefObject<HTMLElement | null>;
 }
 
-const ZOOM_MIN = 1;
-const ZOOM_MAX = 3;
-const clampZoom = (z: number) => Math.min(ZOOM_MAX, Math.max(ZOOM_MIN, Math.round(z * 100) / 100));
+const clampZoom = (z: number) =>
+  Math.min(CROPPER.zoomMax, Math.max(CROPPER.zoomMin, Math.round(z * 100) / 100));
 const SHAPE_CLASS: Record<Shape, string> = { theme: 'rounded-full', ...AVATAR_SHAPE_CLASS };
 
 function failureText(err: unknown) {
   if (err instanceof PhotoError) return PHOTO_PROBLEMS[err.problem];
-  if (err instanceof ApiError && [0, 502, 503, 504].includes(err.status)) return PHOTO.waking;
+  if (err instanceof ApiError && (CROPPER.wakingStatuses as readonly number[]).includes(err.status)) return PHOTO.waking;
   return errorText(err);
 }
 
@@ -105,7 +104,7 @@ export default function PhotoCropDialog({
   const sayLater = useCallback(
     (text: string) => {
       window.clearTimeout(announceTimer.current);
-      announceTimer.current = window.setTimeout(() => say(text), 500);
+      announceTimer.current = window.setTimeout(() => say(text), CROPPER.announceDelayMs);
     },
     [say],
   );
@@ -278,10 +277,10 @@ export default function PhotoCropDialog({
     if ((e.target as HTMLElement).getAttribute('aria-label') !== PHOTO.cropLabel) return;
     if (e.key === '+' || e.key === '=') {
       e.preventDefault();
-      changeZoom(zoom + 0.1);
+      changeZoom(zoom + CROPPER.keyZoomStep);
     } else if (e.key === '-' || e.key === '_') {
       e.preventDefault();
-      changeZoom(zoom - 0.1);
+      changeZoom(zoom - CROPPER.keyZoomStep);
     } else if (e.key === 'r' || e.key === 'R') {
       e.preventDefault();
       rotate();
@@ -294,21 +293,13 @@ export default function PhotoCropDialog({
   const hints = [
     naturalCrop !== null && naturalCrop < PHOTO_LIMITS.softBelow && PHOTO.hintSmall,
     dark && PHOTO.hintDark,
-    face && area && shareInside(face, area) < 0.8 && PHOTO.hintFace,
+    face && area && shareInside(face, area) < CROPPER.faceShownMin && PHOTO.hintFace,
   ].filter(Boolean) as string[];
 
   const round_ = round && (shape === 'round' || shape === 'theme');
-  const sizes: [string, number][] = round
-    ? [
-        [PHOTO.previewHero, 96],
-        [PHOTO.previewCard, 56],
-        [PHOTO.previewNav, 32],
-      ]
-    : [
-        [PHOTO.previewHero, 176],
-        [PHOTO.previewCard, 112],
-        [PHOTO.previewNav, 64],
-      ];
+  const sizes = [PHOTO.previewHero, PHOTO.previewCard, PHOTO.previewNav].map(
+    (label, i): [string, number] => [label, (round ? CROPPER.previewAvatar : CROPPER.previewCover)[i]],
+  );
   const previewShape = round ? SHAPE_CLASS[shape] : 'rounded-md';
   const ready = loaded && url;
 
@@ -361,12 +352,12 @@ export default function PhotoCropDialog({
                   image={url}
                   crop={crop}
                   zoom={zoom}
-                  minZoom={ZOOM_MIN}
-                  maxZoom={ZOOM_MAX}
+                  minZoom={CROPPER.zoomMin}
+                  maxZoom={CROPPER.zoomMax}
                   aspect={aspect}
                   cropShape={round_ ? 'round' : 'rect'}
                   showGrid={!round_}
-                  keyboardStep={10}
+                  keyboardStep={CROPPER.keyMovePx}
                   onCropChange={setCrop}
                   onZoomChange={(z) => changeZoom(z, false)}
                   onMediaLoaded={(m) => (media.current = m)}
@@ -401,9 +392,9 @@ export default function PhotoCropDialog({
               <input
                 id={zoomId}
                 type="range"
-                min={ZOOM_MIN}
-                max={ZOOM_MAX}
-                step={0.01}
+                min={CROPPER.zoomMin}
+                max={CROPPER.zoomMax}
+                step={CROPPER.zoomStep}
                 value={zoom}
                 disabled={!ready || saving}
                 aria-valuetext={PHOTO.zoomValue(zoom)}

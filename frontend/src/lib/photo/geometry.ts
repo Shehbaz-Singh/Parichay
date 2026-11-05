@@ -9,6 +9,27 @@ export const PHOTO_LIMITS = {
   avatarSide: 800,
 } as const;
 
+// The cropper's own numbers: the zoom range, what a key press moves, how the file is encoded.
+export const CROPPER = {
+  zoomMin: 1,
+  zoomMax: 3,
+  zoomStep: 0.01,
+  keyZoomStep: 0.1, // + and −
+  keyMovePx: 10, // an arrow key
+  announceDelayMs: 500, // a screen reader hears a zoom or a move once it settles
+  faceShownMin: 0.8, // less of the face than this inside the crop: "your face looks cut off"
+  previewAvatar: [96, 56, 32], // large, card and small, in CSS pixels
+  previewCover: [176, 112, 64],
+  displayQuality: 0.92, // the copy the cropper shows
+  encodeQuality: 0.85, // the file that is uploaded
+  minQuality: 0.6, // below this the file is made smaller instead
+  qualityStep: 0.1,
+  shrink: 0.85,
+  thumbSide: 32, // the thumbnail the brightness is read from
+  // The answers of a server that is still waking up (0: no answer at all).
+  wakingStatuses: [0, 502, 503, 504],
+} as const;
+
 // A photo larger than the pixel limit is decoded at this scale. EXIF orientations 5 to 8 turn the
 // picture a quarter, so its decoded width is the stored height.
 export function decodeSize(

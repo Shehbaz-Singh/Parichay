@@ -1,3 +1,4 @@
+import { COVER_HEIGHT, COVER_WIDTH } from '@parichay/shared';
 import { v2 as cloudinary } from 'cloudinary';
 import { config } from './config';
 
@@ -61,13 +62,13 @@ export const uploadAvatar = (buffer: Buffer, profileId: string) =>
 // image a profile has can be found, and removed, by that prefix. A fresh name per upload, like avatars.
 const COVER_FOLDER = 'portfolio/covers';
 export const uploadCover = (buffer: Buffer, profileId: string, postId: string) =>
-  uploadImage(buffer, `${COVER_FOLDER}/${profileId}/${postId}-${Date.now()}`, 1200, 630);
+  uploadImage(buffer, `${COVER_FOLDER}/${profileId}/${postId}-${Date.now()}`, COVER_WIDTH, COVER_HEIGHT);
 
 // A project's cover: 1200 x 630, like a post's. A gallery image keeps its own shape, shrunk to fit
 // 1600 x 1600 at most. Both are under the profile's own folder, for the same reason as covers.
 const PROJECT_FOLDER = 'portfolio/projects';
 export const uploadProjectCover = (buffer: Buffer, profileId: string, projectId: string) =>
-  uploadImage(buffer, `${PROJECT_FOLDER}/${profileId}/${projectId}-cover-${Date.now()}`, 1200, 630);
+  uploadImage(buffer, `${PROJECT_FOLDER}/${profileId}/${projectId}-cover-${Date.now()}`, COVER_WIDTH, COVER_HEIGHT);
 export const uploadProjectImage = (buffer: Buffer, profileId: string, projectId: string) =>
   uploadImage(
     buffer,

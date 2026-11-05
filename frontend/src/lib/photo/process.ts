@@ -1,6 +1,7 @@
 import { IMAGE_MAX_BYTES } from '@parichay/shared';
 import { hasEmbeddedMetadata, jpegOrientation, readDimensions, sniffPhoto } from './bytes';
 import {
+  CROPPER,
   PHOTO_LIMITS,
   averageLuma,
   cropNaturalWidth,
@@ -117,7 +118,7 @@ const toBlob = (canvas: HTMLCanvasElement, type: string, quality: number) =>
 
 // A picture for the cropper to show: the canvas as a short-lived file the browser can display.
 export async function displayUrl(canvas: HTMLCanvasElement): Promise<string> {
-  const blob = (await toBlob(canvas, 'image/webp', 0.92)) ?? (await toBlob(canvas, 'image/png', 1));
+  const blob = (await toBlob(canvas, 'image/webp', CROPPER.displayQuality)) ?? (await toBlob(canvas, 'image/png', 1));
   if (!blob) throw new PhotoError('unreadable');
   return URL.createObjectURL(blob);
 }
@@ -149,7 +150,7 @@ export async function encodeCrop(
   baseName = 'photo',
 ): Promise<File> {
   let current = canvas;
-  let quality = 0.85;
+  let quality = CROPPER.encodeQuality;
   for (let attempt = 0; attempt < 6; attempt++) {
     let blob = await toBlob(current, 'image/webp', quality);
     if (blob?.type !== 'image/webp') {
@@ -170,10 +171,13 @@ export async function encodeCrop(
       const ext = blob.type === 'image/webp' ? 'webp' : 'jpg';
       return new File([blob], `${baseName}.${ext}`, { type: blob.type });
     }
-    if (quality > 0.6) {
-      quality -= 0.1;
+    if (quality > CROPPER.minQuality) {
+      quality -= CROPPER.qualityStep;
     } else {
-      const next = makeCanvas(Math.round(current.width * 0.85), Math.round(current.height * 0.85));
+      const next = makeCanvas(
+        Math.round(current.width * CROPPER.shrink),
+        Math.round(current.height * CROPPER.shrink),
+      );
       context(next).drawImage(current, 0, 0, next.width, next.height);
       current = next;
     }
@@ -183,10 +187,11 @@ export async function encodeCrop(
 
 // How bright the photo is, 0 to 255, from a thumbnail of it.
 export function brightness(canvas: HTMLCanvasElement): number {
-  const thumb = makeCanvas(32, 32);
+  const side = CROPPER.thumbSide;
+  const thumb = makeCanvas(side, side);
   const ctx = context(thumb);
-  ctx.drawImage(canvas, 0, 0, 32, 32);
-  return averageLuma(ctx.getImageData(0, 0, 32, 32).data);
+  ctx.drawImage(canvas, 0, 0, side, side);
+  return averageLuma(ctx.getImageData(0, 0, side, side).data);
 }
 
 interface FaceDetectorLike {
@@ -196,7 +201,7 @@ type FaceDetectorCtor = new (options?: { fastMode?: boolean; maxDetectedFaces?: 
 
 // The browser's own face detector, where it has one. The photo never leaves the device. Null means
 // there is no detector, as opposed to an empty list, which means no face was found.
-export const faceDetectionAvailable = () =>
+const faceDetectionAvailable = () =>
   typeof window !== 'undefined' && 'FaceDetector' in window;
 
 export async function findFace(canvas: HTMLCanvasElement): Promise<Box | null | undefined> {

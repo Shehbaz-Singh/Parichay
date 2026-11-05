@@ -3,6 +3,8 @@
 import { useState } from 'react';
 import { ImagePlus, Trash2 } from 'lucide-react';
 import {
+  COVER_HEIGHT,
+  COVER_WIDTH,
   IMAGE_ALT_MAX,
   IMAGE_MAX_BYTES,
   IMAGE_TYPES,
@@ -19,8 +21,7 @@ import { SortableList } from '../SortableList';
 import { PhotoField } from '../photo/PhotoField';
 import { useImageUpload } from '../use-image-upload';
 
-const COVER_WIDTH = 1200;
-const COVER_ASPECT = COVER_WIDTH / 630;
+const COVER_ASPECT = COVER_WIDTH / COVER_HEIGHT;
 
 type Project = SectionItem<'projects'>;
 type GalleryImage = Project['images'][number];
@@ -69,7 +70,8 @@ function CoverImage({ project }: { project: Project }) {
           src={project.coverUrl}
           alt={`Cover of ${project.name}`}
           referrerPolicy="no-referrer"
-          className="aspect-[1200/630] w-full max-w-sm rounded-card object-cover"
+          style={{ aspectRatio: COVER_ASPECT }}
+          className="w-full max-w-sm rounded-card object-cover"
         />
       )}
       <PhotoField
