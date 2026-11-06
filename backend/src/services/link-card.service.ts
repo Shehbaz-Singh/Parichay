@@ -1,6 +1,7 @@
 import { linkCardFeatures, readWorkingHours } from '@parichay/shared';
 import { config } from '../lib/config';
 import { publishedProfile } from '../lib/profile';
+import { announcementPublicSelect, visibleAnnouncement } from './announcement.service';
 import { languageLookup } from './public.service';
 import { pick } from './translation.service';
 
@@ -24,6 +25,7 @@ export async function getLinkCard(slug: string, lang?: string) {
       isSample: true,
       defaultLocale: true,
       locales: true,
+      ...announcementPublicSelect,
       availabilityEnabled: true,
       availabilityStatus: true,
       availabilityMessage: true,
@@ -61,6 +63,9 @@ export async function getLinkCard(slug: string, lang?: string) {
   const own = (field: string, original: string | null) =>
     lookup && original ? pick(lookup, 'profile', profile.id, field, original) : original;
 
+  // The same bar as the portfolio page, from the same function: on, inside its dates, not a sample.
+  const announcement = visibleAnnouncement(profile, lookup);
+
   return {
     slug: profile.slug,
     fullName: profile.fullName,
@@ -70,6 +75,7 @@ export async function getLinkCard(slug: string, lang?: string) {
     accentColor: profile.accentColor,
     style: profile.linkBioStyle,
     isSample: profile.isSample,
+    ...(announcement && { announcement }),
     locale,
     defaultLocale: profile.defaultLocale,
     locales: enabled,

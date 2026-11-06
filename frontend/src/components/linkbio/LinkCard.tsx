@@ -3,6 +3,7 @@ import { ShareButton } from '@/components/ShareButton';
 import type { LinkCardItem, LinkCardModel } from '@/lib/link-card';
 import { ContactForm } from '../themes/ContactForm';
 import { LINK_ICONS } from '../themes/parts';
+import { AnnouncementPreview } from '../announcement/AnnouncementBanner';
 import { ThemeWrapper } from '../themes/ThemeWrapper';
 import { LinkWorkLine } from './LinkWorkLine';
 
@@ -10,11 +11,7 @@ import { LinkWorkLine } from './LinkWorkLine';
 // server with next to no JavaScript (only the contact form, the Share menu and the clock are client
 // components). It is not a theme: it brings no fonts of its own, so the page stays small on a slow
 // connection, and the script of the page's language gets its font from the surrounding LocaleScope.
-//
-// Two looks, both on the profile's accent. The accent fills the main button, with text that is black
-// or white, whichever reads better. Anywhere the accent is text or a border, the page uses --accent-fg,
-// which is the accent moved toward the ink until it is readable on the page (a pale yellow becomes a
-// dark olive). Every button is at least 44 px tall and wraps its label instead of clipping it.
+
 
 const base =
   'flex min-h-12 w-full items-center justify-center gap-3 px-5 py-3 text-center text-base font-semibold [overflow-wrap:anywhere] transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-fg';
@@ -127,115 +124,122 @@ export function LinkCard({ model, preview = false }: { model: LinkCardModel; pre
   const look = looks[model.style];
   const soft = model.style === 'soft';
   return (
-    <ThemeWrapper
-      theme={soft ? 'soft' : 'editorial'}
-      profile={{ accentColor: model.accentColor }}
-      className="text-ink"
-      vars={{
-        ...(preview && { minHeight: '0' }),
-        ...(soft && {
-          backgroundImage:
-            'linear-gradient(180deg, color-mix(in srgb, var(--accent) 16%, var(--bg)) 0%, var(--bg) 70%)',
-        }),
-      }}
-    >
-      <div className="mx-auto flex w-full max-w-[30rem] flex-col items-center px-5 pt-10 pb-8 sm:pt-14">
-        <header className="flex w-full flex-col items-center text-center">
-          {model.avatar.src ? (
-            // A plain <img>, like the portfolio: the picture comes from Cloudinary (already 400 px)
-            // or the host the owner chose. It is small, so it is fetched at once.
-            <img
-              src={model.avatar.src}
-              alt={model.avatar.alt}
-              width={112}
-              height={112}
-              referrerPolicy="no-referrer"
-              decoding="async"
-              className="size-28 rounded-full border-2 border-accent-fg object-cover"
-            />
-          ) : (
-            <div
-              aria-hidden="true"
-              className="flex size-28 items-center justify-center rounded-full border-2 border-accent-fg bg-accent-soft text-3xl font-bold text-ink select-none"
-            >
-              {model.avatar.initials}
-            </div>
-          )}
-          <h1 className="mt-4 text-2xl leading-tight font-bold [overflow-wrap:anywhere]">
-            {model.name}
-          </h1>
-          {model.tagline && (
-            <p className="mt-1 text-base text-muted [overflow-wrap:anywhere]">{model.tagline}</p>
-          )}
-          {model.location && (
-            <p className="mt-2 flex items-center justify-center gap-1.5 text-sm text-muted">
-              <MapPin aria-hidden="true" className="size-4 shrink-0" />
-              <span className="[overflow-wrap:anywhere]">{model.location}</span>
-            </p>
-          )}
-          {model.availability && (
-            <div
-              role="group"
-              aria-label={ui.availability}
-              className={`mt-4 flex max-w-full items-start gap-2.5 px-4 py-2 text-start text-sm ${look.badge}`}
-            >
-              <span
-                aria-hidden="true"
-                className="mt-[0.4em] size-2.5 shrink-0 rounded-full bg-accent-fg"
+    <AnnouncementPreview value={preview}>
+      <ThemeWrapper
+        theme={soft ? 'soft' : 'editorial'}
+        profile={{
+          accentColor: model.accentColor,
+          announcement: model.announcement ?? undefined,
+          slug: model.slug,
+          locale: model.locale,
+        }}
+        className="text-ink"
+        vars={{
+          ...(preview && { minHeight: '0' }),
+          ...(soft && {
+            backgroundImage:
+              'linear-gradient(180deg, color-mix(in srgb, var(--accent) 16%, var(--bg)) 0%, var(--bg) 70%)',
+          }),
+        }}
+      >
+        <div className="mx-auto flex w-full max-w-[30rem] flex-col items-center px-5 pt-10 pb-8 sm:pt-14">
+          <header className="flex w-full flex-col items-center text-center">
+            {model.avatar.src ? (
+              // A plain <img>, like the portfolio: the picture comes from Cloudinary (already 400 px)
+              // or the host the owner chose. It is small, so it is fetched at once.
+              <img
+                src={model.avatar.src}
+                alt={model.avatar.alt}
+                width={112}
+                height={112}
+                referrerPolicy="no-referrer"
+                decoding="async"
+                className="size-28 rounded-full border-2 border-accent-fg object-cover"
               />
-              <span className="min-w-0 [overflow-wrap:anywhere]">
-                <span className="font-semibold">{model.availability.label}</span>
-                {model.availability.detail && (
-                  <span className="block text-muted">{model.availability.detail}</span>
-                )}
-              </span>
+            ) : (
+              <div
+                aria-hidden="true"
+                className="flex size-28 items-center justify-center rounded-full border-2 border-accent-fg bg-accent-soft text-3xl font-bold text-ink select-none"
+              >
+                {model.avatar.initials}
+              </div>
+            )}
+            <h1 className="mt-4 text-2xl leading-tight font-bold [overflow-wrap:anywhere]">
+              {model.name}
+            </h1>
+            {model.tagline && (
+              <p className="mt-1 text-base text-muted [overflow-wrap:anywhere]">{model.tagline}</p>
+            )}
+            {model.location && (
+              <p className="mt-2 flex items-center justify-center gap-1.5 text-sm text-muted">
+                <MapPin aria-hidden="true" className="size-4 shrink-0" />
+                <span className="[overflow-wrap:anywhere]">{model.location}</span>
+              </p>
+            )}
+            {model.availability && (
+              <div
+                role="group"
+                aria-label={ui.availability}
+                className={`mt-4 flex max-w-full items-start gap-2.5 px-4 py-2 text-start text-sm ${look.badge}`}
+              >
+                <span
+                  aria-hidden="true"
+                  className="mt-[0.4em] size-2.5 shrink-0 rounded-full bg-accent-fg"
+                />
+                <span className="min-w-0 [overflow-wrap:anywhere]">
+                  <span className="font-semibold">{model.availability.label}</span>
+                  {model.availability.detail && (
+                    <span className="block text-muted">{model.availability.detail}</span>
+                  )}
+                </span>
+              </div>
+            )}
+          </header>
+
+          <nav aria-label={ui.linkCard.linksLabel} className="mt-8 w-full">
+            <ul className="space-y-3">
+              {model.items.map((item, index) => (
+                <li key={`${item.kind}-${'id' in item ? item.id : index}`}>
+                  <Item item={item} model={model} />
+                </li>
+              ))}
+            </ul>
+          </nav>
+
+          {model.share && (
+            <div className="mt-6">
+              <ShareButton
+                url={model.share.url}
+                title={model.share.title}
+                message={model.share.message}
+                subject={model.share.subject}
+                ui={ui.share}
+                newTab={ui.newTab}
+                className="min-h-11"
+              />
             </div>
           )}
-        </header>
 
-        <nav aria-label={ui.linkCard.linksLabel} className="mt-8 w-full">
-          <ul className="space-y-3">
-            {model.items.map((item, index) => (
-              <li key={`${item.kind}-${'id' in item ? item.id : index}`}>
-                <Item item={item} model={model} />
-              </li>
-            ))}
-          </ul>
-        </nav>
+          {model.work && (
+            <div className="mt-6 w-full text-center">
+              <LinkWorkLine
+                work={{ ...model.work, hours: model.work.hours }}
+                ui={ui}
+                locale={model.locale}
+              />
+            </div>
+          )}
 
-        {model.share && (
-          <div className="mt-6">
-            <ShareButton
-              url={model.share.url}
-              title={model.share.title}
-              message={model.share.message}
-              subject={model.share.subject}
-              ui={ui.share}
-              newTab={ui.newTab}
-              className="min-h-11"
-            />
-          </div>
-        )}
-
-        {model.work && (
-          <div className="mt-6 w-full text-center">
-            <LinkWorkLine
-              work={{ ...model.work, hours: model.work.hours }}
-              ui={ui}
-              locale={model.locale}
-            />
-          </div>
-        )}
-
-        <footer className="mt-10 text-center text-sm text-muted">
-          <a
-            href="/"
-            className="inline-flex min-h-11 items-center underline underline-offset-4 hover:no-underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-fg"
-          >
-            {ui.linkCard.madeWith}
-          </a>
-        </footer>
-      </div>
-    </ThemeWrapper>
+          <footer className="mt-10 text-center text-sm text-muted">
+            <a
+              href="/"
+              className="inline-flex min-h-11 items-center underline underline-offset-4 hover:no-underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-fg"
+            >
+              {ui.linkCard.madeWith}
+            </a>
+          </footer>
+        </div>
+      </ThemeWrapper>
+    </AnnouncementPreview>
   );
 }

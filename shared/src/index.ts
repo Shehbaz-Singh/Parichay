@@ -13,6 +13,7 @@ export type HealthResponse = z.infer<typeof healthResponseSchema>;
 export * from './messages';
 export * from './uploads';
 export * from './availability';
+export * from './announcement';
 export * from './languages';
 export * from './legal';
 export * from './translations';

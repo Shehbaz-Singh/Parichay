@@ -1,7 +1,13 @@
-import type { ProfileUpdateInput, PublishInput, SectionsUpdateInput } from '@parichay/shared';
+import type {
+  AnnouncementSettings,
+  ProfileUpdateInput,
+  PublishInput,
+  SectionsUpdateInput,
+} from '@parichay/shared';
 import { asyncHandler } from '../lib/async-handler';
 import { AppError } from '../lib/errors';
 import { getProfileId } from '../middleware/auth';
+import * as announcementService from '../services/announcement.service';
 import * as avatarService from '../services/avatar.service';
 import * as exportService from '../services/export.service';
 import * as profileService from '../services/profile.service';
@@ -59,4 +65,10 @@ export const exportMyData = asyncHandler(async (req, res) => {
   res.setHeader('Content-Disposition', `attachment; filename="portfolio-data-${slug}.json"`);
   res.setHeader('Cache-Control', 'no-store');
   res.type('application/json').send(JSON.stringify(data, null, 2));
+});
+
+export const saveMyAnnouncement = asyncHandler(async (req, res) => {
+  res.json(
+    await announcementService.saveAnnouncement(getProfileId(req), req.body as AnnouncementSettings),
+  );
 });

@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { ANNOUNCEMENT_LABEL_MAX, ANNOUNCEMENT_TEXT_MAX } from './announcement';
 import { AVAILABILITY_MESSAGE_MAX } from './availability';
 import { CUSTOM_DESCRIPTION_MAX, CUSTOM_SUBTITLE_MAX, CUSTOM_TITLE_MAX } from './custom-sections';
 import { CONTACT_INTRO_MAX } from './contact';
@@ -52,6 +53,8 @@ export const TRANSLATABLE: Record<TranslatableEntity, Record<string, Translatabl
     workNote: line(WORK_NOTE_MAX),
     shareMessage: block(SHARE_MESSAGE_MAX),
     contactFormIntro: line(CONTACT_INTRO_MAX),
+    announcementText: line(ANNOUNCEMENT_TEXT_MAX),
+    announcementLinkLabel: line(ANNOUNCEMENT_LABEL_MAX, false),
   },
   section: { title: line(SECTION_TITLE_MAX) },
   experience: { title: line(100), description: block(3000) },

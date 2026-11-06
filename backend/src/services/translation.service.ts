@@ -39,6 +39,10 @@ export async function loadSource(profileId: string): Promise<Source> {
       shareMessage: true,
       contactFormEnabled: true,
       contactFormIntro: true,
+      announcementEnabled: true,
+      announcementText: true,
+      announcementLinkUrl: true,
+      announcementLinkLabel: true,
       linkBioEnabled: true,
       linkBioLinks: { select: { id: true, label: true } },
       workCardEnabled: true,
@@ -87,6 +91,12 @@ export async function loadSource(profileId: string): Promise<Source> {
     shareMessage: profile.shareMessage,
     // Only while the form is switched on, like the working-together note.
     contactFormIntro: profile.contactFormEnabled ? profile.contactFormIntro : null,
+    // Only while the bar is switched on, like the notes above; the label only means something with a link.
+    announcementText: profile.announcementEnabled ? profile.announcementText : null,
+    announcementLinkLabel:
+      profile.announcementEnabled && profile.announcementLinkUrl
+        ? profile.announcementLinkLabel
+        : null,
   });
   // A built-in heading is translatable when the owner has given it a title of their own; the default
   // headings come from the interface strings of each language.

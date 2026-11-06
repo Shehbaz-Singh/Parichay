@@ -7,12 +7,23 @@ export const profileSelect = Object.fromEntries(
 ) as { [K in keyof typeof profileSchema.shape]: true } satisfies Prisma.ProfileSelect;
 
 // What a visitor may see: the same fields minus the internal id and the published flag.
-// The link-in-bio settings are not part of the portfolio itself (the card has its own endpoint).
+// The link-in-bio settings are not part of the portfolio itself (the card has its own endpoint), and the
+// announcement is only public while it is live, so its columns are read by the services that work that out.
 const publicProfileShape = profileSchema.omit({
   id: true,
   published: true,
   pageConfig: true,
   sitemapListed: true,
+  announcementEnabled: true,
+  announcementText: true,
+  announcementLinkUrl: true,
+  announcementLinkLabel: true,
+  announcementStyle: true,
+  announcementStartsAt: true,
+  announcementEndsAt: true,
+  announcementDismissible: true,
+  announcementScroll: true,
+  announcementVersion: true,
   linkBioEnabled: true,
   linkBioStyle: true,
   linkBioShowContact: true,

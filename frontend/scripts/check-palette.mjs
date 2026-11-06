@@ -3,7 +3,8 @@
 // every theme for a spread of accents, including the awkward ones (yellow, red, near-black, pale gray, white,
 // very low chroma), and checks the contrast of every pairing the themes draw: text and muted text on each
 // surface, the accent as text and as a fill, and text over each gradient at its lightest AND darkest point
-// (Creative's header, Sidebar's bands, Executive's sidebar, Soft's wash, Bento's mesh, Aurora's glow).
+// (Creative's header, Sidebar's bands, Executive's sidebar, Soft's wash, Bento's mesh, Aurora's glow),
+// and the announcement bar in each of its three looks.
 // It also reports how far each accent had to be moved, and fails if a heavy move is not reported by
 // `accentShift`.
 import { createRequire } from 'node:module';
@@ -102,6 +103,14 @@ for (const [theme, appearance] of LOOKS) {
     check(where, 'accent text on tint', v['--accent-fg'], v['--accent-soft'], 4.5);
     check(where, 'text on accent fill', v['--on-accent'], v['--accent'], 4.5);
     check(where, 'accent fill against page', v['--accent'], v['--bg'], theme === 'aurora' ? 3 : 1);
+
+    // The announcement bar, in each of its three looks: its text and its link on its own background (a notice
+    // is a solid accent fill with black or white text), and the thin edge of the quiet look against the page.
+    for (const look of ['info', 'highlight', 'notice']) {
+      check(where, `announcement ${look} text`, v[`--ann-${look}-fg`], v[`--ann-${look}-bg`], 4.5);
+      check(where, `announcement ${look} link`, v[`--ann-${look}-link`], v[`--ann-${look}-bg`], 4.5);
+    }
+    check(where, 'announcement info edge on page', v['--ann-info-edge'], v['--bg'], 3);
 
     if (theme === 'bento') {
       for (const tile of ['--tile-base', '--tile-base-strong']) {

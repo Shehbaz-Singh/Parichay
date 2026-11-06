@@ -149,6 +149,12 @@
     "text": "La personne et tous les détails sont fictifs.",
     "cta": "Créez le vôtre avec Parichay"
   },
+  "announcement": {
+    "dismiss": "Fermer l’annonce",
+    "learnMore": "En savoir plus",
+    "pause": "Mettre le défilement en pause",
+    "resume": "Reprendre le défilement"
+  },
   "switcher": {
     "label": "Langue"
   },

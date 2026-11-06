@@ -149,6 +149,12 @@
     "text": "Die Person und alle Angaben sind frei erfunden.",
     "cta": "Erstelle dein eigenes mit Parichay"
   },
+  "announcement": {
+    "dismiss": "Ankündigung schließen",
+    "learnMore": "Mehr erfahren",
+    "pause": "Scrollen anhalten",
+    "resume": "Scrollen fortsetzen"
+  },
   "switcher": {
     "label": "Sprache"
   },

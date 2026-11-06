@@ -17,6 +17,7 @@ import {
   Link2,
   LayoutPanelTop,
   Mail,
+  Megaphone,
   MessageSquareQuote,
   PenLine,
   Palette,
@@ -235,6 +236,7 @@ const GO_TO: {
     icon: Share2,
     keywords: [
       'availability',
+      'announcement',
       'working together',
       'time zone',
       'contact card',
@@ -246,6 +248,13 @@ const GO_TO: {
       'signature',
       'features',
     ],
+  },
+  {
+    id: 'announcement',
+    title: 'Edit announcement',
+    href: '/dashboard/extras?open=announcement',
+    icon: Megaphone,
+    keywords: ['banner', 'news', 'notice', 'bar', 'event', 'speaking', 'open to work', 'schedule'],
   },
   {
     id: 'link-bio',

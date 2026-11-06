@@ -1,3 +1,11 @@
+import {
+  ANNOUNCEMENT_LABEL_MAX,
+  ANNOUNCEMENT_TEXT_MAX,
+  DEFAULT_ANNOUNCEMENT_STYLE,
+  announcementStyleSchema,
+  isoInstant,
+  optionalHttpUrl,
+} from './announcement';
 import { CONTACT_INTRO_MAX } from './contact';
 import { DEFAULT_LINK_BIO_STYLE, linkBioStyleSchema } from './link-bio';
 import { z } from 'zod';
@@ -162,6 +170,17 @@ export const profileInputSchema = z.object({
   availabilityEnabled: z.boolean().default(false),
   availabilityStatus: availabilityStatusSchema.default(DEFAULT_AVAILABILITY_STATUS),
   availabilityMessage: optionalLine(AVAILABILITY_MESSAGE_MAX),
+  // The announcement bar (announcement.ts). Changed by its own endpoint, which saves all of it together and
+  // keeps the version; the dates are ISO strings here, as the editor reads them.
+  announcementEnabled: z.boolean().default(false),
+  announcementText: optionalLine(ANNOUNCEMENT_TEXT_MAX),
+  announcementLinkUrl: optionalHttpUrl,
+  announcementLinkLabel: optionalLine(ANNOUNCEMENT_LABEL_MAX),
+  announcementStyle: announcementStyleSchema.default(DEFAULT_ANNOUNCEMENT_STYLE),
+  announcementStartsAt: isoInstant,
+  announcementEndsAt: isoInstant,
+  announcementDismissible: z.boolean().default(true),
+  announcementScroll: z.boolean().default(false),
   // Whether the public page offers a "Download resume" PDF made from it (/<slug>/resume.pdf).
   resumeEnabled: z.boolean().default(true),
   // Whether the public page offers an "Add to contacts" vCard (/<slug>/contact.vcf), and whether the
@@ -210,6 +229,8 @@ export const profileSchema = profileInputSchema.extend({
   locales: z.array(z.string()).default([]),
   // The pages of multi mode, as stored (pages.ts). Read through normalizePageConfig, never trusted raw.
   pageConfig: z.unknown().default([]),
+  // Counts up whenever the announcement's words, link or dates change, so one that was closed shows again.
+  announcementVersion: z.number().int().default(1),
 });
 export type Profile = z.infer<typeof profileSchema>;
 
@@ -223,6 +244,15 @@ export const profileUpdateSchema = profileInputSchema
     acceptTestimonials: true,
     contactFormEnabled: true,
     contactFormIntro: true,
+    announcementEnabled: true,
+    announcementText: true,
+    announcementLinkUrl: true,
+    announcementLinkLabel: true,
+    announcementStyle: true,
+    announcementStartsAt: true,
+    announcementEndsAt: true,
+    announcementDismissible: true,
+    announcementScroll: true,
     linkBioEnabled: true,
     linkBioStyle: true,
     linkBioShowContact: true,

@@ -149,6 +149,12 @@
     "text": "The person and all the details are made up.",
     "cta": "Make your own with Parichay"
   },
+  "announcement": {
+    "dismiss": "Dismiss announcement",
+    "learnMore": "Learn more",
+    "pause": "Pause scrolling",
+    "resume": "Resume scrolling"
+  },
   "switcher": {
     "label": "Language"
   },

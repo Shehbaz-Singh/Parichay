@@ -31,6 +31,13 @@ enum AvatarShape {
 }
 
 // Aurora's look: dark (the default) or light. The other themes have one look and ignore it.
+// The look of the announcement bar (shared/src/announcement.ts).
+enum AnnouncementStyle {
+  info
+  highlight
+  notice
+}
+
 enum PortfolioAppearance {
   dark
   light
@@ -147,6 +154,20 @@ model Profile {
   // The contact form of the public page (shared/src/contact.ts). The intro is one plain line.
   contactFormEnabled  Boolean            @default(false)
   contactFormIntro    String?            @db.VarChar(140)
+  // The announcement bar at the top of the public page (shared/src/announcement.ts). It is shown while it is
+  // enabled and now is inside [announcementStartsAt, announcementEndsAt] (both UTC, either may be null).
+  // announcementVersion goes up whenever the text, link or dates change, so a visitor who closed the old
+  // one sees the new one.
+  announcementEnabled     Boolean            @default(false)
+  announcementText        String?            @db.VarChar(140)
+  announcementLinkUrl     String?            @db.VarChar(2048)
+  announcementLinkLabel   String?            @db.VarChar(30)
+  announcementStyle       AnnouncementStyle  @default(info)
+  announcementStartsAt    DateTime?
+  announcementEndsAt      DateTime?
+  announcementDismissible Boolean            @default(true)
+  announcementScroll      Boolean            @default(false)
+  announcementVersion     Int                @default(1)
   // The link-in-bio card at /<slug>/links (shared/src/link-bio.ts): on or off, its look, and which
   // optional buttons it shows. Its custom buttons are the LinkBioLink rows.
   linkBioEnabled      Boolean            @default(false)

@@ -1,0 +1,219 @@
+/* The announcement bar (components/announcement/AnnouncementBanner.tsx). One slim line above the page, from
+   the theme's own colors: the --ann-<look>-bg / -fg / -link / -edge variables come from lib/palette, where every
+   text is checked against its background. Logical properties throughout, so it mirrors in a right-to-left
+   language; rem throughout, so the visitor's text size scales it. It scrolls away with the page (never sticky).
+   Motion: one short slide-down when the page loads and, when the owner chose it, the text scrolling slowly
+   along the bar. Both are only for visitors who have not asked for less motion (the system setting, the
+   reading preference in reading-prefs.css, or a low-effects device); for everyone else the text is still and wraps. Scrolling
+   stops on hover and focus and has a pause button. Nothing pulses or flashes. */
+.ann {
+  --ann-bg: var(--ann-info-bg);
+  --ann-fg: var(--ann-info-fg);
+  --ann-link: var(--ann-info-link);
+  --ann-edge: var(--ann-info-edge);
+  background: var(--ann-bg);
+  color: var(--ann-fg);
+  border-block-end: 2px solid var(--ann-edge);
+  font-size: var(--t-body, 1rem);
+  font-weight: 500;
+  line-height: var(--lh-small, 1.5);
+}
+.ann[data-style='notice'] {
+  font-weight: 600;
+}
+.ann[data-style='highlight'] {
+  --ann-bg: var(--ann-highlight-bg);
+  --ann-fg: var(--ann-highlight-fg);
+  --ann-link: var(--ann-highlight-link);
+  --ann-edge: var(--ann-highlight-edge);
+}
+.ann[data-style='notice'] {
+  --ann-bg: var(--ann-notice-bg);
+  --ann-fg: var(--ann-notice-fg);
+  --ann-link: var(--ann-notice-link);
+  --ann-edge: var(--ann-notice-edge);
+}
+.ann[hidden] {
+  display: none;
+}
+.ann-inner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding-block: 0.75rem;
+  padding-inline: max(var(--gutter, 1.25rem), 0.75rem);
+}
+.ann-text {
+  flex: 0 1 auto;
+  min-inline-size: 0;
+  margin: 0;
+  text-align: center;
+  text-wrap: pretty;
+  /* A long translated line wraps, and an unbroken address inside it cannot push the page wider. */
+  overflow-wrap: anywhere;
+}
+.ann-link {
+  color: var(--ann-link);
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+  text-decoration-thickness: 1px;
+}
+.ann-link:hover {
+  text-decoration-thickness: 2px;
+}
+/* On a solid fill the link is a small outlined button, so it is not only a color against a color. */
+.ann[data-style='notice'] .ann-link {
+  display: inline-block;
+  padding: 0.0625rem 0.625rem;
+  border: 1px solid currentColor;
+  border-radius: 999px;
+  text-decoration: none;
+}
+.ann[data-style='notice'] .ann-link:hover {
+  text-decoration: underline;
+}
+.ann-link:focus-visible,
+.ann-close:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+.ann-close {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: 1.75rem;
+  block-size: 1.75rem;
+  min-inline-size: 24px;
+  min-block-size: 24px;
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+}
+.ann-close:hover {
+  background: color-mix(in srgb, currentColor 14%, transparent);
+}
+/* The text takes the row; the pause and close buttons sit at its end. */
+.ann-viewport {
+  flex: 1 1 auto;
+  min-inline-size: 0;
+}
+.ann-track {
+  display: block;
+}
+/* The second copy of a scrolling text and the pause button only exist for the moving look below. */
+.ann-copy[aria-hidden='true'],
+.ann-pause {
+  display: none;
+}
+.ann-pause {
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  inline-size: 1.75rem;
+  block-size: 1.75rem;
+  min-inline-size: 24px;
+  min-block-size: 24px;
+  padding: 0;
+  border: 1px solid currentColor;
+  border-radius: 999px;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+}
+.ann-pause:hover {
+  background: color-mix(in srgb, currentColor 14%, transparent);
+}
+.ann-pause:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}
+/* One short slide-down on arrival. Transform and opacity only, so nothing else on the page moves. */
+@media (prefers-reduced-motion: no-preference) {
+  html:not([data-fx='low']) .ann {
+    animation: ann-in 0.4s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+}
+/* Scrolling: the text and a copy of it run in a row that moves by exactly one copy, then starts again, so it
+   never jumps. Each copy is at least as wide as the bar, so a short text travels across it. Hovering over the
+   bar or focusing something in it, and the pause button, stop it. */
+@media (prefers-reduced-motion: no-preference) {
+  html:not([data-fx='low']) .ann[data-scroll] {
+    .ann-viewport {
+      overflow: hidden;
+      container-type: inline-size;
+    }
+    .ann-track {
+      display: flex;
+      inline-size: max-content;
+      animation: ann-scroll var(--ann-duration, 30s) linear infinite;
+    }
+    .ann-text {
+      flex: none;
+      min-inline-size: 100cqw;
+      box-sizing: border-box;
+      padding-inline-end: 4rem;
+      text-align: start;
+      white-space: nowrap;
+    }
+    .ann-copy[aria-hidden='true'] {
+      display: block;
+    }
+    .ann-pause {
+      display: inline-flex;
+    }
+    &:hover .ann-track,
+    &:focus-within .ann-track,
+    &[data-paused] .ann-track {
+      animation-play-state: paused;
+    }
+    &:dir(rtl) .ann-track {
+      animation-name: ann-scroll-rtl;
+    }
+  }
+}
+@keyframes ann-scroll {
+  to {
+    transform: translateX(-50%);
+  }
+}
+@keyframes ann-scroll-rtl {
+  to {
+    transform: translateX(50%);
+  }
+}
+@keyframes ann-in {
+  from {
+    opacity: 0;
+    transform: translateY(-100%);
+  }
+}
+/* A page that is printed or saved as PDF is without it. */
+@media print {
+  .ann {
+    display: none;
+  }
+}
+/* Forced colors: the system picks the colors, so the bar keeps its edge as a line and the controls their look. */
+@media (forced-colors: active) {
+  .ann {
+    border-block-end: 1px solid CanvasText;
+  }
+  .ann-link {
+    color: LinkText;
+  }
+  .ann[data-style='notice'] .ann-link {
+    border-color: LinkText;
+  }
+  .ann-close,
+  .ann-pause {
+    border: 1px solid ButtonText;
+    color: ButtonText;
+  }
+}

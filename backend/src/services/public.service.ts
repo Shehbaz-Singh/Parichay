@@ -21,6 +21,7 @@ import {
   publicProfileSelect,
   publicTestimonials,
 } from '../lib/selects';
+import { announcementPublicSelect, visibleAnnouncement } from './announcement.service';
 import { lookupFor, pick, publishableLocales, type Lookup } from './translation.service';
 import { ERRORS } from '../lib/messages';
 
@@ -30,6 +31,7 @@ const publicSelect = {
   ...publicProfileSelect,
   id: true,
   sectionConfig: true,
+  ...announcementPublicSelect,
   // The pages of multi mode: how they are set up, and the ones the owner made.
   pageConfig: true,
   customPages: {
@@ -161,8 +163,40 @@ export async function getPublicProfile(slug: string, lang?: string) {
           : (tn('page', key, 'title', fallback ?? null) ?? undefined),
     });
   }
+  // The announcement is worked out from its stored columns, which never go out as they are.
+  const {
+    announcementEnabled,
+    announcementText,
+    announcementLinkUrl,
+    announcementLinkLabel,
+    announcementStyle,
+    announcementStartsAt,
+    announcementEndsAt,
+    announcementDismissible,
+    announcementScroll,
+    announcementVersion,
+    ...withoutAnnouncement
+  } = rest;
+  const announcement = visibleAnnouncement(
+    {
+      id,
+      isSample: rest.isSample,
+      announcementEnabled,
+      announcementText,
+      announcementLinkUrl,
+      announcementLinkLabel,
+      announcementStyle,
+      announcementStartsAt,
+      announcementEndsAt,
+      announcementDismissible,
+      announcementScroll,
+      announcementVersion,
+    },
+    lookup,
+  );
   // The badge is only part of the page while it is switched on.
-  const { availabilityEnabled, availabilityStatus, availabilityMessage, ...withoutBadge } = rest;
+  const { availabilityEnabled, availabilityStatus, availabilityMessage, ...withoutBadge } =
+    withoutAnnouncement;
   // Likewise the "Working together" card: nothing of it is public while it is switched off.
   const {
     workCardEnabled,
@@ -178,6 +212,7 @@ export async function getPublicProfile(slug: string, lang?: string) {
   return {
     ...visible,
     pages,
+    ...(announcement && { announcement }),
     // The contact form: nothing of it is public while it is switched off, and a sample has none.
     ...(contactFormEnabled &&
       !rest.isSample && {

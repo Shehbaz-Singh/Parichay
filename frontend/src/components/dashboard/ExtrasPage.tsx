@@ -1,18 +1,26 @@
 'use client';
 
-import { useState, type ReactNode } from 'react';
-import { Clock, FileDown, Inbox, Link2, Mail, Radio, UserPlus } from 'lucide-react';
+import { useEffect, useState, type ReactNode } from 'react';
+import { useSearchParams } from 'next/navigation';
+import { Clock, FileDown, Inbox, Link2, Mail, Megaphone, Radio, UserPlus } from 'lucide-react';
+import { stateText } from '@/lib/announcement';
 import { Sheet } from '../ui';
 import { useEditor } from './editor-context';
 import { FeatureCard, PageHeader, type FeatureState } from './layout';
+import { AnnouncementCard } from './steps/AnnouncementCard';
 import { AvailabilityCard } from './steps/AvailabilityCard';
 import { ContactCardCard } from './steps/ContactCardCard';
 import { ResumeCard } from './steps/ResumeCard';
 import { WorkingTogetherCard } from './steps/WorkingTogetherCard';
 
-type SheetId = 'availability' | 'work' | 'contact-card' | 'resume';
+type SheetId = 'announcement' | 'availability' | 'work' | 'contact-card' | 'resume';
 
 const SHEETS: Record<SheetId, { title: string; description: string; body: ReactNode }> = {
+  announcement: {
+    title: 'Announcement',
+    description: 'A short line above the top of your page, for news that has a date.',
+    body: <AnnouncementCard />,
+  },
   availability: {
     title: 'Availability',
     description: 'A small badge near the top of your page.',
@@ -44,6 +52,12 @@ export function ExtrasPage() {
   const { profile } = useEditor();
   const [open, setOpen] = useState<SheetId | null>(null);
   const sheet = open ? SHEETS[open] : null;
+  // The command palette's "Edit announcement" arrives as ?open=announcement.
+  const asked = useSearchParams().get('open');
+  useEffect(() => {
+    if (asked === 'announcement') setOpen('announcement');
+  }, [asked]);
+  const announcement = stateText(profile);
 
   return (
     <>
@@ -52,6 +66,15 @@ export function ExtrasPage() {
         description="Optional features for your page. Switch on what you need; the rest stays out of the way. Publishing and the page link are in the bar at the top."
       />
       <ul className="grid gap-4 sm:grid-cols-2">
+        <FeatureCard
+          icon={Megaphone}
+          title="Announcement"
+          description="A slim bar at the top of your page for news, like a talk or when you are available."
+          state={announcement.state === 'live' || announcement.state === 'scheduled' ? 'on' : 'off'}
+          stateNote={announcement.state === 'off' ? undefined : announcement.text}
+          actionLabel={profile.announcementEnabled ? 'Manage' : 'Set up'}
+          onAction={() => setOpen('announcement')}
+        />
         <FeatureCard
           icon={Radio}
           title="Availability"

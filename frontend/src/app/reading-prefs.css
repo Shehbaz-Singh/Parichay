@@ -77,4 +77,29 @@
   html[data-read-motion='reduce'] [data-reading] main section[aria-labelledby] {
     animation: none !important;
   }
+  /* The announcement bar neither slides in nor scrolls: its text is still, wrapped and centered, with no
+     second copy and no pause button (announcement.css). */
+  html[data-read-motion='reduce'] .ann,
+  html[data-read-motion='reduce'] .ann .ann-track {
+    animation: none !important;
+    transform: none !important;
+  }
+  html[data-read-motion='reduce'] .ann .ann-viewport {
+    overflow: visible !important;
+  }
+  html[data-read-motion='reduce'] .ann .ann-track {
+    display: block !important;
+    inline-size: auto !important;
+  }
+  html[data-read-motion='reduce'] .ann .ann-text {
+    flex: 1 1 auto !important;
+    min-inline-size: 0 !important;
+    padding-inline-end: 0 !important;
+    white-space: normal !important;
+    text-align: center !important;
+  }
+  html[data-read-motion='reduce'] .ann .ann-pause,
+  html[data-read-motion='reduce'] .ann .ann-copy[aria-hidden='true'] {
+    display: none !important;
+  }
 }

@@ -51,6 +51,8 @@ const LABELS: Partial<Record<TranslatableEntity, Record<string, string>>> = {
     workNote: 'Working together note',
     shareMessage: 'Share message',
     contactFormIntro: 'Contact form intro',
+    announcementText: 'Announcement',
+    announcementLinkLabel: 'Announcement link text',
   },
   section: { title: 'Heading' },
   linkBioLink: { label: 'Button text' },
@@ -117,6 +119,20 @@ export function buildGroups(profile: MyProfile): FieldGroup[] {
         profile.id,
         'contactFormIntro',
         profile.contactFormEnabled ? profile.contactFormIntro : null,
+      ),
+      spec(
+        'profile',
+        profile.id,
+        'announcementText',
+        profile.announcementEnabled ? profile.announcementText : null,
+      ),
+      spec(
+        'profile',
+        profile.id,
+        'announcementLinkLabel',
+        profile.announcementEnabled && profile.announcementLinkUrl
+          ? profile.announcementLinkLabel
+          : null,
       ),
     ]),
   ]);

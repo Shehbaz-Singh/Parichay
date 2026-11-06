@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import {
   addLanguageSchema,
+  announcementSettingsSchema,
   contactListQuerySchema,
   contactSettingsSchema,
   contactStatusUpdateSchema,
@@ -71,6 +72,7 @@ import {
   getMySections,
   parseMyResume,
   publishMyProfile,
+  saveMyAnnouncement,
   updateMyProfile,
   updateMySections,
   uploadMyAvatar,
@@ -134,6 +136,9 @@ profileRouter.post('/me/avatar', uploadLimiter, avatarUpload, uploadMyAvatar);
 profileRouter.delete('/me/avatar', deleteMyAvatar);
 // Reads a resume PDF and returns the parsed data. Declared before /me/:section like the others.
 profileRouter.post('/me/resume', resumeLimiter, resumeUpload, parseMyResume);
+
+// The announcement bar: all of its settings in one request. Declared before /me/:section like the others.
+profileRouter.put('/me/announcement', validateBody(announcementSettingsSchema), saveMyAnnouncement);
 
 // Layout of the page: which sections show, in what order, under what heading. Declared before
 // /me/:section like the others, so "sections" is not read as a section name.

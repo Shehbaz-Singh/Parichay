@@ -149,6 +149,12 @@
     "text": "A pessoa e todos os detalhes são fictícios.",
     "cta": "Crie o seu com o Parichay"
   },
+  "announcement": {
+    "dismiss": "Fechar o aviso",
+    "learnMore": "Saiba mais",
+    "pause": "Pausar a rolagem",
+    "resume": "Retomar a rolagem"
+  },
   "switcher": {
     "label": "Idioma"
   },

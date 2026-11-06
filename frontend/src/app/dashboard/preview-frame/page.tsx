@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { languageOf, type PublicProfile } from '@parichay/shared';
+import { AnnouncementPreview } from '@/components/announcement/AnnouncementBanner';
 import { HtmlLang } from '@/components/portfolio/HtmlLang';
 import { SiteNav } from '@/components/portfolio/SiteNav';
 import { findPage, isMulti, pageLabel } from '@/lib/pages';
@@ -43,17 +44,19 @@ export default function PreviewFramePage() {
   return (
     <div inert lang={language.code} dir={language.dir} data-script={language.script}>
       <HtmlLang lang={language.code} dir={language.dir} />
-      <Theme
-        profile={profile}
-        idPrefix="preview-"
-        page={page}
-        heading={
-          page && page.key !== 'home'
-            ? `${pageLabel(profile, page)} | ${profile.fullName}`
-            : undefined
-        }
-        nav={page ? <SiteNav profile={profile} current={page.key} /> : undefined}
-      />
+      <AnnouncementPreview value>
+        <Theme
+          profile={profile}
+          idPrefix="preview-"
+          page={page}
+          heading={
+            page && page.key !== 'home'
+              ? `${pageLabel(profile, page)} | ${profile.fullName}`
+              : undefined
+          }
+          nav={page ? <SiteNav profile={profile} current={page.key} /> : undefined}
+        />
+      </AnnouncementPreview>
     </div>
   );
 }

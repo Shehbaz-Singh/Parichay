@@ -41,6 +41,11 @@ export function applyTranslations(
       'availabilityMessage',
       preview.availabilityMessage,
     ),
+    announcement: preview.announcement && {
+      ...preview.announcement,
+      text: t('profile', profileId, 'announcementText', preview.announcement.text),
+      linkLabel: tn('profile', profileId, 'announcementLinkLabel', preview.announcement.linkLabel),
+    },
     contactForm: preview.contactForm && {
       ...preview.contactForm,
       intro: tn('profile', profileId, 'contactFormIntro', preview.contactForm.intro),

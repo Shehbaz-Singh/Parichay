@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { publicAnnouncementSchema } from './announcement';
 import { availabilityStatusSchema } from './availability';
 import { publicContactFormSchema } from './contact';
 import { myLinkBioButtonSchema } from './link-bio';
@@ -138,6 +139,16 @@ export const publicProfileSchema = profileSchema
     workNote: true,
     contactFormEnabled: true,
     contactFormIntro: true,
+    announcementEnabled: true,
+    announcementText: true,
+    announcementLinkUrl: true,
+    announcementLinkLabel: true,
+    announcementStyle: true,
+    announcementStartsAt: true,
+    announcementEndsAt: true,
+    announcementDismissible: true,
+    announcementScroll: true,
+    announcementVersion: true,
     linkBioEnabled: true,
     linkBioStyle: true,
     linkBioShowContact: true,
@@ -160,6 +171,8 @@ export const publicProfileSchema = profileSchema
     workNote: z.string().nullable().optional(),
     // The contact form: present only while the owner has it switched on (and the page is not a sample).
     contactForm: publicContactFormSchema.optional(),
+    // The announcement bar: present only while it is on and inside its dates (and the page is not a sample).
+    announcement: publicAnnouncementSchema.optional(),
     // The language this response is in (one of `locales`, or the default). `locales` here lists only
     // the extra languages that are ready for visitors.
     locale: z.string().default('en'),

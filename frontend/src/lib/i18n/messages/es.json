@@ -149,6 +149,12 @@
     "text": "La persona y todos los datos son inventados.",
     "cta": "Crea el tuyo con Parichay"
   },
+  "announcement": {
+    "dismiss": "Cerrar el anuncio",
+    "learnMore": "Más información",
+    "pause": "Pausar el desplazamiento",
+    "resume": "Reanudar el desplazamiento"
+  },
   "switcher": {
     "label": "Idioma"
   },

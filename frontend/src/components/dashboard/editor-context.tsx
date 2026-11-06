@@ -23,11 +23,13 @@ import {
   type MyTestimonial,
   type ParsedResume,
   type ProfileUpdateInput,
+  type PublicAnnouncement,
   type PublicProfile,
   type Section,
   type SectionConfig,
   type StoredTranslation,
 } from '@parichay/shared';
+import { savedAnnouncement } from '@/lib/announcement';
 import { ApiError, api } from '@/lib/client-api';
 import { applyTranslations } from '@/lib/translate-preview';
 import { ToastRegion, type ToastData } from '../ui';
@@ -62,7 +64,11 @@ export type Draft = Partial<
     | 'workNote'
     | 'shareMessage'
   >
->;
+> & {
+  // The announcement bar as typed in its card: set (or null for none) while the card is open, so the preview
+  // shows it before it is saved. Absent: the saved one, if it is live.
+  announcement?: PublicAnnouncement | null;
+};
 
 // What an autosaving form or list is doing, and how the top bar tells the person.
 //   pending: edited, waiting a moment for more typing    saving: the request is on its way
@@ -410,6 +416,11 @@ export function EditorProvider({ initial, children }: { initial: MyProfile; chil
             preferredContact: undefined,
             workNote: undefined,
           }),
+      // The announcement bar: the one being typed while its card is open, else the saved one while it is live.
+      announcement:
+        draft?.announcement !== undefined
+          ? (draft.announcement ?? undefined)
+          : savedAnnouncement(profile),
       // The contact form, as the API gives it: only while it is switched on.
       ...(profile.contactFormEnabled && !profile.isSample
         ? {

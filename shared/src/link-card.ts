@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { publicAnnouncementSchema } from './announcement';
 import { availabilityStatusSchema } from './availability';
 import { linkBioStyleSchema, myLinkBioButtonSchema } from './link-bio';
 import { linkTypeSchema } from './portfolio';
@@ -29,6 +30,8 @@ export const publicLinkCardSchema = z.object({
     z.object({ id: z.string(), type: linkTypeSchema, url: z.string(), order: z.number() }),
   ),
   buttons: z.array(myLinkBioButtonSchema),
+  // Present only while the announcement is on and inside its dates (announcement.ts).
+  announcement: publicAnnouncementSchema.optional(),
   // Which optional buttons to draw. `contactForm` is set when the form is on and the card shows it.
   contactForm: z.object({ intro: z.string().nullable(), retentionDays: z.number() }).optional(),
   vcard: z.boolean(),

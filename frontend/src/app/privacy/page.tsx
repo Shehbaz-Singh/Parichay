@@ -342,9 +342,13 @@ export default async function PrivacyPage() {
             changes something, their choices (text size, font, line spacing, motion) are kept in one
             small note in their own browser’s local storage (“parichay:reading-prefs”). It never
             leaves their browser, is not a cookie, and is used only to show the page the way they
-            asked. Downloading a contact card or a resume stores nothing about the visitor: we do
-            not record who downloaded it, and the contact card contains only what the owner chose to
-            show.
+            asked. If a portfolio shows an announcement bar and a visitor closes it, a second small
+            note is kept in the tab’s session storage (“parichay:announcement:” followed by that
+            portfolio’s address): it holds the version of the announcement that was closed and when,
+            so the bar stays closed for the rest of the visit. It is gone when the tab is closed,
+            never leaves their browser and is not a cookie. Downloading a contact card or a resume
+            stores nothing about the visitor: we do not record who downloaded it, and the contact
+            card contains only what the owner chose to show.
           </p>
           <p>
             The link-in-bio card works like the portfolio page: it sets no cookies and has no

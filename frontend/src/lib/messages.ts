@@ -37,6 +37,9 @@ export const NOTICES = {
   contactFormOff: 'The contact form is off. Visitors can no longer write to you.',
   contactFormShown: 'The Contact section is now shown on your page.',
   contactIntroSaved: 'Contact form intro saved.',
+  announcementSaved:
+    'Announcement saved. It shows on your page once it is published and inside its dates.',
+  announcementOff: 'Announcement saved. It is switched off, so it is not on your page.',
   messageDeleted: 'Message deleted.',
   messageSpam: 'Reported as spam and deleted.',
   messageArchived: 'Message archived.',

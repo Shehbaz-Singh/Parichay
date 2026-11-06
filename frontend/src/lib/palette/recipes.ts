@@ -364,6 +364,36 @@ function aurora(p: Palette, c: Checker): Vars {
   };
 }
 
+// The announcement bar (components/announcement), in three looks, from the colors the theme has already
+// settled on, so it belongs to every theme without a recipe of its own. Each look has a background, its text,
+// its link and an edge, and every text is checked against its own background (4.5:1), whatever the accent:
+//   info       a quiet tint of the text color on the page, with a thin edge of the accent
+//   highlight  a soft tint of the accent
+//   notice     the accent itself, with black or white text, whichever reads better
+function announcementBar(c: Checker, v: Vars): Vars {
+  const page = v['--bg'];
+  const accent = v['--accent'];
+  const infoBg = mixHex(v['--text'], page, 0.05);
+  const softBg = mixHex(accent, page, 0.14);
+  const noticeBg = accent;
+  const noticeText = c.text('announcement notice text', readableOn(noticeBg), [noticeBg]);
+  return {
+    '--ann-info-bg': infoBg,
+    '--ann-info-fg': c.text('announcement text', v['--text'], [infoBg]),
+    '--ann-info-link': c.text('announcement link', v['--accent-fg'], [infoBg]),
+    // The edge is a shape, not text: it only has to be seen against the page (3:1).
+    '--ann-info-edge': c.text('announcement edge', accent, [page], UI_MIN),
+    '--ann-highlight-bg': softBg,
+    '--ann-highlight-fg': c.text('announcement highlight text', v['--text'], [softBg]),
+    '--ann-highlight-link': c.text('announcement highlight link', v['--accent-fg'], [softBg]),
+    '--ann-highlight-edge': mixHex(accent, page, 0.4),
+    '--ann-notice-bg': noticeBg,
+    '--ann-notice-fg': noticeText,
+    '--ann-notice-link': noticeText,
+    '--ann-notice-edge': noticeBg,
+  };
+}
+
 const RECIPES: Record<ThemeKey, (p: Palette, c: Checker) => Vars> = {
   index,
   editorial,
@@ -387,6 +417,7 @@ export function themeColors(
   const checker = new Checker();
   // Aurora is the one theme with two looks; the others ignore the appearance.
   const recipe = theme === 'aurora' && appearance === 'light' ? auroraLight : RECIPES[theme];
-  const vars = recipe(palette, checker);
+  const themed = recipe(palette, checker);
+  const vars = { ...themed, ...announcementBar(checker, themed) };
   return { vars, adjustments: checker.adjustments, accentShift: checker.accentShift };
 }

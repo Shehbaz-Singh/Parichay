@@ -42,6 +42,8 @@ export interface LinkCardModel {
   location: string | null;
   avatar: { src: string | null; alt: string; initials: string };
   availability: { label: string; detail: string | null } | null;
+  // The announcement bar, drawn at the top of the card like on the portfolio.
+  announcement: PublicLinkCard['announcement'] | null;
   items: LinkCardItem[];
   // The Share menu: of the portfolio, with the owner's message.
   share: { url: string; title: string; message: string | null; subject: string } | null;
@@ -117,6 +119,7 @@ export function buildLinkCard(card: PublicLinkCard): LinkCardModel {
     ui,
     style: card.style,
     accentColor: card.accentColor,
+    announcement: card.announcement ?? null,
     name: card.fullName,
     tagline: card.tagline,
     location: card.location,
@@ -170,6 +173,7 @@ export function linkCardFromEditor(profile: MyProfile, preview: PublicProfile): 
     accentColor: preview.accentColor,
     style: profile.linkBioStyle,
     isSample: profile.isSample,
+    ...(preview.announcement && { announcement: preview.announcement }),
     locale: profile.defaultLocale,
     defaultLocale: profile.defaultLocale,
     locales: [],

@@ -37,6 +37,9 @@ function toSession(user: SessionUser): SessionResponse {
     profile: user.profile && {
       ...user.profile,
       workingHours: readWorkingHours(user.profile.workingHours),
+      // JSON has no dates: the session says them as ISO strings, as the editor reads them.
+      announcementStartsAt: user.profile.announcementStartsAt?.toISOString() ?? null,
+      announcementEndsAt: user.profile.announcementEndsAt?.toISOString() ?? null,
     },
   };
 }
