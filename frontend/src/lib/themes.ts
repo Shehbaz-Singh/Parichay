@@ -19,35 +19,43 @@ export interface ThemeEntry {
 const entries: Record<ThemeKey, Omit<ThemeEntry, 'key' | 'scheme' | 'background'>> = {
   index: {
     name: 'Index',
-    description: 'A brand-guidelines page: a slim sidebar, one soft gradient, numbered sections in a narrow column and hairline rules. Light only. The default.',
+    description:
+      'A brand-guidelines page: a slim sidebar, one soft gradient, numbered sections in a narrow column and hairline rules. Light only. The default.',
   },
   editorial: {
     name: 'Editorial',
-    description: 'A quiet magazine page on warm paper: a narrow reading column, small-caps labels and dates in the margin.',
+    description:
+      'A quiet magazine page on warm paper: a narrow reading column, small-caps labels and dates in the margin.',
   },
   bento: {
     name: 'Bento',
-    description: 'Rounded tiles on a cool page, with Experience as one full-width list and a whisper of your accent.',
+    description:
+      'Flat hairline tiles on a cool page, with Experience as one full-width list and a whisper of your accent.',
   },
   creative: {
     name: 'Creative',
-    description: 'Bold type, a slanted header band in your accent, hard borders and offset shadows.',
+    description:
+      'Bold type, a slanted header band in your accent, hard borders and offset shadows.',
   },
   soft: {
     name: 'Soft',
-    description: 'Warm and calm: a centered introduction, one narrow column, a quiet timeline and dark ink throughout.',
+    description:
+      'Warm and calm: a centered introduction, one narrow column, a quiet timeline and dark ink throughout.',
   },
   sidebar: {
     name: 'Sidebar',
-    description: 'A dark side rail with your name and navigation beside an airy page, with Experience in a band of your accent.',
+    description:
+      'A dark side rail with your name and navigation beside an airy page, with Experience in a band of your accent.',
   },
   aurora: {
     name: 'Aurora',
-    description: 'One soft glow of your accent behind the introduction, raised cards and a scrolling strip of selected work. Dark or light.',
+    description:
+      'One soft glow of your accent behind the introduction, raised cards and a scrolling strip of selected work. Dark or light.',
   },
   executive: {
     name: 'Executive',
-    description: 'A resume-like page: a dark sidebar with contact and skills, dense text led by Experience. Prints cleanly.',
+    description:
+      'A resume-like page: a dark sidebar with contact and skills, dense text led by Experience. Prints cleanly.',
   },
 };
 

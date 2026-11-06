@@ -12,7 +12,6 @@ import { LinkWorkLine } from './LinkWorkLine';
 // components). It is not a theme: it brings no fonts of its own, so the page stays small on a slow
 // connection, and the script of the page's language gets its font from the surrounding LocaleScope.
 
-
 const base =
   'flex min-h-12 w-full items-center justify-center gap-3 px-5 py-3 text-center text-base font-semibold [overflow-wrap:anywhere] transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-fg';
 

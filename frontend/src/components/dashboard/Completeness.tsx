@@ -83,9 +83,9 @@ export function encouragement(percent: number, published: boolean) {
       : 'Everything is filled in. Your page is ready to publish whenever you are.';
   }
   if (percent >= 75) return 'Almost there. Just a few finishing touches left.';
-  if (percent >= 50) return "You're over halfway. Your page is really taking shape.";
+  if (percent >= 50) return 'You’re over halfway. Your page is really taking shape.';
   if (percent >= 25) return 'Good start. Each thing you add makes your page more you.';
-  return "Let's get started. Your page is a blank canvas, and the first few details go quickly.";
+  return 'Let’s get started. Your page is a blank canvas, and the first few details go quickly.';
 }
 
 export function Completeness() {
@@ -137,7 +137,7 @@ export function Completeness() {
       ) : null}
 
       <details className="text-sm">
-        <summary className="cursor-pointer text-muted">See what's done so far</summary>
+        <summary className="cursor-pointer text-muted">See what’s done so far</summary>
         <ul className="mt-2 grid gap-1 sm:grid-cols-2">
           {TASKS.map((task) => {
             const complete = task.done(profile);

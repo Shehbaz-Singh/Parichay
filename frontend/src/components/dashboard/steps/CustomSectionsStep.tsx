@@ -353,7 +353,7 @@ export function CustomSectionsStep() {
       {sections.length === 0 && (
         <Card dashed padding="lg" className="text-center">
           <EmptyState icon={LayoutPanelTop}>
-            Nothing here yet. Add a section for anything that doesn't fit elsewhere, under a heading
+            Nothing here yet. Add a section for anything that doesn’t fit elsewhere, under a heading
             you choose.
           </EmptyState>
         </Card>

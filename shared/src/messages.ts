@@ -42,10 +42,10 @@ export const VALIDATION = {
   dateInvalid: 'Enter a valid date and time',
   announcementTextRequired: 'Write the announcement before you turn it on',
   announcementLinkNeedsText: 'Add the announcement text before adding a link',
-  announcementEndTooFar: 'The end cannot be more than 12 months from now',
+  announcementEndTooFar: 'The end can’t be more than 12 months from now',
 
   // translations.ts
-  notTranslatable: 'This field cannot be translated',
+  notTranslatable: 'This field can’t be translated',
 
   // work-card.ts
   timeZoneUnknown: 'Choose a time zone from the list',

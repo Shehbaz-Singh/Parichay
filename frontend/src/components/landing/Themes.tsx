@@ -1,10 +1,13 @@
 import { ThemeExplorer } from './ThemeExplorer';
 
 const THEMES = [
-  ['Executive', 'A resume-like page: a dark sidebar, dense text led by Experience. Prints cleanly.'],
+  [
+    'Executive',
+    'A resume-like page: a dark sidebar, dense text led by Experience. Prints cleanly.',
+  ],
   ['Editorial', 'A quiet magazine page on warm paper with a narrow reading column.'],
   ['Soft', 'Warm and calm: a centered introduction, a quiet timeline, dark ink throughout.'],
-  ['Bento', 'Rounded tiles on a cool page, with Experience as one full-width list.'],
+  ['Bento', 'Flat hairline tiles on a cool page, with Experience as one full-width list.'],
   ['Creative', 'Bold type, a slanted header band in your accent and offset shadows.'],
   ['Sidebar', 'A dark side rail beside an airy page, with Experience in a band of your accent.'],
   ['Aurora', 'One soft glow of your accent behind the introduction. Dark or light.'],

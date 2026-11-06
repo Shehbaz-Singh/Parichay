@@ -12,7 +12,7 @@ export default function ProfileNotFound() {
     <ErrorPage
       eyebrow="404"
       title="Portfolio not found"
-      message="This page doesn't exist, or its owner hasn't published it yet."
+      message="This page doesn’t exist, or its owner hasn’t published it yet."
     >
       <Link href="/" className={buttonStyles()}>
         Back to home

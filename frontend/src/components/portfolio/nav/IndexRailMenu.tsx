@@ -10,7 +10,7 @@ import { focusRing, WIDE } from '@/components/themes/tokens';
 // from 900px up, a top bar with a menu button below. One element does both: the bar is always there on a
 // phone, and the rest (numbered links, the secondary links, language and reading preferences) is the rail
 // itself above 900px and a full-height panel when the button opens it. The panel traps Tab, closes with
-// Escape or a link and gives focus back to the button. 
+// Escape or a link and gives focus back to the button.
 //
 // `pages` mode (a multi-page portfolio): real links, the current page marked with aria-current="page".
 // `sections` mode (the single page): links to the sections' headings; the one being read is marked

@@ -68,7 +68,7 @@ export function EducationStep() {
         noun="entry"
         addLabel="Add education"
         icon={GraduationCap}
-        empty="Nothing here yet. Add a degree, a course or a bootcamp, whatever you're proud of."
+        empty="Nothing here yet. Add a degree, a course or a bootcamp, whatever you’re proud of."
         summary={(entry) => ({
           title: entry.degree,
           subtitle: `${entry.institution} · ${formatRange(entry.startDate, entry.endDate)}`,

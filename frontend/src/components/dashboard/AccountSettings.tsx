@@ -181,7 +181,7 @@ function DeleteAccount() {
       </h2>
       <p className="text-sm text-ink">
         This permanently deletes your account, your portfolio, your posts, your testimonials, your
-        contact messages and your images. Your page address stops working right away. It cannot be
+        contact messages and your images. Your page address stops working right away. It can’t be
         undone, so download your data first if you want a copy.
       </p>
       {confirming ? (

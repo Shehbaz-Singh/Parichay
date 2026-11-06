@@ -261,7 +261,7 @@ export function TestimonialsStep() {
         id="testimonials-pending"
         title="Pending review"
         items={t.pending}
-        empty="You're all caught up. New testimonials from visitors will wait here for your OK."
+        empty="You’re all caught up. New testimonials from visitors will wait here for your OK."
         actions={(item, done) => (
           <>
             <Button

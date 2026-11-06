@@ -84,15 +84,15 @@ export const ERRORS = {
   pdfTooLarge: `The PDF must be ${megabytes(RESUME_MAX_BYTES)} or smaller`,
 
   // ---- resume import
-  pdfUnreadable: "We couldn't read that PDF. It may be damaged or password protected.",
+  pdfUnreadable: 'We couldn’t read that PDF. It may be damaged or password protected.',
   pdfNoText:
     'That PDF has no readable text. Scanned resumes are not supported; export a PDF with selectable text.',
   resumeUnavailable:
     'Resume import is not available right now. You can fill in your details by hand.',
   resumeBusy: 'The reading service is busy. Please try again in a minute.',
   resumeTimeout: 'Reading your resume took too long. Please try again.',
-  resumeParseFailed: "We couldn't make sense of that resume. Please try again.",
-  resumeNothingFound: "We couldn't find resume details in that file.",
+  resumeParseFailed: 'We couldn’t make sense of that resume. Please try again.',
+  resumeNothingFound: 'We couldn’t find resume details in that file.',
 
   // ---- languages and translations
   confirmRepeatCode: 'Confirm by repeating the language code in the "confirm" query parameter',
@@ -108,10 +108,10 @@ export const ERRORS = {
   nothingToTranslate: 'There is no text to translate here',
   suggestionsUnavailable: 'Translation suggestions are not available',
   suggestionLimit: (perDay: number) =>
-    `You have used today's ${perDay} translation suggestions. Try again tomorrow, or write the text yourself.`,
+    `You have used today’s ${perDay} translation suggestions. Try again tomorrow, or write the text yourself.`,
   suggestionsBusy: 'The translation service is busy. Try again in a minute.',
   suggestionsTimeout: 'The translation took too long. Please try again.',
-  suggestionFailed: "We couldn't get a usable translation. Please try again.",
+  suggestionFailed: 'We couldn’t get a usable translation. Please try again.',
   suggestionTooLong: (max: number) =>
     `The suggestion was longer than the ${max} character limit. Write it yourself, or shorten the original.`,
 } as const;

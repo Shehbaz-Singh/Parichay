@@ -134,6 +134,123 @@
   outline: 2px solid currentColor;
   outline-offset: 2px;
 }
+/* ---- Each theme draws the bar in its own manner. The colors never change here (they are the checked
+   --ann-* pairs, from the theme's own palette); only the shape, edge, type and alignment do, so every
+   pairing that was checked still holds. The bar sits in the theme's wrapper, so the theme's font variables and
+   its colors are in scope. */
+
+/* Index: a ruled line of text, square, with the page's side padding and a hairline below. */
+[data-fx-theme='index'] .ann {
+  border-block-end-width: 1px;
+  font-size: 0.9375rem;
+  font-weight: 400;
+}
+[data-fx-theme='index'] .ann-inner {
+  padding-inline: clamp(1.25rem, 3.2vw, 2.75rem);
+  justify-content: flex-start;
+}
+[data-fx-theme='index'] .ann-text {
+  text-align: start;
+}
+
+/* Sidebar: bold and plain, with a thick edge on the side the text starts from. */
+[data-fx-theme='sidebar'] .ann {
+  border-block-end-width: 1px;
+  border-inline-start: 6px solid var(--ann-edge);
+  font-weight: 700;
+}
+[data-fx-theme='sidebar'] .ann-inner {
+  padding-inline: clamp(1.25rem, 5vw, 4.5rem);
+  justify-content: flex-start;
+}
+[data-fx-theme='sidebar'] .ann-text {
+  text-align: start;
+}
+
+/* Aurora: a floating rounded bar inside the page margin, one step off the page like its raised cards. */
+[data-fx-theme='aurora'] .ann {
+  margin: 0.75rem clamp(1rem, 5vw, 3rem) 0;
+  border: 1px solid var(--ann-edge);
+  border-radius: 0.875rem;
+  font-weight: 500;
+}
+[data-fx-theme='aurora'] .ann-inner {
+  padding-inline: 1.25rem;
+}
+
+/* Editorial: a masthead note in the serif, between two rules. */
+[data-fx-theme='editorial'] .ann {
+  border-block: 1px solid var(--ann-edge);
+  font-family: var(--font-theme-display, serif);
+  font-size: 1.0625rem;
+  font-weight: 400;
+}
+[data-fx-theme='editorial'] .ann-inner {
+  padding-block: 0.875rem;
+}
+[data-fx-theme='editorial'] .ann-link {
+  font-family: var(--font-body, inherit);
+  font-size: 0.9375rem;
+}
+
+/* Bento: a flat tile with a hairline, the width of the grid below it. */
+[data-fx-theme='bento'] .ann {
+  inline-size: min(calc(100% - 2rem), 69rem);
+  margin: 1rem auto 0;
+  border: 1px solid var(--ann-edge);
+  border-radius: 0.75rem;
+  font-weight: 500;
+}
+[data-fx-theme='bento'] .ann-inner {
+  padding-inline: 1.5rem;
+}
+
+/* Soft: a rounded, centered note in the narrow column, with room around it. */
+[data-fx-theme='soft'] .ann {
+  inline-size: min(calc(100% - 2rem), 44rem);
+  margin: 1rem auto 0;
+  border: 1px solid var(--ann-edge);
+  border-radius: 999px;
+  font-weight: 500;
+}
+[data-fx-theme='soft'] .ann-inner {
+  padding-inline: 1.5rem;
+}
+
+/* Executive: dense and square, set like a line in a document. */
+[data-fx-theme='executive'] .ann {
+  border-block-end-width: 1px;
+  font-family: var(--font-theme-display, serif);
+  font-size: 0.9375rem;
+  font-weight: 500;
+}
+[data-fx-theme='executive'] .ann-inner {
+  padding-block: 0.5rem;
+  padding-inline: clamp(1rem, 3vw, 2rem);
+  justify-content: flex-start;
+}
+[data-fx-theme='executive'] .ann-text {
+  text-align: start;
+}
+
+/* Creative: loud and hard: a thick black rule, the mono face, tracked capitals. */
+[data-fx-theme='creative'] .ann {
+  border-block-end: 3px solid var(--text);
+  font-family: var(--font-theme-mono, monospace);
+  font-size: 0.8125rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+[data-fx-theme='creative'] .ann-inner {
+  padding-inline: clamp(1rem, 3vw, 2rem);
+}
+/* Tracking and capitals belong to Latin type: a script that joins its letters keeps its own spacing. */
+:where([data-script]:not([data-script='latin'])) [data-fx-theme='creative'] .ann {
+  letter-spacing: 0;
+  text-transform: none;
+}
+
 /* One short slide-down on arrival. Transform and opacity only, so nothing else on the page moves. */
 @media (prefers-reduced-motion: no-preference) {
   html:not([data-fx='low']) .ann {

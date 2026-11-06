@@ -60,11 +60,12 @@ async function attempt(path: string, options: Options): Promise<Response | ApiEr
       signal: options.signal,
     });
   } catch (err) {
-    if (options.signal?.aborted || (err instanceof DOMException && err.name === 'AbortError')) throw err;
+    if (options.signal?.aborted || (err instanceof DOMException && err.name === 'AbortError'))
+      throw err;
     return new ApiError(
       0,
       'NETWORK',
-      "We couldn't reach the server. Check your internet connection and try again.",
+      'We couldn’t reach the server. Check your internet connection and try again.',
     );
   }
 }
@@ -73,13 +74,13 @@ async function attempt(path: string, options: Options): Promise<Response | ApiEr
 // Anything not listed keeps the server's own wording (validation errors name the field).
 const FRIENDLY: Record<string, string> = {
   [ERROR_CODES.INVALID_CREDENTIALS]:
-    "That email and password don't match. Check them and try again, or create an account if you're new.",
+    'That email and password don’t match. Check them and try again, or create an account if you’re new.',
   [ERROR_CODES.RATE_LIMITED]:
-    "You've tried that a few times in a row. Wait a few minutes, then try again.",
-  [ERROR_CODES.INVALID_PASSWORD]: "That isn't your current password. Check it and try again.",
-  [ERROR_CODES.UPLOAD_FAILED]: "We couldn't save that image. Try again, or pick a different one.",
+    'You’ve tried that a few times in a row. Wait a few minutes, then try again.',
+  [ERROR_CODES.INVALID_PASSWORD]: 'That isn’t your current password. Check it and try again.',
+  [ERROR_CODES.UPLOAD_FAILED]: 'We couldn’t save that image. Try again, or pick a different one.',
   [ERROR_CODES.NOTHING_FOUND]:
-    "We couldn't find resume details in that file. Try a PDF with selectable text, or fill in your details by hand.",
+    'We couldn’t find resume details in that file. Try a PDF with selectable text, or fill in your details by hand.',
 };
 
 const GENERIC =

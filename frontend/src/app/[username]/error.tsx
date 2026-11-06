@@ -9,7 +9,7 @@ export default function ProfileError({ reset }: { error: Error; reset: () => voi
   return (
     <ErrorPage
       title="Something went wrong"
-      message="We couldn't load this portfolio right now. If the site hasn't been visited for a while, the server can take up to a minute to wake up, so please try again in a moment."
+      message="We couldn’t load this portfolio right now. If the site hasn’t been visited for a while, the server can take up to a minute to wake up, so please try again in a moment."
     >
       <Button variant="primary" onClick={reset}>
         Try again

@@ -11,7 +11,7 @@ export default function NotFound() {
     <ErrorPage
       eyebrow="404"
       title="Page not found"
-      message="This page doesn't exist. It may have moved, or the address may have a typo."
+      message="This page doesn’t exist. It may have moved, or the address may have a typo."
     >
       <Link href="/" className={buttonStyles({ variant: 'primary' })}>
         Back to home

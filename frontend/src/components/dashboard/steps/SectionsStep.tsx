@@ -153,7 +153,7 @@ export function SectionsStep() {
               </div>
               {custom ? (
                 <p className="flex flex-wrap items-center gap-2 text-sm text-muted">
-                  The heading is the section's own title.
+                  The heading is the section’s own title.
                   <Button variant="ghost" onClick={() => void go('/dashboard/profile', 'custom')}>
                     Edit items and title
                   </Button>

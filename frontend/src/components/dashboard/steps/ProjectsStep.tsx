@@ -94,7 +94,7 @@ function ProjectForm({ item, draft, onDone, onSaved }: ItemFormProps<'projects'>
         rows={4}
         maxLength={DESCRIPTION_MAX}
         placeholder="A weekly meal planner that builds your shopping list for you."
-        hint="What it is, who it's for, and what you did on it. About 300 characters reads well; longer text is folded behind “Read more” on your page."
+        hint="What it is, who it’s for, and what you did on it. About 300 characters reads well; longer text is folded behind “Read more” on your page."
       />
       {profile.experience.length > 0 && (
         <SelectField

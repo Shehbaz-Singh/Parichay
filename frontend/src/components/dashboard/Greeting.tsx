@@ -25,8 +25,8 @@ export function Greeting() {
   const status = profile.published
     ? 'Your page is live. Changes you make here show up on it right away.'
     : percent === 0
-      ? "Let's build your page. It only takes a few minutes, and you can change anything later."
-      : "Your page is still a draft, so only you can see it. Publish it whenever you're ready.";
+      ? 'Let’s build your page. It only takes a few minutes, and you can change anything later.'
+      : 'Your page is still a draft, so only you can see it. Publish it whenever you’re ready.';
 
   return <PageHeader title={name ? `${greeting}, ${name}` : greeting} description={status} />;
 }

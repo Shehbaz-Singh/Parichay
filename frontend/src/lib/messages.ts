@@ -79,17 +79,17 @@ export const PROBLEMS = {
   generic: 'Something went wrong. Please try again.',
   notSaved: 'Something went wrong, and your change may not have been saved. Please try again.',
   tryAgain: 'That did not work. Please try again.',
-  orderNotSaved: (reason: string) => `Couldn't save the new order. ${reason}`,
-  dataFile: "We couldn't prepare your data file. Please try again.",
-  themeNotChanged: "We couldn't change the theme. Please try again.",
-  colorNotChanged: "We couldn't change the color. Please try again.",
-  linkNotUpdated: "We couldn't update that link. Please try again.",
-  copyEmail: "We couldn't copy the email address automatically. Select it and copy it by hand.",
-  linkBioCopy: "We couldn't copy the link automatically. Select it and copy it by hand.",
-  copyLink: "We couldn't copy the link automatically. Select it and copy it by hand.",
+  orderNotSaved: (reason: string) => `Couldn’t save the new order. ${reason}`,
+  dataFile: 'We couldn’t prepare your data file. Please try again.',
+  themeNotChanged: 'We couldn’t change the theme. Please try again.',
+  colorNotChanged: 'We couldn’t change the color. Please try again.',
+  linkNotUpdated: 'We couldn’t update that link. Please try again.',
+  copyEmail: 'We couldn’t copy the email address automatically. Select it and copy it by hand.',
+  linkBioCopy: 'We couldn’t copy the link automatically. Select it and copy it by hand.',
+  copyLink: 'We couldn’t copy the link automatically. Select it and copy it by hand.',
   signatureCopy:
-    "We couldn't copy that automatically. Select the preview and copy it by hand, or download the .html file.",
-  imageType: "That file type won't work. Choose a JPG, PNG or WebP image.",
+    'We couldn’t copy that automatically. Select the preview and copy it by hand, or download the .html file.',
+  imageType: 'That file type won’t work. Choose a JPG, PNG or WebP image.',
   avatarTooLarge: `That image is over ${megabytes(IMAGE_MAX_BYTES)}. Choose a smaller one, or shrink it and try again.`,
   coverTooLarge: `That image is over ${megabytes(IMAGE_MAX_BYTES)}. Choose a smaller one, or shrink it first.`,
   notPdf: 'That doesn’t look like a PDF. Choose a PDF file, or fill in your details by hand.',
@@ -98,8 +98,8 @@ export const PROBLEMS = {
   sectionTitle: 'Enter a title (up to 80 characters).',
   passwordsDiffer: 'Those two passwords are different. Type the new one the same way twice.',
   saveFailed: 'We couldn’t save. Your changes are still here',
-  imageOrderNotSaved: (reason: string) => `Couldn't save the new image order. ${reason}`,
-  altNotSaved: (reason: string) => `Couldn't save the image description. ${reason}`,
+  imageOrderNotSaved: (reason: string) => `Couldn’t save the new image order. ${reason}`,
+  altNotSaved: (reason: string) => `Couldn’t save the image description. ${reason}`,
 } as const;
 
 export const CONFIRMS = {
@@ -107,13 +107,13 @@ export const CONFIRMS = {
   discardPost: 'You have changes that are not saved. Go back to the list and lose them?',
   discardImport: 'Everything read from your resume will be thrown away.',
   deleteSection: (title: string, items: string) =>
-    `Delete "${title}"${items}? This cannot be undone.`,
+    `Delete "${title}"${items}? This can’t be undone.`,
   deleteTestimonial: (name: string) =>
-    `The testimonial from ${name} will be deleted. This cannot be undone.`,
+    `The testimonial from ${name} will be deleted. This can’t be undone.`,
   deleteMessage: (name: string) =>
-    `The message from ${name} will be deleted for good. This cannot be undone.`,
+    `The message from ${name} will be deleted for good. This can’t be undone.`,
   reportSpam: (name: string) =>
-    `The message from ${name} will be deleted for good, as spam. This cannot be undone.`,
+    `The message from ${name} will be deleted for good, as spam. This can’t be undone.`,
   switchToMulti:
     'Your portfolio becomes a short Home page plus a page for your work, one for your story and any you add. Your sections and everything you wrote stay as they are. Links keep working: an old link to a section such as /name#projects takes visitors to the right page. You can switch back at any time and nothing is lost.',
   switchToSingle:

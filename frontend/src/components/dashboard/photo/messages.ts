@@ -25,7 +25,7 @@ export const PHOTO = {
   zoom: 'Zoom',
   zoomValue: (z: number) => `${Math.round(z * 100)}%`,
   rotate: 'Rotate',
-  rotated: (turns: number) => `Rotated to ${((turns % 4) + 4) % 4 * 90} degrees`,
+  rotated: (turns: number) => `Rotated to ${(((turns % 4) + 4) % 4) * 90} degrees`,
   zoomed: (z: number) => `Zoom ${Math.round(z * 100)} percent`,
   moved: 'Photo moved',
   resetDone: 'Back to the start',
@@ -34,7 +34,8 @@ export const PHOTO = {
   centerFaceNone: 'No face found to center on.',
 
   shape: 'Photo shape',
-  shapeNote: 'Used for your photo on your page, in every theme. “Theme’s own” lets each theme draw it its own way.',
+  shapeNote:
+    'Used for your photo on your page, in every theme. “Theme’s own” lets each theme draw it its own way.',
   shapes: { theme: 'Theme’s own', round: 'Round', soft: 'Rounded square', square: 'Square' },
   shapeSaved: 'Photo shape saved.',
   previewHero: 'Large',
@@ -67,7 +68,7 @@ export const PHOTO = {
 export const PHOTO_PROBLEMS: Record<PhotoProblem, string> = {
   type: 'That file is not a JPG, PNG or WebP photo. Choose one of those.',
   tooBig: `That photo is too large to open here (over ${megabytes(PHOTO_LIMITS.maxInputBytes)} or ${PHOTO_LIMITS.maxPixels / 1_000_000} megapixels). Choose a smaller one.`,
-  heic: 'This looks like an iPhone HEIC photo, which this browser cannot open. Choose Most Compatible in your camera settings, or export the photo as JPEG, then choose it again.',
+  heic: 'This looks like an iPhone HEIC photo, which this browser can’t open. Choose Most Compatible in your camera settings, or export the photo as JPEG, then choose it again.',
   unreadable: 'We could not read that photo. Try another one, or save it again as a JPG.',
   tooSmall: `That photo is too small. Choose one at least ${PHOTO_LIMITS.minSide} × ${PHOTO_LIMITS.minSide} pixels.`,
 };

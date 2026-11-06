@@ -205,6 +205,9 @@ function splitKey(key: string): [TranslatableEntity, string, string] {
   ];
 }
 
+// The two texts of the profile that make a language worth offering to visitors, where the default language has them.
+const REQUIRED_PROFILE_FIELDS = ['tagline', 'about'] as const;
+
 export function statusFor(locale: string, source: Source, rows: Row[]): LanguageStatus {
   const mine = new Map(
     rows
@@ -215,7 +218,10 @@ export function statusFor(locale: string, source: Source, rows: Row[]): Language
   const done = counted.filter((key) => mine.has(key));
   const needsReview = counted.filter((key) => mine.get(key)?.needsReview).length;
   // The two fields that make a language worth publishing: where the default language has them.
-  const required = counted.filter((key) => /^profile:[^:]+:(tagline|about)$/.test(key));
+  const required = counted.filter((key) => {
+    const [type, , field] = splitKey(key);
+    return type === 'profile' && (REQUIRED_PROFILE_FIELDS as readonly string[]).includes(field);
+  });
   // A suggestion still marked "needs review" counts: the flag is a reminder for the owner, not a gate.
   const publishable = required.every((key) => mine.has(key));
   return {
@@ -387,12 +393,29 @@ export const pick = <T extends string | null>(
   original: T,
 ): T | string => lookup.get(type, id, field) ?? original;
 
-// The languages a visitor can choose: the extra ones whose tagline and about are translated.
+// The languages a visitor can choose: the extra ones whose tagline and about are translated (where the
+// default language has them). This runs on every public page view, so it asks for just those two texts and
+// their translations, not for everything the owner could translate (statusFor reads the same rule, for the
+// editor's full progress figures).
 export async function publishableLocales(profileId: string, locales: string[]) {
   if (locales.length === 0) return [];
-  const [source, rows] = await Promise.all([
-    loadSource(profileId),
-    prisma.translation.findMany({ where: { profileId }, select: rowSelect }),
+  const [profile, rows] = await Promise.all([
+    prisma.profile.findUnique({ where: { id: profileId }, select: { tagline: true, about: true } }),
+    prisma.translation.findMany({
+      where: {
+        profileId,
+        entityType: 'profile',
+        entityId: profileId,
+        field: { in: [...REQUIRED_PROFILE_FIELDS] },
+        locale: { in: locales },
+      },
+      select: { locale: true, field: true, value: true },
+    }),
   ]);
-  return locales.filter((locale) => statusFor(locale, source, rows).publishable);
+  const required = REQUIRED_PROFILE_FIELDS.filter((field) => profile?.[field]?.trim());
+  return locales.filter((locale) =>
+    required.every((field) =>
+      rows.some((row) => row.locale === locale && row.field === field && row.value.trim()),
+    ),
+  );
 }

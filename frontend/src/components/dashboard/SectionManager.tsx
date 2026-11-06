@@ -347,7 +347,7 @@ export function ListManager<T extends { id: string }, D = never>({
         </Card>
       ) : showEmpty ? null : full ? (
         <p className="text-sm text-muted">
-          That's the most {noun}s you can have here ({limit}). Delete one if you'd like to add
+          That’s the most {noun}s you can have here ({limit}). Delete one if you’d like to add
           another.
         </p>
       ) : (

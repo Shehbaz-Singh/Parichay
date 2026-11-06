@@ -107,7 +107,8 @@ function AvatarUpload() {
               options={SHAPE_OPTIONS}
               onChange={(value) =>
                 void attempt(
-                  () => saveFields({ avatarShape: value === 'theme' ? null : (value as AvatarShape) }),
+                  () =>
+                    saveFields({ avatarShape: value === 'theme' ? null : (value as AvatarShape) }),
                   PHOTO.shapeSaved,
                 )
               }
@@ -200,7 +201,7 @@ function DetailsForm() {
         name="location"
         label="Location"
         placeholder="e.g. Pune, India"
-        hint="A city or region is plenty. Leave it blank if you'd rather not say."
+        hint="A city or region is plenty. Leave it blank if you’d rather not say."
       />
     </Form>
   );
