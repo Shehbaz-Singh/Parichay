@@ -9,3 +9,12 @@ export const wrap = '[overflow-wrap:anywhere]';
 export const display = 'font-(family-name:--font-theme-display)';
 // Where the desktop rail replaces the top bar.
 export const WIDE = '(min-width: 900px)';
+// Sora a little tighter than its default: what makes Bento's large headings look composed.
+export const tightDisplay = `${display} tracking-[-0.02em]`;
+// The mono face of Creative, for dates and tags.
+export const mono = 'font-(family-name:--font-theme-mono)';
+// The links of the Editorial and Executive themes (the single page and the pages share them).
+export const editorialLink = `ed-underline text-accent-fg ${focusRing}`;
+export const executiveLink = `text-accent-fg underline underline-offset-2 hover:no-underline ${focusRing}`;
+// A bold underlined accent link, as Sidebar and Soft draw them.
+export const strongTextLink = `font-bold text-accent-fg underline underline-offset-4 hover:no-underline ${focusRing}`;

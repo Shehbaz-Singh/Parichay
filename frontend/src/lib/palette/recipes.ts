@@ -95,7 +95,7 @@ function editorial(p: Palette, c: Checker): Vars {
 
 function bento(p: Palette, c: Checker): Vars {
   // The tiles are neutral; the accent is a whisper in the strong tile and the one mesh tile.
-  const tile = p.neutral(0.99, 0.004, 255);
+  const tile = p.neutral(0.998, 0.003, 255);
   const tileStrong = mixHex(p.scale[100], tile, 0.45);
   const meshA = mixHex(p.scale[200], tile, 0.5);
   const meshB = mixHex(p.cool[200], tile, 0.45);
@@ -104,11 +104,11 @@ function bento(p: Palette, c: Checker): Vars {
     p,
     c,
     {
-      bg: p.neutral(0.965, 0.008, 255),
-      surface: p.neutral(0.992, 0.004, 255),
+      bg: p.neutral(0.978, 0.006, 255),
+      surface: p.neutral(0.998, 0.003, 255),
       text: p.neutral(0.2, 0.02, 262),
       muted: p.neutral(0.45, 0.02, 262),
-      border: p.neutral(0.9, 0.01, 255),
+      border: p.neutral(0.91, 0.008, 255),
     },
     [tileStrong, meshA, meshB, meshC],
   );
@@ -118,7 +118,7 @@ function bento(p: Palette, c: Checker): Vars {
     ...vars,
     '--tile-base': tile,
     '--tile-base-strong': tileStrong,
-    '--tile-base-border': p.neutral(0.9, 0.01, 255),
+    '--tile-base-border': p.neutral(0.91, 0.008, 255),
     '--mesh-a': meshA,
     '--mesh-b': meshB,
     '--mesh-c': meshC,

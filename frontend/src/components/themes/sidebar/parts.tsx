@@ -22,7 +22,7 @@ import {
 import { ShareButton } from '../../ShareButton';
 import { WorkCard } from '../WorkCard';
 import { splitTagline } from './model';
-import { focusRing, display, wrap } from '@/components/themes/tokens';
+import { focusRing, display, strongTextLink, wrap } from '@/components/themes/tokens';
 export { focusRing, display, wrap };
 
 // The pieces of the Sidebar theme that both the single page and the pages of a multi-page portfolio use.
@@ -35,7 +35,7 @@ export const primaryButton = `sb-link inline-flex min-h-12 items-center gap-3 bg
 export const outlineButton = `inline-flex min-h-11 max-w-full items-center gap-2 border border-ink px-5 py-2.5 pt-small font-bold hover:bg-ink hover:text-page ${focusRing}`;
 const bandButton = `inline-flex min-h-11 items-center border border-current px-5 pt-small font-bold hover:bg-white/15 ${focusRing}`;
 const lightButton = `inline-flex min-h-11 items-center border border-ink px-5 pt-small font-bold hover:bg-ink hover:text-page ${focusRing}`;
-export const textLink = `font-bold text-accent-fg underline underline-offset-4 hover:no-underline ${focusRing}`;
+export const textLink = strongTextLink;
 
 export const Arrow = ({ className = 'size-5' }: { className?: string }) => (
   <ArrowRight aria-hidden="true" className={`${className} sb-arrow rtl:-scale-x-100`} />

@@ -41,7 +41,7 @@ import { ThemeWrapper } from './ThemeWrapper';
 import { BentoPages } from './templates/BentoPages';
 import { pageView } from './templates/model';
 import type { ThemeProps } from './types';
-import { focusRing, display } from '@/components/themes/tokens';
+import { focusRing, tightDisplay as display } from '@/components/themes/tokens';
 
 // A bento grid: the page is rounded tiles of different sizes. The person and the links come first,
 // then one tile per section (one per project, one per testimonial) in the owner's order. Tile
@@ -142,7 +142,7 @@ function EntriesTile({ block }: { block: Extract<Block, { kind: 'entries' }> }) 
   const lead = block.variant === 'experience';
   return (
     <section aria-labelledby={block.id} className="min-w-0">
-      <h2 id={block.id} className={`${display} mb-5 font-bold ${lead ? 'pt-h1' : 'pt-h2'}`}>
+      <h2 id={block.id} className={`${display} mb-5 font-semibold ${lead ? 'pt-h1' : 'pt-h2'}`}>
         {block.title}
       </h2>
       <EntryList
@@ -151,7 +151,7 @@ function EntriesTile({ block }: { block: Extract<Block, { kind: 'entries' }> }) 
         classes={{
           list: 'divide-y divide-line',
           item: 'py-6 first:pt-0',
-          title: `${display} font-bold ${lead ? 'pt-h2' : 'pt-h3'}`,
+          title: `${display} font-semibold ${lead ? 'pt-h2' : 'pt-h3'}`,
           org: 'text-muted',
           dates: 'text-muted',
         }}
@@ -170,8 +170,8 @@ function identityTile(header: HeaderModel): Tile {
       <div className="flex h-full min-w-0 flex-col justify-between gap-8">
         <Avatar
           avatar={header.avatar}
-          className="size-24 rounded-[1.75rem] sm:size-28"
-          placeholderClassName={`${display} bg-accent pt-title font-bold text-on-accent`}
+          className="size-24 rounded-xl sm:size-28"
+          placeholderClassName={`${display} bg-accent pt-title font-semibold text-on-accent`}
         />
         <div className="min-w-0">
           {header.location && (
@@ -180,21 +180,21 @@ function identityTile(header: HeaderModel): Tile {
               <span>{header.location}</span>
             </p>
           )}
-          <h1 className={`${display} pt-title pt-name font-bold`}>{header.name}</h1>
+          <h1 className={`${display} pt-title pt-name font-semibold`}>{header.name}</h1>
           {header.tagline && (
             <p className="pt-h3 pt-measure mt-3 font-normal text-muted">{header.tagline}</p>
           )}
           <AvailabilityBadge
             availability={header.availability}
             ui={header.ui}
-            className="pt-small mt-5 w-fit rounded-2xl bg-surface px-3.5 py-2.5 text-ink"
+            className="pt-small mt-5 w-fit rounded-lg bg-surface px-3.5 py-2.5 text-ink"
             dotClassName="bg-accent-fg"
             linkClassName={`font-semibold text-accent-fg underline underline-offset-2 hover:no-underline ${focusRing}`}
           />
           {header.work && (
             <WorkCard
               work={header.work}
-              className="pt-small mt-4 w-full max-w-sm rounded-2xl bg-surface px-4 py-3.5 text-ink"
+              className="pt-small mt-4 w-full max-w-sm rounded-lg bg-surface px-4 py-3.5 text-ink"
               linkClassName={`font-semibold text-accent-fg underline underline-offset-2 hover:no-underline ${focusRing}`}
               buttonClassName={`pt-fine rounded-full border border-line px-3 py-1 font-semibold hover:bg-page ${focusRing}`}
             />
@@ -206,7 +206,7 @@ function identityTile(header: HeaderModel): Tile {
 }
 
 function linksTile(header: HeaderModel, idPrefix: string): Tile {
-  const link = `pt-small flex max-w-full items-center gap-3 rounded-xl px-3 py-2 font-semibold transition-colors hover:bg-surface ${focusRing}`;
+  const link = `pt-small flex max-w-full items-center gap-3 rounded-md px-3 py-2 font-semibold transition-colors hover:bg-surface ${focusRing}`;
   return {
     key: 'links',
     span: 2,
@@ -304,7 +304,7 @@ function blockTiles(block: Block): Tile[] {
           >
             <ProjectCover
               project={project}
-              className="mb-4 aspect-[40/21] w-full rounded-2xl object-cover"
+              className="mb-4 aspect-[40/21] w-full rounded-lg object-cover"
             />
             {/* The section's heading is said once, on the first tile; the others carry it for screen
                 readers only, so every tile does not repeat a label. */}
@@ -313,11 +313,11 @@ function blockTiles(block: Block): Tile[] {
             </p>
             <h2
               id={`${block.id}-${project.id}`}
-              className={`${display} pt-h3 flex items-start justify-between gap-3 font-bold`}
+              className={`${display} pt-h3 flex items-start justify-between gap-3 font-semibold`}
             >
               <Link
                 href={project.detailHref}
-                className={`min-w-0 after:absolute after:inset-0 after:rounded-3xl ${focusRing}`}
+                className={`min-w-0 after:absolute after:inset-0 after:rounded-xl ${focusRing}`}
               >
                 {project.name}
               </Link>
@@ -371,7 +371,7 @@ function blockTiles(block: Block): Tile[] {
               <ul className="mt-5 grid gap-x-8 gap-y-6 md:grid-cols-2">
                 {block.rest.map((project) => (
                   <li key={project.id} className="min-w-0">
-                    <h3 className={`${display} pt-h3 font-bold`}>
+                    <h3 className={`${display} pt-h3 font-semibold`}>
                       <Link href={project.detailHref} className={`underline ${focusRing}`}>
                         {project.name}
                       </Link>
@@ -407,9 +407,9 @@ function blockTiles(block: Block): Tile[] {
                 block={block}
                 className="grid gap-x-8 gap-y-6 md:grid-cols-3"
                 itemClassName="group relative min-w-0"
-                coverClassName="mb-3 aspect-[40/21] w-full rounded-2xl object-cover"
-                titleClassName={`${display} pt-h3 font-bold`}
-                linkClassName={`after:absolute after:inset-0 after:rounded-2xl ${focusRing}`}
+                coverClassName="mb-3 aspect-[40/21] w-full rounded-lg object-cover"
+                titleClassName={`${display} pt-h3 font-semibold`}
+                linkClassName={`after:absolute after:inset-0 after:rounded-lg ${focusRing}`}
                 metaClassName="pt-small mt-1 font-medium text-muted"
                 excerptClassName="pt-body mt-2 text-muted"
                 moreClassName={`pt-small mt-6 inline-block font-semibold text-accent-fg underline underline-offset-2 hover:no-underline ${focusRing}`}
@@ -462,7 +462,7 @@ function blockTiles(block: Block): Tile[] {
           <figure className="flex h-full min-w-0 flex-col">
             <span
               aria-hidden="true"
-              className={`${display} block h-9 pt-display leading-[0.9] font-bold text-accent-fg`}
+              className={`${display} block h-9 pt-display leading-[0.9] font-semibold text-accent-fg`}
             >
               “
             </span>
@@ -577,10 +577,10 @@ export default function BentoTheme({
       <IdentityStrip
         header={buildHeader(profile)}
         full={page.key === 'about'}
-        wrapClassName="mb-5 flex items-center gap-4 rounded-3xl border border-line bg-surface p-5 sm:gap-6 sm:p-6"
-        avatarClassName="size-20 shrink-0 rounded-2xl sm:size-28"
-        placeholderClassName={`${display} bg-page pt-title font-bold text-ink`}
-        nameClassName={`${display} pt-h2 font-bold`}
+        wrapClassName="mb-5 flex items-center gap-4 rounded-xl border border-line bg-surface p-5 sm:gap-6 sm:p-6"
+        avatarClassName="size-20 shrink-0 rounded-lg sm:size-28"
+        placeholderClassName={`${display} bg-page pt-title font-semibold text-ink`}
+        nameClassName={`${display} pt-h2 font-semibold`}
         taglineClassName="mt-1 text-muted"
         metaClassName="pt-small mt-1 text-muted"
         pillClassName={`pt-small inline-flex items-center gap-2 rounded-full border border-line bg-page px-4 py-2 font-semibold hover:bg-surface ${focusRing}`}
@@ -610,7 +610,7 @@ export default function BentoTheme({
   return (
     <ThemeWrapper theme="bento" profile={profile} nav={nav} className={fontClass} vars={vars}>
       <div data-tiles={tiles}>
-        <main id={`${idPrefix}main`} className="mx-auto max-w-6xl px-4 py-6 sm:px-6 sm:py-10">
+        <main id={`${idPrefix}main`} className="mx-auto max-w-6xl px-4 py-10 sm:px-6 sm:py-16">
           {leadNode ??
             (heading && (
               <PageHeading
@@ -619,7 +619,7 @@ export default function BentoTheme({
                 kicker={profile.fullName}
                 wrapClassName="mb-5 px-1 sm:mb-7"
                 kickerClassName={`pt-small mb-1 font-semibold text-muted`}
-                className={`${display} pt-display pt-name font-bold`}
+                className={`${display} pt-display pt-name font-semibold`}
               />
             ))}
           {identity}
@@ -629,7 +629,7 @@ export default function BentoTheme({
                 key={tile.key}
                 data-tone={tile.tone}
                 style={{ '--i': i } as CSSProperties}
-                className={`bento-tile fx-item relative min-w-0 rounded-3xl border p-6 transition duration-200 hover:shadow-raised sm:p-7 ${SM[sm[i]]} ${LG[lg[i]]}`}
+                className={`bento-tile fx-item relative min-w-0 rounded-xl border p-7 sm:p-9 ${SM[sm[i]]} ${LG[lg[i]]}`}
               >
                 {tile.node}
               </li>

@@ -110,7 +110,7 @@
   --fx-range: 50%;
 }
 [data-fx-theme='bento'] {
-  --fx-distance: 16px;
+  --fx-distance: 8px;
   --fx-duration: 250ms;
 }
 [data-fx-theme='soft'] {
@@ -137,10 +137,7 @@
   --fx-duration: 250ms;
 }
 
-/* ---- Bento: tile tints from the scale, an inner light along the top edge, one mesh tile. */
-.bento-tile {
-  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.65);
-}
+/* ---- Bento: flat tiles with a hairline, tinted from the scale, and one mesh tile. No shadow or inner light. */
 .bento-tile[data-tone='mesh'] {
   --tile: var(--tile-base-strong, var(--accent-soft));
   background-color: var(--tile);
@@ -148,9 +145,6 @@
     radial-gradient(70% 90% at 12% 8%, var(--mesh-a, transparent), transparent 70%),
     radial-gradient(60% 80% at 92% 90%, var(--mesh-b, transparent), transparent 70%),
     radial-gradient(50% 60% at 85% 10%, var(--mesh-c, transparent), transparent 70%);
-}
-[data-tiles='dark'] .bento-tile {
-  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.08);
 }
 [data-tiles='dark'] .bento-tile[data-tone='mesh'] {
   --tile: color-mix(in srgb, var(--accent) 22%, #12141c);

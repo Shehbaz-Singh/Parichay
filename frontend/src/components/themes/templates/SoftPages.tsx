@@ -30,7 +30,7 @@ import {
   type ProjectPageModel,
   type WorkPageModel,
 } from './model';
-import { focusRing, display } from '@/components/themes/tokens';
+import { focusRing, display, strongTextLink as textLink } from '@/components/themes/tokens';
 
 // The pages of a multi-page portfolio in the Soft theme: warm and calm. A centered introduction, one
 // narrow column, open panels with a hairline, soft tinted chips, a quiet timeline and nothing that moves.
@@ -42,7 +42,6 @@ const tint = 'rounded-3xl bg-accent-soft';
 const chip = 'rounded-full bg-accent-soft px-3.5 py-1 text-sm font-semibold';
 const pill = `inline-flex max-w-full items-center gap-2 rounded-full border border-line bg-surface px-4 py-2 text-sm font-semibold transition-colors duration-200 hover:bg-accent-soft ${focusRing}`;
 const solid = `inline-flex items-center gap-2 rounded-full bg-ink px-6 py-2.5 text-sm font-bold text-page transition-opacity duration-200 hover:opacity-90 ${focusRing}`;
-const textLink = `font-bold text-accent-fg underline underline-offset-4 hover:no-underline ${focusRing}`;
 const wrapText = '[overflow-wrap:anywhere]';
 const badgeProps = {
   className:

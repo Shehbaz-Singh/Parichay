@@ -32,7 +32,7 @@ import {
   type ProjectPageModel,
   type WorkPageModel,
 } from './model';
-import { focusRing, display, wrap } from '@/components/themes/tokens';
+import { focusRing, tightDisplay as display, wrap } from '@/components/themes/tokens';
 
 // The pages of a multi-page portfolio in the Bento theme. Every page is its own composition of rounded
 // tiles, tinted from the accent, in the same grid as the single page (six units wide on a desktop, two
@@ -41,7 +41,7 @@ import { focusRing, display, wrap } from '@/components/themes/tokens';
 // frame's fonts, the tiles of a block, the footer), so this file never imports the theme.
 
 const chip = 'rounded-full border border-line bg-page/70 px-3 py-1 text-sm font-medium';
-const stretched = `after:absolute after:inset-0 after:rounded-3xl ${focusRing}`;
+const stretched = `after:absolute after:inset-0 after:rounded-xl ${focusRing}`;
 
 type Tone = 'plain' | 'strong' | 'solid' | 'mesh';
 export interface BentoTile {
@@ -111,8 +111,8 @@ function Grid({ tiles }: { tiles: BentoTile[] }) {
           key={tile.key}
           data-tone={tile.tone}
           style={{ '--i': i } as CSSProperties}
-          className={`bento-tile fx-item relative min-w-0 overflow-hidden rounded-3xl border transition duration-300 hover:shadow-raised print:break-inside-avoid ${
-            tile.flush ? 'p-0' : 'p-6 sm:p-7'
+          className={`bento-tile fx-item relative min-w-0 overflow-hidden rounded-xl border print:break-inside-avoid ${
+            tile.flush ? 'p-0' : 'p-7 sm:p-9'
           } ${SM[sm[i]]} ${LG[lg[i]]}`}
         >
           {tile.node}
@@ -161,7 +161,7 @@ function TitleTile({
       <p className="text-sm font-semibold text-muted">{kicker}</p>
       <h1
         id={id}
-        className={`${display} ${wrap} text-[clamp(2.25rem,7vw,4.5rem)] leading-[1.02] font-bold tracking-tight text-balance`}
+        className={`${display} ${wrap} text-[clamp(2.25rem,7vw,4.5rem)] leading-[1.02] font-semibold tracking-tight text-balance`}
       >
         {title}
       </h1>
@@ -213,11 +213,11 @@ function identityMini(profile: PublicProfile, header: HeaderModel, span = 2): Be
       <div className="flex h-full min-w-0 flex-col justify-between gap-6">
         <Avatar
           avatar={header.avatar}
-          className="size-16 rounded-2xl sm:size-20"
-          placeholderClassName={`${display} bg-surface text-2xl font-bold text-ink`}
+          className="size-16 rounded-lg sm:size-20"
+          placeholderClassName={`${display} bg-surface text-2xl font-semibold text-ink`}
         />
         <div className="min-w-0">
-          <p className={`${display} ${wrap} text-lg leading-snug font-bold`}>
+          <p className={`${display} ${wrap} text-lg leading-snug font-semibold`}>
             <Link href={rootOf(profile)} className={focusRing}>
               {header.name}
             </Link>
@@ -273,7 +273,7 @@ function projectTile(
       width={project.cover.width}
       height={project.cover.height}
       priority={options.priority}
-      className={`h-auto w-full rounded-2xl object-cover ${
+      className={`h-auto w-full rounded-lg object-cover ${
         options.hero ? 'aspect-[16/10] md:mb-0' : 'aspect-[40/21]'
       } mb-4`}
     />
@@ -296,7 +296,7 @@ function projectTile(
           </p>
           <h2
             id={id}
-            className={`${display} ${wrap} flex items-start justify-between gap-3 leading-snug font-bold ${
+            className={`${display} ${wrap} flex items-start justify-between gap-3 leading-snug font-semibold ${
               options.hero ? 'text-3xl sm:text-4xl' : 'text-xl'
             }`}
           >
@@ -334,7 +334,7 @@ function projectTile(
 
 // The links, the vCard and the resume of the owner, with Share: the tile Home shows beside the identity.
 function linksTile(header: HeaderModel, idPrefix: string, title: string): BentoTile {
-  const link = `flex max-w-full items-center gap-3 rounded-xl px-3 py-2 text-sm font-semibold transition-colors hover:bg-surface ${focusRing}`;
+  const link = `flex max-w-full items-center gap-3 rounded-md px-3 py-2 text-sm font-semibold transition-colors hover:bg-surface ${focusRing}`;
   return {
     key: 'links',
     span: 2,
@@ -394,8 +394,8 @@ function homeTiles(
       <div className="flex h-full min-w-0 flex-col justify-between gap-8">
         <Avatar
           avatar={header.avatar}
-          className="size-24 rounded-[1.75rem] sm:size-32"
-          placeholderClassName={`${display} bg-accent text-4xl font-bold text-on-accent`}
+          className="size-24 rounded-xl sm:size-32"
+          placeholderClassName={`${display} bg-accent text-4xl font-semibold text-on-accent`}
         />
         <div className="min-w-0">
           {header.location && (
@@ -405,7 +405,7 @@ function homeTiles(
             </p>
           )}
           <h1
-            className={`${display} ${wrap} text-[clamp(2.25rem,7vw,4.25rem)] leading-[1.03] font-bold tracking-tight text-balance`}
+            className={`${display} ${wrap} text-[clamp(2.25rem,7vw,4.25rem)] leading-[1.03] font-semibold tracking-tight text-balance`}
           >
             {header.name}
           </h1>
@@ -417,14 +417,14 @@ function homeTiles(
           <AvailabilityBadge
             availability={header.availability}
             ui={header.ui}
-            className="mt-5 w-fit rounded-2xl bg-surface px-3.5 py-2.5 text-sm text-ink"
+            className="mt-5 w-fit rounded-lg bg-surface px-3.5 py-2.5 text-sm text-ink"
             dotClassName="bg-accent-fg"
             linkClassName={`font-semibold text-accent-fg underline underline-offset-2 hover:no-underline ${focusRing}`}
           />
           {header.work && (
             <WorkCard
               work={header.work}
-              className="mt-4 w-full max-w-sm rounded-2xl bg-surface px-4 py-3.5 text-ink"
+              className="mt-4 w-full max-w-sm rounded-lg bg-surface px-4 py-3.5 text-ink"
               linkClassName={`font-semibold text-accent-fg underline underline-offset-2 hover:no-underline ${focusRing}`}
               buttonClassName={`rounded-full border border-line px-3 py-1 text-xs font-semibold hover:bg-page ${focusRing}`}
             />
@@ -458,10 +458,10 @@ function homeTiles(
       tone: 'solid',
       node: (
         <div className="flex h-full min-w-0 flex-col justify-between gap-8">
-          <p aria-hidden="true" className={`${display} text-6xl leading-none font-bold`}>
+          <p aria-hidden="true" className={`${display} text-6xl leading-none font-semibold`}>
             {String(model.projectTotal).padStart(2, '0')}
           </p>
-          <p className="flex items-center justify-between gap-3 text-lg font-bold">
+          <p className="flex items-center justify-between gap-3 text-lg font-semibold">
             <Link href={href} className={stretched}>
               {label}
               <span className="sr-only">
@@ -484,7 +484,7 @@ function homeTiles(
       tone: 'plain',
       node: (
         <Labelled id={`${idPrefix}now`} title={ui.pages.now}>
-          <p className={`${display} ${wrap} text-xl leading-snug font-bold`}>
+          <p className={`${display} ${wrap} text-xl leading-snug font-semibold`}>
             {fill(ui.pages.atCompany, { role, company })}
           </p>
           {open && (
@@ -553,7 +553,7 @@ function homeTiles(
         <figure className="flex h-full min-w-0 flex-col">
           <span
             aria-hidden="true"
-            className={`${display} block h-9 text-6xl leading-[0.9] font-bold text-accent-fg`}
+            className={`${display} block h-9 text-6xl leading-[0.9] font-semibold text-accent-fg`}
           >
             “
           </span>
@@ -592,7 +592,7 @@ function homeTiles(
           <div className="min-w-0">
             <h2
               id={`${idPrefix}cta`}
-              className={`${display} ${wrap} text-3xl leading-tight font-bold text-balance sm:text-5xl`}
+              className={`${display} ${wrap} text-3xl leading-tight font-semibold text-balance sm:text-5xl`}
             >
               {title}
             </h2>
@@ -716,7 +716,7 @@ function projectPageTiles(
                 <NewTabLink
                   href={model.external}
                   context={model.name}
-                  className={`flex items-center justify-between gap-3 rounded-xl bg-surface px-4 py-3 text-sm font-semibold ${focusRing}`}
+                  className={`flex items-center justify-between gap-3 rounded-md bg-surface px-4 py-3 text-sm font-semibold ${focusRing}`}
                 >
                   {ui.pages.visit}
                   <ArrowUpRight aria-hidden="true" className="size-4 shrink-0 rtl:-scale-x-100" />
@@ -823,7 +823,7 @@ function projectPageTiles(
             <ArrowRight aria-hidden="true" className="size-4 rtl:-scale-x-100" />
           )}
         </p>
-        <p className={`${display} ${wrap} text-xl leading-snug font-bold`}>
+        <p className={`${display} ${wrap} text-xl leading-snug font-semibold`}>
           <Link href={item.href} rel={which === 'next' ? 'next' : 'prev'} className={stretched}>
             {item.name}
           </Link>
@@ -838,7 +838,7 @@ function projectPageTiles(
     span: 2,
     tone: 'solid',
     node: (
-      <p className="flex h-full min-w-0 items-end text-lg font-bold">
+      <p className="flex h-full min-w-0 items-end text-lg font-semibold">
         <Link href={model.back.href} className={`flex items-center gap-2 ${stretched}`}>
           <ArrowLeft aria-hidden="true" className="size-5 shrink-0 rtl:-scale-x-100" />
           {fill(ui.pages.backTo, { page: model.back.label })}
@@ -871,7 +871,7 @@ function aboutTiles(
         <Avatar
           avatar={header.avatar}
           className="aspect-square w-full"
-          placeholderClassName={`${display} bg-accent text-8xl font-bold text-on-accent`}
+          placeholderClassName={`${display} bg-accent text-8xl font-semibold text-on-accent`}
         />
       ),
     },
@@ -903,7 +903,7 @@ function aboutTiles(
       node: (
         <div className="flex h-full min-w-0 flex-col justify-between gap-6">
           <p className="text-sm font-semibold text-muted">{fact.label}</p>
-          <p className={`${display} ${wrap} text-2xl leading-tight font-bold text-balance`}>
+          <p className={`${display} ${wrap} text-2xl leading-tight font-semibold text-balance`}>
             {fact.value}
           </p>
         </div>
@@ -983,7 +983,7 @@ function contactTiles(
               <AvailabilityBadge
                 availability={header.availability}
                 ui={header.ui}
-                className="text-lg leading-snug font-bold"
+                className="text-lg leading-snug font-semibold"
                 dotClassName="bg-accent-fg"
                 linkClassName={`underline underline-offset-2 ${focusRing}`}
               />
@@ -1130,7 +1130,7 @@ export function BentoPages({
   return (
     <ThemeWrapper theme="bento" profile={profile} nav={nav} className={fontClass} vars={vars}>
       <div data-tiles={tiles}>
-        <main id={`${idPrefix}main`} className="mx-auto max-w-6xl px-4 py-6 sm:px-6 sm:py-10">
+        <main id={`${idPrefix}main`} className="mx-auto max-w-6xl px-4 py-10 sm:px-6 sm:py-16">
           <Grid tiles={items} />
         </main>
         {footer}

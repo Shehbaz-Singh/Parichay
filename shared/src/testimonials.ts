@@ -1,5 +1,12 @@
 import { z } from 'zod';
-import { EMAIL_MAX, optionalLine, requiredBlock, requiredLine } from './text';
+import {
+  EMAIL_MAX,
+  NO_TAGS,
+  isPlain as plain,
+  optionalLine,
+  requiredBlock,
+  requiredLine,
+} from './text';
 import { VALIDATION } from './messages';
 
 // Testimonials: quotes about the profile's owner. A visitor can submit one when the owner accepts
@@ -21,12 +28,6 @@ export const TESTIMONIAL_EMAIL_MAX = EMAIL_MAX;
 // Keeps the table and the owner's list manageable, however many people submit.
 export const MAX_TESTIMONIALS = 100; // all statuses, per profile
 export const MAX_PENDING_TESTIMONIALS = 50; // waiting for review, per profile
-
-// The text fields are plain text (see text.ts) and must not look like HTML: a "<b>" in a quote is
-// refused instead of shown literally.
-const TAG = /<\/?[a-z!][^>]*>/i;
-const NO_TAGS = 'Plain text only, please leave out HTML tags';
-const plain = (value: string | null) => value === null || !TAG.test(value);
 
 const optionalEmail = z
   .string()

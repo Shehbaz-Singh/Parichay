@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { VALIDATION } from './messages';
-import { requiredLine } from './text';
+import { NO_TAGS, isPlain, requiredLine } from './text';
 
 // Link-in-bio: a compact, mobile-first card version of the portfolio at /<slug>/links, for the bio of
 // an Instagram profile, a WhatsApp status or an email signature. It shows the owner's own custom
@@ -18,10 +18,6 @@ export const LINK_BIO_LABEL_MAX = 40;
 export const LINK_BIO_URL_MAX = 2048;
 
 // ---- one custom button
-
-// Text of any kind that is not a tag: a label is shown as text, never read as markup.
-const TAG = /<\/?[a-z!][^>]*>/i;
-const NO_TAGS = 'Plain text only, please leave out HTML tags';
 
 const isControl = (char: string) => {
   const code = char.charCodeAt(0);
@@ -63,7 +59,7 @@ export const linkBioUrlSchema = z
   .pipe(z.string().max(LINK_BIO_URL_MAX));
 
 export const linkBioButtonInputSchema = z.object({
-  label: requiredLine(LINK_BIO_LABEL_MAX).refine((label) => !TAG.test(label), NO_TAGS),
+  label: requiredLine(LINK_BIO_LABEL_MAX).refine(isPlain, NO_TAGS),
   url: linkBioUrlSchema,
 });
 export type LinkBioButtonInput = z.infer<typeof linkBioButtonInputSchema>;

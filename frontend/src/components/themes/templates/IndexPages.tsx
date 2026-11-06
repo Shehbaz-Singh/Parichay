@@ -6,6 +6,7 @@ import { Markdown } from '@/components/Markdown';
 import { ShareButton } from '../../ShareButton';
 import { fill, translatorFor } from '@/lib/i18n';
 import type { Block } from '../blocks';
+import { textLink as link } from '../kit';
 import { AvailabilityBadge, NewTabLink } from '../parts';
 import { aboutExtras } from '../sidebar/model';
 import { heroSplit } from '../index/model';
@@ -25,6 +26,7 @@ import {
   grid2,
   gutter,
   labelClass,
+  bodyText,
   primaryButton,
   wrap,
   type Action,
@@ -44,9 +46,6 @@ import {
 // nav); these are what sits beside it. IndexTheme passes in how a section is drawn.
 
 type Render = (block: Block) => ReactNode;
-
-const link = `underline decoration-1 underline-offset-4 hover:decoration-2 ${focusRing}`;
-const bodyText = 'text-[1.0625rem] leading-[1.65]';
 
 // A page's title: the large h1 on the left, the owner's line on the right.
 function Title({

@@ -22,6 +22,12 @@ const lengthRule = (min: number, max: number) =>
     .min(min, min > 1 ? VALIDATION.tooShort(min) : undefined)
     .max(max, VALIDATION.tooLong(max));
 
+// Text that looks like an HTML tag is refused instead of being shown with its angle brackets (markup is never
+// interpreted, so this is for the owner's sake, not safety).
+const TAG = /<\/?[a-z!][^>]*>/i;
+export const NO_TAGS = 'Plain text only, please leave out HTML tags';
+export const isPlain = (value: string | null) => value === null || !TAG.test(value);
+
 // The longest email address, as the standard has it.
 export const EMAIL_MAX = 254;
 

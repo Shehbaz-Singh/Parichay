@@ -34,7 +34,7 @@ import { EditorialPages } from './templates/EditorialPages';
 import { pageView } from './templates/model';
 import { ThemeWrapper } from './ThemeWrapper';
 import type { ThemeProps } from './types';
-import { focusRing, display } from '@/components/themes/tokens';
+import { editorialLink as link, focusRing, display } from '@/components/themes/tokens';
 
 // A quiet magazine page on warm paper (.theme-editorial). A narrow reading column; a masthead with a
 // large serif name between two rules; the About text opens with a drop cap; section labels are small
@@ -64,7 +64,6 @@ const serif = Newsreader({
 export const fontClass = `${sans.className} ${serif.variable}`;
 
 const caps = 'pt-label';
-const link = `ed-underline text-accent-fg ${focusRing}`;
 
 // One narrow column. The label is small capitals with a short accent rule that draws in as it enters.
 function Section({ block, children }: { block: Block; children: ReactNode }) {

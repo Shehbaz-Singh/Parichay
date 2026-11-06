@@ -35,7 +35,7 @@ interface Props<T extends { id: string }> {
   renderItem: (item: T, handle: ReactNode) => ReactNode;
 }
 
-const moveClass =
+export const moveClass =
   'flex size-6 shrink-0 items-center justify-center rounded text-muted hover:text-ink disabled:opacity-30';
 
 function Row({

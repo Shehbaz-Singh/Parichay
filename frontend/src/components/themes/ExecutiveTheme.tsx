@@ -35,7 +35,7 @@ import { ThemeWrapper } from './ThemeWrapper';
 import type { ThemeProps } from './types';
 import { ExecutivePages } from './templates/ExecutivePages';
 import { pageView } from './templates/model';
-import { focusRing, display } from '@/components/themes/tokens';
+import { executiveLink as link, focusRing, display } from '@/components/themes/tokens';
 
 // A professional, resume-like page: a document on a gray desk with two columns. The left sidebar
 // (dark, tinted by the accent) holds the photo, name, tagline, contact links and skills; the wider
@@ -63,7 +63,6 @@ const serif = Source_Serif_4({
 // The class that sets this theme's fonts; the Writing pages use it too.
 export const fontClass = `${sans.className} ${serif.variable}`;
 
-const link = `text-accent-fg underline underline-offset-2 hover:no-underline ${focusRing}`;
 const small = 'pt-label';
 
 function Sidebar({

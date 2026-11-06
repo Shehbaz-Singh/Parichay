@@ -1,10 +1,8 @@
 import { ChevronDown, ChevronUp } from 'lucide-react';
 import type { AnyPageKey, ConfigKey } from '@parichay/shared';
 import { Select } from '../../ui';
+import { moveClass } from '../SortableList';
 import { moveSection, shiftSection, type Row } from './arrangement';
-
-const moveClass =
-  'flex size-6 shrink-0 items-center justify-center rounded text-muted hover:text-ink disabled:opacity-30';
 
 // The sections on one page, in their order, each with buttons to move it earlier or later on the page
 // and a list to put it on another page. Plain controls, so it works with a keyboard and a screen reader.

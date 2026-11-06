@@ -29,7 +29,7 @@ import {
   type ProjectPageModel,
   type WorkPageModel,
 } from './model';
-import { focusRing } from '@/components/themes/tokens';
+import { focusRing, mono as monoText } from '@/components/themes/tokens';
 
 // The page templates of the Creative theme: loud, heavy type under a header in the accent color, thick
 // ink borders, hard offset shadows, big outlined numbers and stickers. Each page has a layout of its own
@@ -47,7 +47,6 @@ export interface CreativePagesProps {
   renderBlock: (block: Block) => ReactNode; // the theme's own body of a block (jobs, education, ...)
 }
 
-const monoText = 'font-(family-name:--font-theme-mono)';
 const outline =
   'font-black text-transparent [-webkit-text-stroke:2px_var(--text)] leading-none select-none';
 

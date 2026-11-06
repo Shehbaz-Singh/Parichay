@@ -34,7 +34,7 @@ export const gutter = pageGutter;
 // The asymmetric grid of the kit: a label column and a text column of about 66 characters.
 export const grid2 = splitGrid;
 const titleClass = `ix-tight scroll-mt-20 min-[900px]:scroll-mt-10 text-[clamp(2.5rem,3.6vw,3.5rem)] leading-[1.1] font-medium outline-none ${wrap}`;
-const bodyText = 'text-[1.0625rem] leading-[1.65]';
+export const bodyText = 'text-[1.0625rem] leading-[1.65]';
 const small = 'text-[0.875rem] leading-snug';
 export const labelClass = 'text-[0.8125rem] leading-snug font-semibold';
 const link = textLink;

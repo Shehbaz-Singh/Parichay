@@ -1,6 +1,13 @@
 import { z } from 'zod';
 import { VALIDATION } from './messages';
-import { EMAIL_MAX, optionalLine, requiredBlock, requiredLine } from './text';
+import {
+  EMAIL_MAX,
+  NO_TAGS,
+  isPlain as plain,
+  optionalLine,
+  requiredBlock,
+  requiredLine,
+} from './text';
 
 // The contact form of the public page and the owner's inbox. A visitor writes a message; it is kept
 // in the database for a limited time and the owner reads it in the dashboard. Nothing is emailed:
@@ -29,12 +36,6 @@ export const CONTACT_TOKEN_MAX_SECONDS = 60 * 60;
 
 // The owner's inbox is shown a page at a time.
 export const CONTACT_PAGE_SIZE = 20;
-
-// Plain text only: markup is never interpreted, and text that looks like a tag is refused instead
-// of being shown with its angle brackets.
-const TAG = /<\/?[a-z!][^>]*>/i;
-const NO_TAGS = 'Plain text only, please leave out HTML tags';
-const plain = (value: string | null) => value === null || !TAG.test(value);
 
 // Things that read as a link: an address with a scheme or "www.", or a domain with a common ending.
 // An email address is taken out first, so writing one down is not counted.
